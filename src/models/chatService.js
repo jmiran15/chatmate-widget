@@ -3,14 +3,19 @@ import { v4 } from "uuid";
 
 const ChatService = {
   embedSessionHistory: async function (embedSettings, sessionId) {
-    const { embedId, baseApiUrl } = embedSettings;
-    return await fetch(`${baseApiUrl}/${embedId}/${sessionId}`)
+    // this loads in all the messages form the chat history
+
+    const { embedId } = embedSettings;
+    const URL_TEST = `http://localhost:3000/api/chat/${embedId}/${sessionId}`;
+
+    return await fetch(URL_TEST)
       .then((res) => {
         if (res.ok) return res.json();
         throw new Error("Invalid response from server");
       })
       .then((res) => {
-        return res.history.map((msg) => ({
+        console.log("res", res);
+        return res.map((msg) => ({
           ...msg,
           id: v4(),
           sender: msg.role === "user" ? "user" : "system",
@@ -24,32 +29,44 @@ const ChatService = {
       });
   },
   resetEmbedChatSession: async function (embedSettings, sessionId) {
-    const { baseApiUrl, embedId } = embedSettings;
-    return await fetch(`${baseApiUrl}/${embedId}/${sessionId}`, {
+    // we probably don't want to delete on the backend when someone resets the chat
+    // just delete all the messages in the chat on backend, but dont delete the chat
+
+    const { embedId } = embedSettings;
+    const URL_TEST = `http://localhost:3000/api/chat/${embedId}/${sessionId}`;
+
+    return await fetch(URL_TEST, {
       method: "DELETE",
     })
       .then((res) => res.ok)
       .catch(() => false);
   },
-  streamChat: async function (sessionId, embedSettings, message, handleChat) {
-    const { baseApiUrl, embedId } = embedSettings;
-    const overrides = {
-      prompt: embedSettings?.prompt ?? null,
-      model: embedSettings?.model ?? null,
-      temperature: embedSettings?.temperature ?? null,
-    };
-
+  streamChat: async function (
+    chatbot,
+    remHistory,
+    chatbotId,
+    sessionId,
+    embedSettings,
+    message,
+    handleChat
+  ) {
     const ctrl = new AbortController();
 
     // CHANGE THIS URL TO BE THE URL OF MY API
 
-    const URL_TEST = "http://localhost:3000/api/chat/t";
+    console.log("remHistory", remHistory);
+
+    const URL_TEST = `http://localhost:3000/api/chat/${chatbotId}/${sessionId}`;
     await fetchEventSource(URL_TEST, {
       method: "POST",
       body: JSON.stringify({
-        message,
-        sessionId,
-        ...overrides,
+        chatbot,
+        messages: remHistory.map((msg) => {
+          return {
+            role: msg.role === "user" ? "user" : "assistant",
+            content: msg.content,
+          };
+        }),
       }),
       signal: ctrl.signal,
       openWhenHidden: true,

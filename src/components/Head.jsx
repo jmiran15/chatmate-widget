@@ -159,6 +159,19 @@ const customCss = `
 .bg-black-900 {
   background: #141414;
 }
+
+.shadow-custom {
+  box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.06), 0 2px 32px 0 rgba(0, 0, 0, 0.16);
+}
+
+.transition-custom {
+  transition: transform 167ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+}
+
+.button-hover-effect:hover {
+  transition: transform 250ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+  transform: scale(1.1);
+}
 `;
 
 export default function Head() {

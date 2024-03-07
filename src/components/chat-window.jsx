@@ -5,7 +5,13 @@ import ChatContainer from "./chat-container";
 import Sponsor from "./sponsor";
 import { ChatHistoryLoading } from "./chat-history";
 
-export default function ChatWindow({ closeChat, settings, sessionId }) {
+export default function ChatWindow({
+  closeChat,
+  settings,
+  sessionId,
+  chatbot,
+  chatbotId,
+}) {
   const { chatHistory, setChatHistory, loading } = useChatHistory(
     settings,
     sessionId
@@ -44,6 +50,8 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
         sessionId={sessionId}
         settings={settings}
         knownHistory={chatHistory}
+        chatbot={chatbot}
+        chatbotId={chatbotId}
       />
       <div className="pt-4 pb-2 h-fit gap-y-1">
         <SessionId />

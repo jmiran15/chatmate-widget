@@ -1,20 +1,20 @@
 // vite.config.js
-import { defineConfig } from "vite"
-import { fileURLToPath, URL } from "url"
-import react from "@vitejs/plugin-react"
-import image from "@rollup/plugin-image"
+import { defineConfig } from "vite";
+import { fileURLToPath, URL } from "url";
+import react from "@vitejs/plugin-react";
+import image from "@rollup/plugin-image";
 
 export default defineConfig({
   plugins: [react(), image()],
   define: {
     // In dev, we need to disable this, but in prod, we need to enable it
-    "process.env.NODE_ENV": JSON.stringify("production")
+    "process.env.NODE_ENV": JSON.stringify("production"),
   },
   resolve: {
     alias: [
       {
         find: "@",
-        replacement: fileURLToPath(new URL("./src", import.meta.url))
+        replacement: fileURLToPath(new URL("./src", import.meta.url)),
       },
       {
         process: "process/browser",
@@ -23,26 +23,26 @@ export default defineConfig({
         util: "util",
         find: /^~.+/,
         replacement: (val) => {
-          return val.replace(/^~/, "")
-        }
-      }
-    ]
+          return val.replace(/^~/, "");
+        },
+      },
+    ],
   },
   build: {
     lib: {
       entry: "src/main.jsx",
-      name: "EmbeddedAnythingLLM",
+      name: "Chatmate",
       formats: ["umd"],
-      fileName: (_format) => `anythingllm-chat-widget.js`
+      fileName: (_format) => `chatmate-chat-widget.js`,
     },
     rollupOptions: {
       external: [
         // Reduces transformation time by 50% and we don't even use this variant, so we can ignore.
         /@phosphor-icons\/react\/dist\/ssr/,
-      ]
+      ],
     },
     commonjsOptions: {
-      transformMixedEsModules: true
+      transformMixedEsModules: true,
     },
     cssCodeSplit: false,
     assetsInlineLimit: 100000000,
@@ -51,14 +51,14 @@ export default defineConfig({
     emptyOutDir: true,
     inlineDynamicImports: true,
     assetsDir: "",
-    sourcemap: 'inline',
+    sourcemap: "inline",
   },
   optimizeDeps: {
     esbuildOptions: {
       define: {
-        global: "globalThis"
+        global: "globalThis",
       },
-      plugins: []
-    }
+      plugins: [],
+    },
   },
-})
+});

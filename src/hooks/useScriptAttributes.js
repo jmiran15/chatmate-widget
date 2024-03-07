@@ -5,25 +5,29 @@ const DEFAULT_SETTINGS = {
   embedId: null, //required
   baseApiUrl: null, // required
 
+  // base url is not required, we will just fix it
+
+  // we will get all these things from the CHATBOT IN PRISMA when we make the chat call
   // Override properties that can be defined.
   prompt: null, // override
   model: null, // override
   temperature: null, //override
 
+  // have these as parameters (automatically set in the share page, so that we don't need to fetch it from backend at load time)
   // style parameters
-  chatIcon: "plus",
+  chatIcon: "magic",
   brandImageUrl: null, // will be forced into 100x50px container
   greeting: null, // empty chat window greeting.
   buttonColor: "#262626", // must be hex color code
-  userBgColor: "#2C2F35", // user text bubble color
-  assistantBgColor: "#2563eb", // assistant text bubble color
+  userBgColor: "#000", // user text bubble color
+  assistantBgColor: "#FFF", // assistant text bubble color
   noSponsor: null, // Shows sponsor in footer of chat
-  sponsorText: "Powered by AnythingLLM", // default sponsor text
-  sponsorLink: "https://useanything.com", // default sponsor link
+  supportEmail: null, // string of email for contact
+  sponsorText: "Powered by Chatmate", // default sponsor text
+  sponsorLink: "https://chatmate.fly.dev/", // default sponsor link
 
   // behaviors
   openOnLoad: "off", // or "on"
-  supportEmail: null, // string of email for contact
 };
 
 export default function useGetScriptAttributes() {
@@ -40,7 +44,7 @@ export default function useGetScriptAttributes() {
         !embedderSettings.settings.embedId
       )
         throw new Error(
-          "[AnythingLLM Embed Module::Abort] - Invalid script tag setup detected. Missing required parameters for boot!"
+          "[Chatmate Embed Module::Abort] - Invalid script tag setup detected. Missing required parameters for boot!"
         );
 
       setSettings({

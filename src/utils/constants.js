@@ -1,1 +1,3 @@
-export const CHAT_UI_REOPEN = "___anythingllm-chat-widget-open___";
+// set this to something chatmate
+
+export const CHAT_UI_REOPEN = "___chatmate-chat-widget-open___";

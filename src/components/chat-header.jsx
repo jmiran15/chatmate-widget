@@ -1,4 +1,4 @@
-import AnythingLLMLogo from "@/assets/anything-llm-dark.png";
+import ChatmateLogo from "@/assets/chatmatelogo.jpeg";
 import ChatService from "@/models/chatService";
 import {
   DotsThreeOutlineVertical,
@@ -27,8 +27,8 @@ export default function ChatWindowHeader({
     <div className="flex justify-between items-center relative">
       <img
         style={{ maxWidth: 100, maxHeight: 20 }}
-        src={iconUrl ?? AnythingLLMLogo}
-        alt={iconUrl ? "Brand" : "AnythingLLM Logo"}
+        src={iconUrl ?? ChatmateLogo}
+        alt={iconUrl ? "Brand" : "Chatmate Logo"}
       />
       <div className="flex gap-x-1 items-center">
         {settings.loaded && (

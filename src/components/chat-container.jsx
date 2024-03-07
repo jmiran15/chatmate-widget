@@ -8,6 +8,8 @@ export default function ChatContainer({
   sessionId,
   settings,
   knownHistory = [],
+  chatbot,
+  chatbotId,
 }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
@@ -61,6 +63,9 @@ export default function ChatContainer({
       console.log("fetchReply", promptMessage);
 
       await ChatService.streamChat(
+        chatbot,
+        remHistory,
+        chatbotId,
         sessionId,
         settings,
         promptMessage.userMessage,

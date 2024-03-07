@@ -1,6 +1,5 @@
 import React, { memo, forwardRef } from "react";
 import { Warning } from "@phosphor-icons/react";
-// import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
 import { embedderSettings } from "@/main";
 import { v4 } from "uuid";
@@ -38,19 +37,13 @@ const HistoricalMessage = forwardRef(
               </div>
             ) : (
               <span
-                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+                className={`whitespace-pre-line font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(renderMarkdown(message)),
                 }}
               />
             )}
           </div>
-          {role === "assistant" && !error && (
-            <div className="flex gap-x-5">
-              <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
-              <Actions message={DOMPurify.sanitize(message)} />
-            </div>
-          )}
         </div>
       </div>
     );
