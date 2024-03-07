@@ -6,45 +6,39 @@ import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
 
 const DOMPurify = createDOMPurify(window);
+
 const HistoricalMessage = forwardRef(
   ({ uuid = v4(), message, role, sources = [], error = false }, ref) => {
     return (
       <div
         key={uuid}
         ref={ref}
-        className={`flex rounded-lg justify-center items-end w-full h-fit ${
+        className={`w-auto max-w-[75%] h-fit py-[17px] px-[20px] relative inline-block rounded-[10px] mb-[16px] ${
           error
             ? "bg-red-200"
             : role === "user"
-              ? embedderSettings.USER_BACKGROUND_COLOR
-              : embedderSettings.AI_BACKGROUND_COLOR
+              ? "bg-orange-500 text-white ml-auto" // Aligns user messages to the right
+              : "bg-[#f2f2f2] text-black" // Aligns assistant messages to the left
         }`}
       >
-        <div
-          style={{ wordBreak: "break-word" }}
-          className={`py-2 px-2 w-full flex flex-col`}
-        >
-          <div className="flex">
-            {error ? (
-              <div className="p-2 rounded-lg bg-red-50 text-red-500">
-                <span className={`inline-block `}>
-                  <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
-                  respond to message.
-                </span>
-                <p className="text-xs font-mono mt-2 border-l-2 border-red-500 pl-2 bg-red-300 p-2 rounded-sm">
-                  {error}
-                </p>
-              </div>
-            ) : (
-              <span
-                className={`whitespace-pre-line font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(renderMarkdown(message)),
-                }}
-              />
-            )}
+        {error ? (
+          <div className="p-2 rounded-lg bg-red-50 text-red-500">
+            <span className={`inline-block `}>
+              <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
+              respond to message.
+            </span>
+            <p className="text-xs font-mono mt-2 border-l-2 border-red-500 pl-2 bg-red-300 p-2 rounded-sm">
+              {error}
+            </p>
           </div>
-        </div>
+        ) : (
+          <span
+            className="whitespace-normal break-words flex flex-col gap-y-1 text-[14px] leading-[1.4] min-h-[10px]"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(renderMarkdown(message)),
+            }}
+          />
+        )}
       </div>
     );
   }

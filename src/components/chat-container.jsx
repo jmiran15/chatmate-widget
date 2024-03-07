@@ -84,7 +84,7 @@ export default function ChatContainer({
   }, [loadingResponse, chatHistory]);
 
   return (
-    <div className="h-full w-full relative">
+    <div className="relative flex min-w-full grow shrink basis-0 overflow-hidden">
       <ChatHistory settings={settings} history={chatHistory} />
       <PromptInput
         message={message}

@@ -11,13 +11,9 @@ const PromptReply = forwardRef(
       return (
         <div
           ref={ref}
-          className={`flex justify-center items-end rounded-lg w-full ${embedderSettings.AI_BACKGROUND_COLOR}`}
+          className={`w-auto max-w-[75%] h-fit py-[17px] px-[20px] relative inline-block rounded-[10px] mb-[16px] bg-[#f2f2f2] text-black`}
         >
-          <div className="py-2 px-2 w-full flex flex-col">
-            <div className="flex gap-x-5">
-              <div className="mt-3 ml-5 dot-falling"></div>
-            </div>
-          </div>
+          <div className="mx-[20px] dot-falling"></div>
         </div>
       );
     }
@@ -44,19 +40,12 @@ const PromptReply = forwardRef(
       <div
         key={uuid}
         ref={ref}
-        className={`flex justify-center items-end w-full ${embedderSettings.AI_BACKGROUND_COLOR}`}
+        className="w-auto max-w-[75%] h-fit py-[17px] px-[20px] relative inline-block rounded-[10px] mb-[16px] bg-[#f2f2f2] text-black"
       >
-        <div
-          style={{ wordBreak: "break-word" }}
-          className="py-2 px-2 w-full flex flex-col"
-        >
-          <div className="flex gap-x-5">
-            <span
-              className={`reply whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
-            />
-          </div>
-        </div>
+        <span
+          className="whitespace-normal break-words flex flex-col gap-y-1 text-[14px] leading-[1.4] min-h-[10px]"
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
+        />
       </div>
     );
   }

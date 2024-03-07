@@ -19,8 +19,8 @@ export default function ChatWindow({
 
   if (loading) {
     return (
-      <div className="flex flex-col h-full">
-        <ChatWindowHeader
+      <div className="flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-9999 min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden bg-red-100 chat-window-custom">
+        {/* <ChatWindowHeader
           sessionId={sessionId}
           settings={settings}
           iconUrl={settings.brandImageUrl}
@@ -31,14 +31,14 @@ export default function ChatWindow({
         <div className="pt-4 pb-2 h-fit gap-y-1">
           <SessionId />
           <Sponsor settings={settings} />
-        </div>
+        </div> */}
       </div>
     );
   }
 
   setEventDelegatorForCodeSnippets();
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-9999 min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden chat-window-custom">
       <ChatWindowHeader
         sessionId={sessionId}
         settings={settings}
@@ -53,10 +53,10 @@ export default function ChatWindow({
         chatbot={chatbot}
         chatbotId={chatbotId}
       />
-      <div className="pt-4 pb-2 h-fit gap-y-1">
+      {/* <div className="pt-4 pb-2 h-fit gap-y-1">
         <SessionId />
         <Sponsor settings={settings} />
-      </div>
+      </div>{" "} */}
     </div>
   );
 }

@@ -22,9 +22,9 @@ const customCss = `
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #eeeeee;
+  background-color: #475569;
   color: #5fa4fa;
-  box-shadow: 9999px 0 0 0 #eeeeee;
+  box-shadow: 9999px 0 0 0 #475569;
   animation: dot-falling 1.5s infinite linear;
   animation-delay: 0.1s;
 }
@@ -41,8 +41,8 @@ const customCss = `
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #eeeeee;
-  color: #eeeeee;
+  background-color: #475569;
+  color: #475569;
   animation: dot-falling-before 1.5s infinite linear;
   animation-delay: 0s;
 }
@@ -51,11 +51,12 @@ const customCss = `
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #eeeeee;
-  color: #eeeeee;
+  background-color: #475569;
+  color: #475569;
   animation: dot-falling-after 1.5s infinite linear;
   animation-delay: 0.2s;
 }
+
 
 @keyframes dot-falling {
   0% {
@@ -65,7 +66,7 @@ const customCss = `
   25%,
   50%,
   75% {
-    box-shadow: 9999px 0 0 0 #eeeeee;
+    box-shadow: 9999px 0 0 0 #475569;
   }
 
   100% {
@@ -81,7 +82,7 @@ const customCss = `
   25%,
   50%,
   75% {
-    box-shadow: 9984px 0 0 0 #eeeeee;
+    box-shadow: 9984px 0 0 0 #475569;
   }
 
   100% {
@@ -97,7 +98,7 @@ const customCss = `
   25%,
   50%,
   75% {
-    box-shadow: 10014px 0 0 0 #eeeeee;
+    box-shadow: 10014px 0 0 0 #475569;
   }
 
   100% {
@@ -171,6 +172,38 @@ const customCss = `
 .button-hover-effect:hover {
   transition: transform 250ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
   transform: scale(1.1);
+}
+
+
+.chat-window-custom {
+  transform-origin: right bottom;
+  height: min(704px, 100% - 104px);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 5px 40px;
+  transition: width 200ms ease 0s, height 200ms ease 0s, max-height 200ms ease 0s, transform 300ms cubic-bezier(0, 1.2, 1, 1) 0s, opacity 83ms ease-out 0s;
+}
+
+.chat-header-bottom-border {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.chat-header-image {
+  overflow-clip-margin: content-box;
+  overflow: clip;
+}
+
+.chat-header-button {
+  transition: background-color 250ms ease 0s;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.settings-button {
+  transition: background-color 250ms ease 0s;
+}
+
+
+.chat-header-btn:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 `;
 

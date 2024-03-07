@@ -25,35 +25,21 @@ export default function App() {
   return (
     <>
       <Head />
-      <div className="fixed p-0 m-0 border-none bottom-[20px] right-[20px] z-9999">
-        <div
-          style={{
-            width: isChatOpen ? (isMobile ? "100vw" : 320) : "auto",
-            height: isChatOpen ? (isMobile ? "100vh" : "93vh") : "auto",
-          }}
-          // className={`${
-          //   isChatOpen
-          //     ? isMobile
-          //       ? "bg-white px-4 py-2"
-          //       : "max-w-md px-4 py-2 bg-white rounded-lg border shadow-lg w-72"
-          //     : "w-16 h-16 rounded-full"
-          // }`}
-        >
-          {isChatOpen && (
-            <ChatWindow
-              closeChat={() => toggleOpenChat(false)}
-              settings={embedSettings}
-              sessionId={sessionId}
-              chatbot={chatbot}
-              chatbotId={embedSettings.embedId}
-            />
-          )}
-          <OpenButton
+      <div>
+        {isChatOpen && (
+          <ChatWindow
+            closeChat={() => toggleOpenChat(false)}
             settings={embedSettings}
-            isOpen={isChatOpen}
-            toggleOpen={() => toggleOpenChat(true)}
+            sessionId={sessionId}
+            chatbot={chatbot}
+            chatbotId={embedSettings.embedId}
           />
-        </div>
+        )}
+        <OpenButton
+          settings={embedSettings}
+          isOpen={isChatOpen}
+          toggleOpen={() => toggleOpenChat(true)}
+        />
       </div>
     </>
   );
