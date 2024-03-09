@@ -1,13 +1,22 @@
 import HistoricalMessage from "./historical-message";
 import PromptReply from "./prompt-reply";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, CircleNotch } from "@phosphor-icons/react";
+import { CircleNotch } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
-export default function ChatHistory({ settings = {}, history = [] }) {
+export default function ChatHistory({ settings = {}, history = [], chatbot }) {
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
+
+  const scrollToBottom = () => {
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTo({
+        top: chatHistoryRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
 
   useEffect(() => {
     scrollToBottom();
@@ -35,15 +44,6 @@ export default function ChatHistory({ settings = {}, history = [] }) {
     watchScrollEvent();
   }, []);
 
-  const scrollToBottom = () => {
-    if (chatHistoryRef.current) {
-      chatHistoryRef.current.scrollTo({
-        top: chatHistoryRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  };
-
   if (history.length === 0) {
     return (
       <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
@@ -58,7 +58,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   return (
     <div
-      className="flex flex-col absolute inset-0 overflow-y-scroll overflow-x-hidden grow pb-[4px] shrink-0 h-auto px-[24px] pt-[24px]"
+      className="flex flex-col flex-1 overflow-auto overflow-x-hidden relative overscroll-none pb-[4px] px-[24px] pt-[24px] bg-white"
       id="chat-history"
       ref={chatHistoryRef}
     >
@@ -92,22 +92,10 @@ export default function ChatHistory({ settings = {}, history = [] }) {
             chatId={props.chatId}
             feedbackScore={props.feedbackScore}
             error={props.error}
+            chatbot={chatbot}
           />
         );
       })}
-      {!isAtBottom && (
-        <div className="fixed bottom-[10rem] right-[3rem] z-50 cursor-pointer animate-pulse">
-          <div className="flex flex-col items-center">
-            <div className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white">
-              <ArrowDown
-                weight="bold"
-                className="text-white/60 w-5 h-5"
-                onClick={scrollToBottom}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

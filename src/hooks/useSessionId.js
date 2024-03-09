@@ -21,6 +21,8 @@ export default function useSessionId() {
       console.log(`Registering new session id`, newId);
       window.localStorage.setItem(STORAGE_IDENTIFIER, newId);
       setSessionId(newId);
+
+      // should create a new chat when we create a new session id, so that we get the intro messages
     }
     getOrAssignSessionId();
   }, [window]);

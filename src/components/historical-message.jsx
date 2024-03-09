@@ -4,11 +4,15 @@ import renderMarkdown from "@/utils/chat/markdown";
 import { embedderSettings } from "@/main";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
+import { colors } from "@/App";
 
 const DOMPurify = createDOMPurify(window);
 
 const HistoricalMessage = forwardRef(
-  ({ uuid = v4(), message, role, sources = [], error = false }, ref) => {
+  (
+    { uuid = v4(), message, role, sources = [], error = false, chatbot },
+    ref
+  ) => {
     return (
       <div
         key={uuid}
@@ -17,7 +21,7 @@ const HistoricalMessage = forwardRef(
           error
             ? "bg-red-200"
             : role === "user"
-              ? "bg-orange-500 text-white ml-auto" // Aligns user messages to the right
+              ? `bg-${colors[chatbot.themeColor]} text-white ml-auto` // Aligns user messages to the right
               : "bg-[#f2f2f2] text-black" // Aligns assistant messages to the left
         }`}
       >

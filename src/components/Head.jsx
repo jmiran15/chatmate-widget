@@ -205,6 +205,15 @@ const customCss = `
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.2);
 }
+
+.input-border-top {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.input-border-focus:focus {
+  background-color: rgb(255, 255, 255);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 100px 0px;
+}
 `;
 
 export default function Head() {

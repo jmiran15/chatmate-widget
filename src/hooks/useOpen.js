@@ -7,10 +7,13 @@ export default function useOpenChat() {
   );
 
   function toggleOpenChat(newValue) {
+    console.log("toggleOpenChat", newValue);
     if (newValue === true) window.localStorage.setItem(CHAT_UI_REOPEN, "1");
     if (newValue === false) window.localStorage.removeItem(CHAT_UI_REOPEN);
     setOpen(newValue);
   }
+
+  console.log("the open value: ", isOpen);
 
   return { isChatOpen: isOpen, toggleOpenChat };
 }

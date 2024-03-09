@@ -1,5 +1,7 @@
-import { CircleNotch, PaperPlaneRight } from "@phosphor-icons/react";
+import { CircleNotch } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
+import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import { colors } from "@/App";
 
 export default function PromptInput({
   message,
@@ -7,6 +9,7 @@ export default function PromptInput({
   onChange,
   inputDisabled,
   buttonDisabled,
+  chatbot,
 }) {
   const formRef = useRef(null);
   const [_, setFocused] = useState(false);
@@ -32,46 +35,42 @@ export default function PromptInput({
   };
 
   return (
-    <div className="w-full absolute left-0 bottom-[5px] z-10 flex justify-center items-center">
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 rounded-t-lg w-full items-center justify-center"
-      >
-        <div className="flex items-center rounded-lg">
-          <div className="bg-white border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
-            <div className="flex items-center w-full">
-              <textarea
-                onKeyUp={adjustTextArea}
-                onKeyDown={captureEnter}
-                onChange={onChange}
-                required={true}
-                disabled={inputDisabled}
-                onFocus={() => setFocused(true)}
-                onBlur={(e) => {
-                  setFocused(false);
-                  adjustTextArea(e);
-                }}
-                value={message}
-                className="cursor-text max-h-[100px] text-[14px] mx-2 py-2 w-full text-black bg-transparent placeholder:text-slate-800/60 resize-none active:outline-none focus:outline-none flex-grow"
-                placeholder={"Send a message"}
-              />
-              <button
-                ref={formRef}
-                type="submit"
-                disabled={buttonDisabled}
-                className="inline-flex justify-center rounded-2xl cursor-pointer text-black group ml-4"
-              >
-                {buttonDisabled ? (
-                  <CircleNotch className="w-4 h-4 animate-spin" />
-                ) : (
-                  <PaperPlaneRight className="w-4 h-4 my-3" weight="fill" />
-                )}
-                <span className="sr-only">Send message</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
+    <form
+      onSubmit={handleSubmit}
+      className="relative w-full flex-col min-h-[56px] max-h-[200px] input-border-top overflow-hidden bg-white"
+    >
+      <div className="flex items-start w-full px-[29px] py-[18px]">
+        <textarea
+          onKeyUp={adjustTextArea}
+          onKeyDown={captureEnter}
+          onChange={onChange}
+          required={true}
+          disabled={inputDisabled}
+          onFocus={() => setFocused(true)}
+          onBlur={(e) => {
+            setFocused(false);
+            adjustTextArea(e);
+          }}
+          value={message}
+          className="overflow-auto overflow-x-hidden resize-none border-none box-border w-full h-full text-[14px] leading-snug whitespace-pre-wrap	break-words	max-h-[200px] cursor-text focus:outline-none overscroll-none disabled:bg-white"
+          placeholder={"Send a message"}
+        />
+        <button
+          ref={formRef}
+          type="submit"
+          disabled={buttonDisabled}
+          className="inline-flex justify-center rounded-2xl cursor-pointer group ml-4"
+        >
+          {buttonDisabled ? (
+            <CircleNotch className="w-4 h-4 animate-spin" />
+          ) : (
+            <PaperAirplaneIcon
+              className={`w-[16px] h-[16px] text-${colors[chatbot.themeColor]}`}
+            />
+          )}
+          <span className="sr-only">Send message</span>
+        </button>
+      </div>
+    </form>
   );
 }

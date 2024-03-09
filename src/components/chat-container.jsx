@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ChatHistory from "./chat-history";
 import PromptInput from "./prompt-input";
 import handleChat from "@/utils/chat";
@@ -84,14 +84,19 @@ export default function ChatContainer({
   }, [loadingResponse, chatHistory]);
 
   return (
-    <div className="relative flex min-w-full grow shrink basis-0 overflow-hidden">
-      <ChatHistory settings={settings} history={chatHistory} />
+    <div className="relative flex flex-col flex-1 overflow-hidden min-w-full block">
+      <ChatHistory
+        settings={settings}
+        history={chatHistory}
+        chatbot={chatbot}
+      />
       <PromptInput
         message={message}
         submit={handleSubmit}
         onChange={handleMessageChange}
         inputDisabled={loadingResponse}
         buttonDisabled={loadingResponse}
+        chatbot={chatbot}
       />
     </div>
   );

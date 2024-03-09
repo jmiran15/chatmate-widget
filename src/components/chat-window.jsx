@@ -1,9 +1,8 @@
 import ChatWindowHeader from "./chat-header";
-import SessionId from "./session-id";
 import useChatHistory from "@/hooks/chat/useChatHistory";
 import ChatContainer from "./chat-container";
-import Sponsor from "./sponsor";
 import { ChatHistoryLoading } from "./chat-history";
+import { useMobileScreen } from "@/utils/mobile";
 
 export default function ChatWindow({
   closeChat,
@@ -17,34 +16,40 @@ export default function ChatWindow({
     sessionId
   );
 
+  const isMobile = useMobileScreen();
+
   if (loading) {
     return (
-      <div className="flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-9999 min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden bg-red-100 chat-window-custom">
-        {/* <ChatWindowHeader
+      <div className="flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-9999 min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden chat-window-custom">
+        <ChatWindowHeader
           sessionId={sessionId}
           settings={settings}
           iconUrl={settings.brandImageUrl}
           closeChat={closeChat}
           setChatHistory={setChatHistory}
+          chatbot={chatbot}
         />
         <ChatHistoryLoading />
-        <div className="pt-4 pb-2 h-fit gap-y-1">
-          <SessionId />
-          <Sponsor settings={settings} />
-        </div> */}
       </div>
     );
   }
 
+  const mobileStyle =
+    "flex flex-col flex-1 fixed bottom-0 right-0 z-9999 opacity-100 overflow-hidden h-dvh w-dvw";
+
+  const desktopStyle =
+    "flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-9999 min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden chat-window-custom";
+
   setEventDelegatorForCodeSnippets();
   return (
-    <div className="flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-9999 min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden chat-window-custom">
+    <div className={isMobile ? mobileStyle : desktopStyle}>
       <ChatWindowHeader
         sessionId={sessionId}
         settings={settings}
         iconUrl={settings.brandImageUrl}
         closeChat={closeChat}
         setChatHistory={setChatHistory}
+        chatbot={chatbot}
       />
       <ChatContainer
         sessionId={sessionId}
@@ -53,10 +58,6 @@ export default function ChatWindow({
         chatbot={chatbot}
         chatbotId={chatbotId}
       />
-      {/* <div className="pt-4 pb-2 h-fit gap-y-1">
-        <SessionId />
-        <Sponsor settings={settings} />
-      </div>{" "} */}
     </div>
   );
 }
