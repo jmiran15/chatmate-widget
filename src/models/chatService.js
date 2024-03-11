@@ -6,7 +6,7 @@ const ChatService = {
     // this loads in all the messages form the chat history
 
     const { embedId } = embedSettings;
-    const URL_TEST = `http://localhost:3000/api/chat/${embedId}/${sessionId}`;
+    const URL_TEST = `https://chatmate.fly.dev/api/chat/${embedId}/${sessionId}`;
 
     return await fetch(URL_TEST)
       .then((res) => {
@@ -33,7 +33,7 @@ const ChatService = {
     // just delete all the messages in the chat on backend, but dont delete the chat
 
     const { embedId } = embedSettings;
-    const URL_TEST = `http://localhost:3000/api/chat/${embedId}/${sessionId}`;
+    const URL_TEST = `https://chatmate.fly.dev/api/chat/${embedId}/${sessionId}`;
 
     return await fetch(URL_TEST, {
       method: "DELETE",
@@ -56,7 +56,7 @@ const ChatService = {
 
     console.log("remHistory", remHistory);
 
-    const URL_TEST = `http://localhost:3000/api/chat/${chatbotId}/${sessionId}`;
+    const URL_TEST = `https://chatmate.fly.dev/api/chat/${chatbotId}/${sessionId}`;
     await fetchEventSource(URL_TEST, {
       method: "POST",
       body: JSON.stringify({
