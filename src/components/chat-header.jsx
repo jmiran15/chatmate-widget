@@ -80,7 +80,7 @@ function OptionsMenu({ settings, showing, resetChat }) {
         <BoltIcon className="w-[16px] h-[16px]" />
         <p>Reset Chat</p>
       </button>
-      <ContactSupport email={"jmiran15@jhu.edu"} />
+      {/* <ContactSupport email={"jmiran15@jhu.edu"} /> */}
     </div>
   );
 }
