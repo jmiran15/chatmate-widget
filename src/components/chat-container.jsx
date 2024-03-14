@@ -6,7 +6,7 @@ import ChatService from "@/models/chatService";
 
 export default function ChatContainer({
   sessionId,
-  settings,
+  embedId,
   knownHistory = [],
   chatbot,
   chatbotId,
@@ -67,8 +67,6 @@ export default function ChatContainer({
         remHistory,
         chatbotId,
         sessionId,
-        settings,
-        promptMessage.userMessage,
         (chatResult) =>
           handleChat(
             chatResult,
@@ -85,11 +83,7 @@ export default function ChatContainer({
 
   return (
     <div className="relative flex flex-col flex-1 overflow-hidden min-w-full block">
-      <ChatHistory
-        settings={settings}
-        history={chatHistory}
-        chatbot={chatbot}
-      />
+      <ChatHistory embedId={embedId} history={chatHistory} chatbot={chatbot} />
       <PromptInput
         message={message}
         submit={handleSubmit}

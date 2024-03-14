@@ -1,22 +1,41 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
-const appElement = document.createElement("div");
 
-document.body.appendChild(appElement);
-const root = ReactDOM.createRoot(appElement);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// Custom element for the widget
+class MyWidgetElement extends HTMLElement {
+  constructor() {
+    super();
+    // Attach a shadow root to the element.
+    const shadowRoot = this.attachShadow({ mode: "open" });
 
-const scriptSettings = Object.assign(
-  {},
-  document?.currentScript?.dataset || {}
-);
-export const embedderSettings = {
-  settings: scriptSettings,
-  USER_BACKGROUND_COLOR: `bg-[${scriptSettings?.userBgColor ?? "#2C2F35"}]`,
-  AI_BACKGROUND_COLOR: `bg-[${scriptSettings?.assistantBgColor ?? "#2563eb"}]`,
-};
+    // Create a div to host the React app
+    const appElement = document.createElement("div");
+
+    // set the id of the appElement
+    appElement.id = "chatmate-widget-div";
+
+    shadowRoot.appendChild(appElement);
+
+    const { embedId } = this.getScriptSettings();
+
+    console.log("embedId: ", embedId);
+
+    const root = ReactDOM.createRoot(appElement);
+    root.render(
+      <React.StrictMode>
+        <App embedId={embedId} />
+      </React.StrictMode>
+    );
+  }
+
+  getScriptSettings() {
+    const scripts = document.getElementsByTagName("script");
+    const currentScript = scripts[scripts.length - 1];
+    return Object.assign({}, currentScript?.dataset || {});
+  }
+}
+
+customElements.define("my-widget", MyWidgetElement);
+
+document.body.appendChild(new MyWidgetElement());

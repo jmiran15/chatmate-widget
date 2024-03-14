@@ -1,4 +1,3 @@
-import useGetScriptAttributes from "@/hooks/useScriptAttributes";
 import useSessionId from "@/hooks/useSessionId";
 import useOpenChat from "@/hooks/useOpen";
 import Head from "@/components/Head";
@@ -29,20 +28,13 @@ export const colors = {
   rose: "rose-500",
 };
 
-export default function App() {
+export default function App({ embedId }) {
   const { isChatOpen, toggleOpenChat } = useOpenChat();
-  const embedSettings = useGetScriptAttributes();
-  const sessionId = useSessionId();
+  const sessionId = useSessionId(embedId);
   const isMobile = useMobileScreen();
-  const chatbot = useChatbot(embedSettings.embedId);
+  const chatbot = useChatbot(embedId);
 
-  useEffect(() => {
-    if (embedSettings.openOnLoad === "on") {
-      toggleOpenChat(true);
-    }
-  }, [embedSettings.loaded]);
-
-  if (!embedSettings.loaded) return null;
+  if (!embedId) return null;
 
   console.log("the chatbot: ", chatbot);
 
@@ -55,15 +47,15 @@ export default function App() {
         {isChatOpen && (
           <ChatWindow
             closeChat={() => toggleOpenChat(false)}
-            settings={embedSettings}
+            embedId={embedId}
             sessionId={sessionId}
             chatbot={chatbot}
-            chatbotId={embedSettings.embedId}
+            chatbotId={embedId}
           />
         )}
         {(!isMobile || !isChatOpen) && (
           <OpenButton
-            settings={embedSettings}
+            embedId={embedId}
             isOpen={isChatOpen}
             toggleOpen={() => toggleOpenChat(!isChatOpen)}
             chatbot={chatbot}

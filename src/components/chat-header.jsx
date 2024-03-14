@@ -7,8 +7,7 @@ import { colors } from "@/App";
 
 export default function ChatWindowHeader({
   sessionId,
-  settings = {},
-  iconUrl = null,
+  embedId,
   closeChat,
   setChatHistory,
   chatbot,
@@ -17,7 +16,7 @@ export default function ChatWindowHeader({
   const isMobile = useMobileScreen();
 
   const handleChatReset = async () => {
-    await ChatService.resetEmbedChatSession(settings, sessionId);
+    await ChatService.resetEmbedChatSession(embedId, sessionId);
     setChatHistory([]);
     setShowOptions(false);
   };
@@ -31,7 +30,7 @@ export default function ChatWindowHeader({
           <img
             className="rounded-full max-h-[32px] h-[32px] w-[32px] max-w-[32px] chat-header-image"
             src={chatbot.logoUrl}
-            alt={iconUrl ? "Brand" : "Chatmate Logo"}
+            alt={"logo"}
           />
           <div className="flex flex-col items-start">
             <h1 className="text-[16px] font-[600] text-white">
@@ -40,15 +39,14 @@ export default function ChatWindowHeader({
             <div className="text-[14px]">AI chat</div>
           </div>
         </button>
-        {settings.loaded && (
-          <button
-            type="button"
-            onClick={() => setShowOptions(!showingOptions)}
-            className="min-w-[48px] max-h-[48px] h-[48px] w-[48px] bg-transparent border-none box-border rounded-[10px] flex items-center justify-center px-[12px] text-white settings-button chat-header-btn"
-          >
-            <EllipsisVerticalIcon className="text-white w-auto min-h-[24px] h-[24px]" />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setShowOptions(!showingOptions)}
+          className="min-w-[48px] max-h-[48px] h-[48px] w-[48px] bg-transparent border-none box-border rounded-[10px] flex items-center justify-center px-[12px] text-white settings-button chat-header-btn"
+        >
+          <EllipsisVerticalIcon className="text-white w-auto min-h-[24px] h-[24px]" />
+        </button>
+
         {isMobile && (
           <button
             type="button"
@@ -60,7 +58,7 @@ export default function ChatWindowHeader({
         )}
       </div>
       <OptionsMenu
-        settings={settings}
+        embedId={embedId}
         showing={showingOptions}
         resetChat={handleChatReset}
       />
@@ -68,8 +66,7 @@ export default function ChatWindowHeader({
   );
 }
 
-function OptionsMenu({ settings, showing, resetChat }) {
-  console.log("rendering options menu", showing, settings.supportEmail);
+function OptionsMenu({ embedId, showing, resetChat }) {
   if (!showing) return null;
   return (
     <div className="absolute z-10 bg-white flex flex-col gap-y-1 rounded-lg shadow-lg border border-gray-300 top-[23px] right-[20px] max-w-[150px]">

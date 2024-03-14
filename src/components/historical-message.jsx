@@ -1,7 +1,6 @@
 import React, { memo, forwardRef } from "react";
 import { Warning } from "@phosphor-icons/react";
 import renderMarkdown from "@/utils/chat/markdown";
-import { embedderSettings } from "@/main";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
 import { colors } from "@/App";

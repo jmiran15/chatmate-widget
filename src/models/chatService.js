@@ -2,10 +2,9 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { v4 } from "uuid";
 
 const ChatService = {
-  embedSessionHistory: async function (embedSettings, sessionId) {
+  embedSessionHistory: async function (embedId, sessionId) {
     // this loads in all the messages form the chat history
 
-    const { embedId } = embedSettings;
     const URL_TEST = `https://chatmate.fly.dev/api/chat/${embedId}/${sessionId}`;
 
     return await fetch(URL_TEST)
@@ -28,11 +27,10 @@ const ChatService = {
         return [];
       });
   },
-  resetEmbedChatSession: async function (embedSettings, sessionId) {
+  resetEmbedChatSession: async function (embedId, sessionId) {
     // we probably don't want to delete on the backend when someone resets the chat
     // just delete all the messages in the chat on backend, but dont delete the chat
 
-    const { embedId } = embedSettings;
     const URL_TEST = `https://chatmate.fly.dev/api/chat/${embedId}/${sessionId}`;
 
     return await fetch(URL_TEST, {
@@ -46,8 +44,6 @@ const ChatService = {
     remHistory,
     chatbotId,
     sessionId,
-    embedSettings,
-    message,
     handleChat
   ) {
     const ctrl = new AbortController();

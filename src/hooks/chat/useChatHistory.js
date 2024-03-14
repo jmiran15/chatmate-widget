@@ -1,16 +1,16 @@
 import ChatService from "@/models/chatService";
 import { useEffect, useState } from "react";
 
-export default function useChatHistory(settings = null, sessionId = null) {
+export default function useChatHistory(embedId = null, sessionId = null) {
   const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     async function fetchChatHistory() {
-      if (!sessionId || !settings) return;
+      if (!sessionId || !embedId) return;
       try {
         const formattedMessages = await ChatService.embedSessionHistory(
-          settings,
+          embedId,
           sessionId
         );
         setMessages(formattedMessages);
@@ -21,7 +21,7 @@ export default function useChatHistory(settings = null, sessionId = null) {
       }
     }
     fetchChatHistory();
-  }, [sessionId, settings]);
+  }, [sessionId, embedId]);
 
   return { chatHistory: messages, setChatHistory: setMessages, loading };
 }

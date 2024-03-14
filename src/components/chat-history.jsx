@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CircleNotch } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
-export default function ChatHistory({ settings = {}, history = [], chatbot }) {
+export default function ChatHistory({ embedId, history = [], chatbot }) {
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
@@ -49,7 +49,7 @@ export default function ChatHistory({ settings = {}, history = [], chatbot }) {
       <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
         <div className="flex h-full flex-col items-center justify-center">
           <p className="text-slate-400 text-sm font-base py-4 text-center">
-            {settings?.greeting ?? "Send a chat to get started!"}
+            {"Send a chat to get started!"}
           </p>
         </div>
       </div>

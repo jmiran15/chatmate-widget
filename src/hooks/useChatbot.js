@@ -5,7 +5,10 @@ export default function useChatbot(chatbotId) {
   useEffect(() => {
     fetch(`https://chatmate.fly.dev/api/chatbot/${chatbotId}`)
       .then((res) => res.json())
-      .then((data) => setChatbot(data));
+      .then((data) => {
+        console.log("the data: ", data);
+        setChatbot(data);
+      });
   }, [chatbotId]);
   return chatbot;
 }
