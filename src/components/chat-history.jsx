@@ -4,10 +4,23 @@ import { useEffect, useRef, useState } from "react";
 import { CircleNotch } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
-export default function ChatHistory({ embedId, history = [], chatbot }) {
+export default function ChatHistory({
+  history = [],
+  chatbot,
+  followUps,
+  submit,
+  setMessage,
+}) {
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
+  const lastFollowUpRef = useRef(null);
+
+  const scrollToLastFollowUp = () => {
+    if (lastFollowUpRef.current) {
+      lastFollowUpRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const scrollToBottom = () => {
     if (chatHistoryRef.current) {
@@ -19,8 +32,12 @@ export default function ChatHistory({ embedId, history = [], chatbot }) {
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [history]);
+    if (followUps.length > 0) {
+      scrollToLastFollowUp();
+    } else {
+      scrollToBottom();
+    }
+  }, [history, followUps.length]);
 
   const handleScroll = () => {
     if (!chatHistoryRef.current) return;
@@ -64,6 +81,7 @@ export default function ChatHistory({ embedId, history = [], chatbot }) {
     >
       {history.map((props, index) => {
         const isLastMessage = index === history.length - 1;
+
         const isLastBotReply =
           index === history.length - 1 && props.role === "assistant";
 
@@ -96,6 +114,34 @@ export default function ChatHistory({ embedId, history = [], chatbot }) {
           />
         );
       })}
+      {/* followUps */}
+
+      {followUps.length > 0 ? (
+        followUps.map((followUp, i) => {
+          const isLastFollowUp = i === followUps.length - 1;
+
+          return (
+            <form
+              key={i}
+              onSubmit={submit}
+              className="mb-[16px] border border-input bg-white hover:bg-[#f2f2f2] rounded-[10px] relative px-3 py-2 w-auto max-w-[75%] h-fit inline-block ml-auto"
+            >
+              <button
+                ref={isLastFollowUp ? lastFollowUpRef : null}
+                type="submit"
+                className="text-left whitespace-normal break-words flex flex-col gap-y-1 text-black text-black text-sm select-text"
+                onClick={() => {
+                  setMessage(followUp);
+                }}
+              >
+                {followUp}
+              </button>
+            </form>
+          );
+        })
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

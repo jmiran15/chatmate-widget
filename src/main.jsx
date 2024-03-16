@@ -19,8 +19,6 @@ class MyWidgetElement extends HTMLElement {
 
     const { embedId } = this.getScriptSettings();
 
-    console.log("embedId: ", embedId);
-
     const root = ReactDOM.createRoot(appElement);
     root.render(
       <React.StrictMode>

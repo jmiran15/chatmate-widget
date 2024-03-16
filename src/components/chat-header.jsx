@@ -84,7 +84,6 @@ function OptionsMenu({ embedId, showing, resetChat }) {
 
 function ContactSupport({ email = null }) {
   if (!email) return null;
-  console.log("rendering contact support", email);
 
   const subject = `Inquiry from ${window.location.origin}`;
   return (

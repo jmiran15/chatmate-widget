@@ -21629,8 +21629,6 @@ Check your Browserslist config to be sure that your targets are set up correctly
       ]).process(
         `@tailwind base;@tailwind components;@tailwind utilities;${e}`
       );
-      console.log("the r: ", r);
-      
       (!xt || !xt.isConnected) &&
         ((xt = document.createElement("style")),
         document

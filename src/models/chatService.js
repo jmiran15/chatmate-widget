@@ -13,7 +13,6 @@ const ChatService = {
         throw new Error("Invalid response from server");
       })
       .then((res) => {
-        console.log("res", res);
         return res.map((msg) => ({
           ...msg,
           id: v4(),
@@ -48,10 +47,6 @@ const ChatService = {
   ) {
     const ctrl = new AbortController();
 
-    // CHANGE THIS URL TO BE THE URL OF MY API
-
-    console.log("remHistory", remHistory);
-
     const URL_TEST = `https://chatmate.fly.dev/api/chat/${chatbotId}/${sessionId}`;
     await fetchEventSource(URL_TEST, {
       method: "POST",
@@ -68,7 +63,6 @@ const ChatService = {
       openWhenHidden: true,
       async onopen(response) {
         if (response.ok) {
-          console.log("response", response);
           return; // everything's good
         } else if (response.status >= 400) {
           await response
@@ -102,10 +96,8 @@ const ChatService = {
         }
       },
       async onmessage(msg) {
-        console.log("msg", msg);
         try {
           const chatResult = JSON.parse(msg.data);
-          console.log("chatResult", chatResult);
           handleChat(chatResult);
         } catch {}
       },

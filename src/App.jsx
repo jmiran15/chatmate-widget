@@ -36,8 +36,6 @@ export default function App({ embedId }) {
 
   if (!embedId) return null;
 
-  console.log("the chatbot: ", chatbot);
-
   if (!chatbot) return null;
 
   return (

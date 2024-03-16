@@ -22,6 +22,15 @@ export default function ChatContainer({
       setChatHistory([...knownHistory]);
   }, [knownHistory]);
 
+  const showInitalStarterQuestions =
+    chatHistory.length <= chatbot.introMessages.length;
+
+  const [followUps, setFollowUps] = useState(
+    showInitalStarterQuestions ? chatbot?.starterQuestions : []
+  );
+
+  console.log("followUps", followUps);
+
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
@@ -60,7 +69,7 @@ export default function ChatContainer({
         return false;
       }
 
-      console.log("fetchReply", promptMessage);
+      if (loadingResponse) setFollowUps([]);
 
       await ChatService.streamChat(
         chatbot,
@@ -76,6 +85,19 @@ export default function ChatContainer({
             _chatHistory
           )
       );
+
+      const followUpRes = await fetch(
+        `https://chatmate.fly.dev/api/generatefollowups`,
+        {
+          method: "POST",
+          body: JSON.stringify({ history: _chatHistory }),
+        }
+      );
+
+      const { followUps } = await followUpRes.json();
+
+      setFollowUps(followUps);
+
       return;
     }
     loadingResponse === true && fetchReply();
@@ -83,7 +105,13 @@ export default function ChatContainer({
 
   return (
     <div className="relative flex flex-col flex-1 overflow-hidden min-w-full block">
-      <ChatHistory embedId={embedId} history={chatHistory} chatbot={chatbot} />
+      <ChatHistory
+        history={chatHistory}
+        chatbot={chatbot}
+        followUps={followUps}
+        submit={handleSubmit}
+        setMessage={setMessage}
+      />
       <PromptInput
         message={message}
         submit={handleSubmit}

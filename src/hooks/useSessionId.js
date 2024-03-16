@@ -8,7 +8,7 @@ export default function useSessionId(embedId) {
     function getOrAssignSessionId() {
       if (!window || !embedId) return;
 
-      const STORAGE_IDENTIFIER = `allm_${embedId}_session_id`;
+      const STORAGE_IDENTIFIER = `chatmate_${embedId}_session_id`;
       const currentId = window.localStorage.getItem(STORAGE_IDENTIFIER);
       if (!!currentId) {
         console.log(`Resuming session id`, currentId);
