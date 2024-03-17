@@ -37,7 +37,7 @@ export default function ChatWindow({
     "flex flex-col flex-1 fixed bottom-0 right-0 z-9999 opacity-100 overflow-hidden h-dvh w-dvw";
 
   const desktopStyle =
-    "flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-9999 min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden chat-window-custom";
+    "flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-[9999] min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden chat-window-custom";
 
   setEventDelegatorForCodeSnippets();
   return (
