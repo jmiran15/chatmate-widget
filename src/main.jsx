@@ -12,10 +12,7 @@ class MyWidgetElement extends HTMLElement {
     // Create a div to host the React app
     const appElement = document.createElement("div");
 
-    // set the id of the appElement
     appElement.id = "chatmate-widget-div";
-    // set zIndex of the appElement
-    appElement.style.zIndex = "9999";
 
     shadowRoot.appendChild(appElement);
 

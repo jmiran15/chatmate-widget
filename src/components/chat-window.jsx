@@ -20,7 +20,7 @@ export default function ChatWindow({
 
   if (loading) {
     return (
-      <div className="flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-9999 min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden chat-window-custom">
+      <div className="flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-[9999] min-h-[80px] w-[400px] max-h-[704px] rounded-[16px] opacity-100 overflow-hidden chat-window-custom">
         <ChatWindowHeader
           sessionId={sessionId}
           embedId={embedId}
