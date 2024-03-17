@@ -14,6 +14,8 @@ class MyWidgetElement extends HTMLElement {
 
     // set the id of the appElement
     appElement.id = "chatmate-widget-div";
+    // set zIndex of the appElement
+    appElement.style.zIndex = "9999";
 
     shadowRoot.appendChild(appElement);
 
