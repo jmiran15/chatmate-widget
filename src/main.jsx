@@ -27,8 +27,9 @@ class MyWidgetElement extends HTMLElement {
   }
 
   getScriptSettings() {
-    const scripts = document.getElementsByTagName("script");
-    const currentScript = scripts[scripts.length - 1];
+    const currentScript = document.querySelector(
+      "script[data-chatmate-widget-script]"
+    );
     return Object.assign({}, currentScript?.dataset || {});
   }
 }

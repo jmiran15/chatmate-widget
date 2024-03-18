@@ -29,8 +29,6 @@ export default function ChatContainer({
     showInitalStarterQuestions ? chatbot?.starterQuestions : []
   );
 
-  console.log("followUps", followUps);
-
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
