@@ -85,7 +85,7 @@ export default function ChatContainer({
       );
 
       const followUpRes = await fetch(
-        `https://chatmate.fly.dev/api/generatefollowups`,
+        `https://chatmate.so/api/generatefollowups`,
         {
           method: "POST",
           body: JSON.stringify({ history: _chatHistory }),
