@@ -1,9 +1,9 @@
 import React, { memo, forwardRef } from "react";
 import { Warning } from "@phosphor-icons/react";
-import renderMarkdown from "@/utils/chat/markdown";
+import renderMarkdown from "@/utils/markdown";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
-import { colors } from "@/App";
+import { colors } from "../utils/constants";
 
 const DOMPurify = createDOMPurify(window);
 

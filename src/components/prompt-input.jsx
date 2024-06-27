@@ -1,7 +1,7 @@
 import { CircleNotch } from "@phosphor-icons/react";
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { colors } from "@/App";
+import { colors } from "../utils/constants";
 
 export default function PromptInput({
   message,

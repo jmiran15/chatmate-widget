@@ -30,7 +30,7 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: "src/main.jsx",
+      entry: "src/main.tsx",
       name: "Chatmate",
       formats: ["umd"],
       fileName: (_format) => `chatmate-chat-widget.js`,

@@ -1,9 +1,9 @@
-import ChatService from "@/models/chatService";
 import { useState } from "react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import { BoltIcon, EnvelopeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useMobileScreen } from "@/utils/mobile";
-import { colors } from "@/App";
+import { colors } from "../utils/constants";
+import { resetSession } from "../hooks/use-chat";
 
 export default function ChatWindowHeader({
   sessionId,
@@ -16,7 +16,7 @@ export default function ChatWindowHeader({
   const isMobile = useMobileScreen();
 
   const handleChatReset = async () => {
-    await ChatService.resetEmbedChatSession(embedId, sessionId);
+    await resetSession(embedId, sessionId);
     setChatHistory([]);
     setShowOptions(false);
   };
