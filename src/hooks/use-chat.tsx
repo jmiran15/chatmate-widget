@@ -25,7 +25,6 @@ export default function useChat({
         url: `/api/chat/${chatbot.id}/${sessionId}`,
       })
         .then((res) => {
-          console.log("res", res.data);
           const formattedMessages = res.data.map((msg: Message) => ({
             ...msg,
             // id: v4(),
@@ -274,7 +273,6 @@ function handleChat({
           content: (existingHistory.content ?? "") + (textResponse ?? ""),
         };
         _chatHistory[chatIdx] = updatedHistory;
-        console.log("updatedHistory", updatedHistory);
       } else {
         _chatHistory.push({
           id: uuid,
