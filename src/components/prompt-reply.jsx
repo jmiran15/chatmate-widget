@@ -1,6 +1,6 @@
 import { forwardRef, memo } from "react";
 import { Warning } from "@phosphor-icons/react";
-import renderMarkdown from "@/utils/chat/markdown";
+import renderMarkdown from "@/utils/markdown";
 
 const PromptReply = forwardRef(
   ({ uuid, reply, pending, error, sources = [] }, ref) => {

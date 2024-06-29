@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import ChatHistory from "./chat-history";
 import PromptInput from "./prompt-input";
-import handleChat from "@/utils/chat";
-import ChatService from "@/models/chatService";
+import { streamChat } from "../hooks/use-chat";
+import { API_PATH } from "../utils/constants";
 
 export default function ChatContainer({
   sessionId,
-  embedId,
   knownHistory = [],
   chatbot,
   chatbotId,
@@ -59,8 +58,6 @@ export default function ChatContainer({
     async function fetchReply() {
       const promptMessage =
         chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
-      const remHistory = chatHistory.length > 0 ? chatHistory.slice(0, -1) : [];
-      var _chatHistory = [...remHistory];
 
       if (!promptMessage || !promptMessage?.userMessage) {
         setLoadingResponse(false);
@@ -69,28 +66,34 @@ export default function ChatContainer({
 
       if (loadingResponse) setFollowUps([]);
 
-      await ChatService.streamChat(
+      const _chatHistory = await streamChat({
         chatbot,
-        remHistory,
+        chatHistory,
+        setChatHistory,
+        setLoadingResponse,
         chatbotId,
         sessionId,
-        (chatResult) =>
-          handleChat(
-            chatResult,
-            setLoadingResponse,
-            setChatHistory,
-            remHistory,
-            _chatHistory
-          )
-      );
+      });
 
-      const followUpRes = await fetch(
-        `https://chatmate.so/api/generatefollowups`,
-        {
-          method: "POST",
-          body: JSON.stringify({ history: _chatHistory }),
-        }
-      );
+      // await ChatService.streamChat(
+      //   chatbot,
+      //   remHistory,
+      //   chatbotId,
+      //   sessionId,
+      //   (chatResult) =>
+      //     handleChat(
+      //       chatResult,
+      //       setLoadingResponse,
+      //       setChatHistory,
+      //       remHistory,
+      //       _chatHistory
+      //     )
+      // );
+
+      const followUpRes = await fetch(`${API_PATH}/api/generatefollowups`, {
+        method: "POST",
+        body: JSON.stringify({ history: _chatHistory }),
+      });
 
       const { followUps } = await followUpRes.json();
 

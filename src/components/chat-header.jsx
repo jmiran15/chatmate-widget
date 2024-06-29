@@ -1,9 +1,9 @@
-import ChatService from "@/models/chatService";
 import { useState } from "react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import { BoltIcon, EnvelopeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useMobileScreen } from "@/utils/mobile";
-import { colors } from "@/App";
+import { colors } from "../utils/constants";
+import { resetSession } from "../hooks/use-chat";
 
 export default function ChatWindowHeader({
   sessionId,
@@ -16,7 +16,7 @@ export default function ChatWindowHeader({
   const isMobile = useMobileScreen();
 
   const handleChatReset = async () => {
-    await ChatService.resetEmbedChatSession(embedId, sessionId);
+    await resetSession(embedId, sessionId);
     setChatHistory([]);
     setShowOptions(false);
   };
@@ -27,11 +27,13 @@ export default function ChatWindowHeader({
     >
       <div className="flex flex-row flex-1 items-center justify-between gap-[2px] min-h-[48px] text-[18px]">
         <button className="flex flex-row gap-[12px] max-h-[48px] h-[48px] min-w-[48px] bg-transparent border-none box-border rounded-[10px] w-full p-[6px] items-center chat-header-button chat-header-btn">
-          <img
-            className="rounded-full max-h-[32px] h-[32px] w-[32px] max-w-[32px] chat-header-image"
-            src={chatbot.logoUrl}
-            alt={"logo"}
-          />
+          {chatbot.croppedLogoFilepath ? (
+            <img
+              className="rounded-full max-h-[32px] h-[32px] w-[32px] max-w-[32px] chat-header-image"
+              src={chatbot.croppedLogoFilepath}
+              alt={chatbot.publicName}
+            />
+          ) : null}
           <div className="flex flex-col items-start">
             <h1 className="text-[16px] font-[600] text-white">
               {chatbot.publicName}

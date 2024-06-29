@@ -1,19 +1,10 @@
 import {
-  Plus,
-  ChatCircleDots,
-  Headset,
-  Binoculars,
-  MagnifyingGlass,
-  MagicWand,
-} from "@phosphor-icons/react";
-
-import {
   PlusIcon,
   ChevronDoubleUpIcon,
   ChatBubbleLeftEllipsisIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
-import { colors } from "@/App";
+import { colors } from "../utils/constants";
 
 const CHAT_ICONS = {
   plus: PlusIcon,
@@ -22,7 +13,6 @@ const CHAT_ICONS = {
 };
 
 export default function OpenButton({ settings, isOpen, toggleOpen, chatbot }) {
-  // if (isOpen) return null;
   const ChatIcon = CHAT_ICONS.hasOwnProperty(chatbot?.openIcon)
     ? CHAT_ICONS[chatbot.openIcon]
     : CHAT_ICONS.plus;

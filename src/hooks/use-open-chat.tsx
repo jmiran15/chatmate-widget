@@ -1,4 +1,4 @@
-import { CHAT_UI_REOPEN } from "@/utils/constants";
+import { CHAT_UI_REOPEN } from "../utils/constants";
 import { useState } from "react";
 
 export default function useOpenChat() {
@@ -6,7 +6,7 @@ export default function useOpenChat() {
     !!window?.localStorage?.getItem(CHAT_UI_REOPEN) || false
   );
 
-  function toggleOpenChat(newValue) {
+  function toggleOpenChat(newValue: boolean) {
     if (newValue === true) window.localStorage.setItem(CHAT_UI_REOPEN, "1");
     if (newValue === false) window.localStorage.removeItem(CHAT_UI_REOPEN);
     setOpen(newValue);

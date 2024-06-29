@@ -1,5 +1,5 @@
 import ChatWindowHeader from "./chat-header";
-import useChatHistory from "@/hooks/chat/useChatHistory";
+import useChatHistory from "../hooks/use-chat";
 import ChatContainer from "./chat-container";
 import { ChatHistoryLoading } from "./chat-history";
 import { useMobileScreen } from "@/utils/mobile";
@@ -11,10 +11,10 @@ export default function ChatWindow({
   chatbot,
   chatbotId,
 }) {
-  const { chatHistory, setChatHistory, loading } = useChatHistory(
-    embedId,
-    sessionId
-  );
+  const { chatHistory, setChatHistory, loading } = useChatHistory({
+    chatbot,
+    sessionId,
+  });
 
   const isMobile = useMobileScreen();
 
