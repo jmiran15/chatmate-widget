@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import ChatHistory from "./chat-history";
 import PromptInput from "./prompt-input";
 import { streamChat } from "../hooks/use-chat";
+import { API_PATH } from "../utils/constants";
 
 export default function ChatContainer({
   sessionId,
@@ -89,13 +90,10 @@ export default function ChatContainer({
       //     )
       // );
 
-      const followUpRes = await fetch(
-        `http://localhost:3000/api/generatefollowups`,
-        {
-          method: "POST",
-          body: JSON.stringify({ history: _chatHistory }),
-        }
-      );
+      const followUpRes = await fetch(`${API_PATH}/api/generatefollowups`, {
+        method: "POST",
+        body: JSON.stringify({ history: _chatHistory }),
+      });
 
       const { followUps } = await followUpRes.json();
 
