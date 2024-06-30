@@ -121,6 +121,7 @@ export default function ChatHistory({
             sources={props.sources}
             error={props.error}
             closed={props.closed}
+            createdAt={props.createdAt}
           />
         ) : (
           <HistoricalMessage
@@ -133,6 +134,7 @@ export default function ChatHistory({
             feedbackScore={props.feedbackScore}
             error={props.error}
             chatbot={chatbot}
+            createdAt={props.createdAt}
           />
         );
 

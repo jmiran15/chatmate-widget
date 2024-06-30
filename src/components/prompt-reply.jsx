@@ -1,9 +1,13 @@
-import { forwardRef, memo } from "react";
+import { forwardRef, memo, useState } from "react";
 import { Warning } from "@phosphor-icons/react";
 import renderMarkdown from "@/utils/markdown";
+import MessageDateTooltip from "./message-date-tooltip";
+import { AnimatePresence } from "framer-motion";
 
 const PromptReply = forwardRef(
-  ({ uuid, reply, pending, error, sources = [] }, ref) => {
+  ({ uuid, reply, pending, error, sources = [], createdAt }, ref) => {
+    const [showTooltip, setShowTooltip] = useState(false);
+
     if (!reply && sources.length === 0 && !pending && !error) return null;
 
     if (pending) {
@@ -40,7 +44,12 @@ const PromptReply = forwardRef(
         key={uuid}
         ref={ref}
         className="w-auto max-w-[75%] h-fit py-[17px] px-[20px] relative inline-block rounded-[10px] mb-[16px] bg-[#f2f2f2] text-black"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
       >
+        <AnimatePresence>
+          {showTooltip && <MessageDateTooltip date={createdAt} />}
+        </AnimatePresence>
         <span
           className="whitespace-normal break-words flex flex-col gap-y-1 text-[14px] leading-[1.4] min-h-[10px]"
           dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
