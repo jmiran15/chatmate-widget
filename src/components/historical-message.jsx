@@ -1,67 +1,75 @@
-import { memo, forwardRef, useState } from "react";
+import { memo, forwardRef, useState, useEffect } from "react";
 import { Warning } from "@phosphor-icons/react";
 import renderMarkdown from "@/utils/markdown";
-import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
-import { colors } from "../utils/constants";
+import { API_PATH, colors } from "../utils/constants";
 import MessageDateTooltip from "./message-date-tooltip";
 import { AnimatePresence } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
 const DOMPurify = createDOMPurify(window);
 
-const HistoricalMessage = forwardRef(
-  (
-    {
-      uuid = v4(),
-      message,
-      role,
-      sources = [],
-      error = false,
-      chatbot,
-      createdAt,
-    },
-    ref
-  ) => {
-    const [showTooltip, setShowTooltip] = useState(false);
+const HistoricalMessage = ({
+  msgId,
+  message,
+  role,
+  sources = [],
+  error = false,
+  chatbot,
+  createdAt,
+  seen,
+  setPendingCount,
+}) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [ref, inView] = useInView({
+    threshold: 0.5,
+    triggerOnce: true,
+  });
 
-    return (
-      <div
-        key={uuid}
-        ref={ref}
-        className={`w-auto max-w-[75%] h-fit py-[17px] px-[20px] relative inline-block rounded-[10px] mb-[16px] ${
-          error
-            ? "bg-red-200"
-            : role === "user"
-              ? `bg-${colors[chatbot.themeColor]} text-white ml-auto`
-              : "bg-[#f2f2f2] text-black"
-        }`}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-      >
-        <AnimatePresence>
-          {showTooltip && <MessageDateTooltip date={createdAt} />}
-        </AnimatePresence>
-        {error ? (
-          <div className="p-2 rounded-lg bg-red-50 text-red-500">
-            <span className={`inline-block `}>
-              <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
-              respond to message.
-            </span>
-            <p className="text-xs font-mono mt-2 border-l-2 border-red-500 pl-2 bg-red-300 p-2 rounded-sm">
-              {error}
-            </p>
-          </div>
-        ) : (
-          <span
-            className="whitespace-normal break-words flex flex-col gap-y-1 text-[14px] leading-[1.4] min-h-[10px]"
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(renderMarkdown(message)),
-            }}
-          />
-        )}
-      </div>
-    );
-  }
-);
+  useEffect(() => {
+    if (inView && !seen) {
+      fetch(`${API_PATH}/api/seen/${msgId}`, { method: "POST" });
+      setPendingCount((prevCount) => Math.max(0, prevCount - 1));
+    }
+  }, [inView, seen]);
+
+  return (
+    <div
+      key={msgId}
+      ref={ref}
+      className={`w-auto max-w-[75%] h-fit py-[17px] px-[20px] relative inline-block rounded-[10px] mb-[16px] ${
+        error
+          ? "bg-red-200"
+          : role === "user"
+            ? `bg-${colors[chatbot.themeColor]} text-white ml-auto`
+            : "bg-[#f2f2f2] text-black"
+      }`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <AnimatePresence>
+        {showTooltip && <MessageDateTooltip date={createdAt} />}
+      </AnimatePresence>
+      {error ? (
+        <div className="p-2 rounded-lg bg-red-50 text-red-500">
+          <span className={`inline-block `}>
+            <Warning className="h-4 w-4 mb-1 inline-block" /> Could not respond
+            to message.
+          </span>
+          <p className="text-xs font-mono mt-2 border-l-2 border-red-500 pl-2 bg-red-300 p-2 rounded-sm">
+            {error}
+          </p>
+        </div>
+      ) : (
+        <span
+          className="whitespace-normal break-words flex flex-col gap-y-1 text-[14px] leading-[1.4] min-h-[10px]"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(renderMarkdown(message)),
+          }}
+        />
+      )}
+    </div>
+  );
+};
 
 export default memo(HistoricalMessage);

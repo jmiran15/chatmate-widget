@@ -13,7 +13,12 @@ const CHAT_ICONS = {
   chat: ChatBubbleLeftEllipsisIcon,
 };
 
-export default function OpenButton({ isOpen, toggleOpen, chatbot }) {
+export default function OpenButton({
+  isOpen,
+  toggleOpen,
+  chatbot,
+  pendingCount,
+}) {
   const ChatIcon = CHAT_ICONS.hasOwnProperty(chatbot?.openIcon)
     ? CHAT_ICONS[chatbot.openIcon]
     : CHAT_ICONS.plus;
@@ -54,6 +59,11 @@ export default function OpenButton({ isOpen, toggleOpen, chatbot }) {
           ) : null}
         </AnimatePresence>
       </div>
+      {pendingCount > 0 && (
+        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          {pendingCount > 1 ? "1+" : "1"}
+        </div>
+      )}
     </motion.div>
   );
 }

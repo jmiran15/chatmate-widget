@@ -10,6 +10,7 @@ export default function ChatContainer({
   knownHistory = [],
   chatbot,
   chatbotId,
+  setPendingCount,
 }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
@@ -102,6 +103,7 @@ export default function ChatContainer({
         followUps={followUps}
         submit={handleSubmit}
         setMessage={setMessage}
+        setPendingCount={setPendingCount}
       />
       <PromptInput
         message={message}

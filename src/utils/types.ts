@@ -22,6 +22,7 @@ export interface Message {
   role: string;
   content: string | null;
   chatId?: string;
+  seen?: boolean;
 }
 
 export interface ChatResult {

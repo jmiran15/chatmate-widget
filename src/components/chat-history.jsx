@@ -25,6 +25,7 @@ export default function ChatHistory({
   followUps,
   submit,
   setMessage,
+  setPendingCount,
 }) {
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -113,9 +114,9 @@ export default function ChatHistory({
       const messageComponent =
         isLastBotReply && props.animate ? (
           <PromptReply
-            key={props.uuid || index}
+            key={props.id || index}
             ref={isLastMessage ? replyRef : null}
-            uuid={props.uuid}
+            msgId={props.id}
             reply={props.content}
             pending={props.pending}
             sources={props.sources}
@@ -125,8 +126,8 @@ export default function ChatHistory({
           />
         ) : (
           <HistoricalMessage
-            key={props.uuid || index}
-            ref={isLastMessage ? replyRef : null}
+            key={props.id || index}
+            msgId={props.id}
             message={props.content}
             role={props.role}
             sources={props.sources}
@@ -135,11 +136,13 @@ export default function ChatHistory({
             error={props.error}
             chatbot={chatbot}
             createdAt={props.createdAt}
+            seen={props.seen}
+            setPendingCount={setPendingCount}
           />
         );
 
       return (
-        <Fragment key={props.uuid || index}>
+        <Fragment key={props.msgId || index}>
           {dateSeparator}
           {messageComponent}
         </Fragment>
