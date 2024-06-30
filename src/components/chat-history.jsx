@@ -1,8 +1,23 @@
 import HistoricalMessage from "./historical-message";
 import PromptReply from "./prompt-reply";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { CircleNotch } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
+import { format, isToday, isYesterday, isSameDay, parseISO } from "date-fns";
+
+// Helper function to safely parse dates
+const safeParseDate = (dateString) => {
+  if (!dateString) return null;
+
+  try {
+    // First, try to parse ISO format
+    return parseISO(dateString);
+  } catch (error) {
+    // If ISO parsing fails, try creating a new Date object
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? null : date;
+  }
+};
 
 export default function ChatHistory({
   history = [],
@@ -73,36 +88,43 @@ export default function ChatHistory({
     );
   }
 
-  return (
-    <div
-      className="flex flex-col flex-1 overflow-auto overflow-x-hidden relative overscroll-none pb-[4px] px-[24px] pt-[24px] bg-white"
-      id="chat-history"
-      ref={chatHistoryRef}
-    >
-      {history.map((props, index) => {
-        const isLastMessage = index === history.length - 1;
+  const renderMessages = () => {
+    let lastMessageDate = null;
 
-        const isLastBotReply =
-          index === history.length - 1 && props.role === "assistant";
+    return history.map((props, index) => {
+      const isLastMessage = index === history.length - 1;
+      const isLastBotReply = isLastMessage && props.role === "assistant";
+      const currentMessageDate = safeParseDate(props.createdAt);
 
-        if (isLastBotReply && props.animate) {
-          return (
-            <PromptReply
-              key={props.uuid}
-              ref={isLastMessage ? replyRef : null}
-              uuid={props.uuid}
-              reply={props.content}
-              pending={props.pending}
-              sources={props.sources}
-              error={props.error}
-              closed={props.closed}
-            />
-          );
-        }
+      let dateSeparator = null;
+      if (
+        currentMessageDate &&
+        (!lastMessageDate || !isSameDay(lastMessageDate, currentMessageDate))
+      ) {
+        dateSeparator = (
+          <DateSeparator
+            key={`date-${props.createdAt}`}
+            date={props.createdAt}
+          />
+        );
+        lastMessageDate = currentMessageDate;
+      }
 
-        return (
+      const messageComponent =
+        isLastBotReply && props.animate ? (
+          <PromptReply
+            key={props.uuid || index}
+            ref={isLastMessage ? replyRef : null}
+            uuid={props.uuid}
+            reply={props.content}
+            pending={props.pending}
+            sources={props.sources}
+            error={props.error}
+            closed={props.closed}
+          />
+        ) : (
           <HistoricalMessage
-            key={index}
+            key={props.uuid || index}
             ref={isLastMessage ? replyRef : null}
             message={props.content}
             role={props.role}
@@ -113,9 +135,24 @@ export default function ChatHistory({
             chatbot={chatbot}
           />
         );
-      })}
-      {/* followUps */}
 
+      return (
+        <Fragment key={props.uuid || index}>
+          {dateSeparator}
+          {messageComponent}
+        </Fragment>
+      );
+    });
+  };
+
+  return (
+    <div
+      className="flex flex-col flex-1 overflow-auto overflow-x-hidden relative overscroll-none pb-[4px] px-[24px] pt-[24px] bg-white"
+      id="chat-history"
+      ref={chatHistoryRef}
+    >
+      {renderMessages()}
+      {/* followUps */}
       {followUps.length > 0 ? (
         followUps.map((followUp, i) => {
           const isLastFollowUp = i === followUps.length - 1;
@@ -157,3 +194,25 @@ export function ChatHistoryLoading() {
     </div>
   );
 }
+
+const DateSeparator = ({ date }) => {
+  const parsedDate = safeParseDate(date);
+
+  if (!parsedDate) {
+    return null; // Return null if the date is invalid
+  }
+
+  const formattedDate = isToday(parsedDate)
+    ? "Today"
+    : isYesterday(parsedDate)
+      ? "Yesterday"
+      : format(parsedDate, "MMMM d, yyyy");
+
+  return (
+    <div className="flex items-center justify-center my-4">
+      <div className="bg-gray-200 text-gray-600 text-xs font-medium px-3 py-1 rounded-full">
+        {formattedDate}
+      </div>
+    </div>
+  );
+};
