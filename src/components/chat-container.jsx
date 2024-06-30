@@ -3,6 +3,7 @@ import ChatHistory from "./chat-history";
 import PromptInput from "./prompt-input";
 import { streamChat } from "../hooks/use-chat";
 import { API_PATH } from "../utils/constants";
+import { format } from "date-fns";
 
 export default function ChatContainer({
   sessionId,
@@ -36,15 +37,19 @@ export default function ChatContainer({
     event.preventDefault();
     if (!message || message === "") return false;
 
+    const currentDate = new Date();
+    const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+
     const prevChatHistory = [
       ...chatHistory,
-      { content: message, role: "user" },
+      { content: message, role: "user", createdAt: formattedDate },
       {
         content: "",
         role: "assistant",
         pending: true,
         userMessage: message,
         animate: true,
+        createdAt: formattedDate,
       },
     ];
 
@@ -74,21 +79,6 @@ export default function ChatContainer({
         chatbotId,
         sessionId,
       });
-
-      // await ChatService.streamChat(
-      //   chatbot,
-      //   remHistory,
-      //   chatbotId,
-      //   sessionId,
-      //   (chatResult) =>
-      //     handleChat(
-      //       chatResult,
-      //       setLoadingResponse,
-      //       setChatHistory,
-      //       remHistory,
-      //       _chatHistory
-      //     )
-      // );
 
       const followUpRes = await fetch(`${API_PATH}/api/generatefollowups`, {
         method: "POST",
