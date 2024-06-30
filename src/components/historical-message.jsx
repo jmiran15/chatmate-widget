@@ -1,17 +1,29 @@
-import React, { memo, forwardRef } from "react";
+import { memo, forwardRef, useState } from "react";
 import { Warning } from "@phosphor-icons/react";
 import renderMarkdown from "@/utils/markdown";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
 import { colors } from "../utils/constants";
+import MessageDateTooltip from "./message-date-tooltip";
+import { AnimatePresence } from "framer-motion";
 
 const DOMPurify = createDOMPurify(window);
 
 const HistoricalMessage = forwardRef(
   (
-    { uuid = v4(), message, role, sources = [], error = false, chatbot },
+    {
+      uuid = v4(),
+      message,
+      role,
+      sources = [],
+      error = false,
+      chatbot,
+      createdAt,
+    },
     ref
   ) => {
+    const [showTooltip, setShowTooltip] = useState(false);
+
     return (
       <div
         key={uuid}
@@ -20,10 +32,15 @@ const HistoricalMessage = forwardRef(
           error
             ? "bg-red-200"
             : role === "user"
-              ? `bg-${colors[chatbot.themeColor]} text-white ml-auto` // Aligns user messages to the right
-              : "bg-[#f2f2f2] text-black" // Aligns assistant messages to the left
+              ? `bg-${colors[chatbot.themeColor]} text-white ml-auto`
+              : "bg-[#f2f2f2] text-black"
         }`}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
       >
+        <AnimatePresence>
+          {showTooltip && <MessageDateTooltip date={createdAt} />}
+        </AnimatePresence>
         {error ? (
           <div className="p-2 rounded-lg bg-red-50 text-red-500">
             <span className={`inline-block `}>
