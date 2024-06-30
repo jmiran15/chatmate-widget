@@ -11,13 +11,13 @@ export default function useSessionId(embedId: string) {
       const STORAGE_IDENTIFIER = `chatmate_${embedId}_session_id`;
       const currentId = window.localStorage.getItem(STORAGE_IDENTIFIER);
       if (!!currentId) {
-        console.log(`Resuming session id`, currentId);
+        // console.log(`Resuming session id`, currentId);
         setSessionId(currentId);
         return;
       }
 
       const newId = v4();
-      console.log(`Registering new session id`, newId);
+      // console.log(`Registering new session id`, newId);
       window.localStorage.setItem(STORAGE_IDENTIFIER, newId);
       setSessionId(newId);
     }

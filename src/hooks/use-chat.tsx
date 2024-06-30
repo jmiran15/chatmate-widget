@@ -64,7 +64,8 @@ export default function useChat({
   }, [sessionId, chatbot]);
 
   return {
-    pendingCount,
+    pending: pendingCount,
+    setPending: setPendingCount,
     chatHistory: messages,
     setChatHistory: setMessages,
     loading,

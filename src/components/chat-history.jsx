@@ -25,7 +25,8 @@ export default function ChatHistory({
   followUps,
   submit,
   setMessage,
-  setPendingCount,
+  setPending,
+  setChatHistory,
 }) {
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -97,6 +98,8 @@ export default function ChatHistory({
       const isLastBotReply = isLastMessage && props.role === "assistant";
       const currentMessageDate = safeParseDate(props.createdAt);
 
+      console.log("props and props", props);
+
       let dateSeparator = null;
       if (
         currentMessageDate &&
@@ -137,12 +140,13 @@ export default function ChatHistory({
             chatbot={chatbot}
             createdAt={props.createdAt}
             seen={props.seen}
-            setPendingCount={setPendingCount}
+            setPending={setPending}
+            setChatHistory={setChatHistory}
           />
         );
 
       return (
-        <Fragment key={props.msgId || index}>
+        <Fragment key={props.id || index}>
           {dateSeparator}
           {messageComponent}
         </Fragment>

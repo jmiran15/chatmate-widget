@@ -10,21 +10,21 @@ export default function ChatContainer({
   knownHistory = [],
   chatbot,
   chatbotId,
-  setPendingCount,
+  setPending,
+  setChatHistory,
 }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
-  const [chatHistory, setChatHistory] = useState(knownHistory);
 
   // Resync history if the ref to known history changes
   // eg: cleared.
-  useEffect(() => {
-    if (knownHistory.length !== chatHistory.length)
-      setChatHistory([...knownHistory]);
-  }, [knownHistory]);
+  // useEffect(() => {
+  //   if (knownHistory.length !== chatHistory.length)
+  //     setChatHistory([...knownHistory]);
+  // }, [knownHistory]);
 
   const showInitalStarterQuestions =
-    chatHistory.length <= chatbot.introMessages.length;
+    knownHistory.length <= chatbot.introMessages.length;
 
   const [followUps, setFollowUps] = useState(
     showInitalStarterQuestions ? chatbot?.starterQuestions : []
@@ -42,7 +42,7 @@ export default function ChatContainer({
     const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
     const prevChatHistory = [
-      ...chatHistory,
+      ...knownHistory,
       { content: message, role: "user", createdAt: formattedDate },
       {
         content: "",
@@ -63,7 +63,7 @@ export default function ChatContainer({
     // this is where we call our api for a chat response
     async function fetchReply() {
       const promptMessage =
-        chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
+        knownHistory.length > 0 ? knownHistory[knownHistory.length - 1] : null;
 
       if (!promptMessage || !promptMessage?.userMessage) {
         setLoadingResponse(false);
@@ -74,7 +74,7 @@ export default function ChatContainer({
 
       const _chatHistory = await streamChat({
         chatbot,
-        chatHistory,
+        chatHistory: knownHistory,
         setChatHistory,
         setLoadingResponse,
         chatbotId,
@@ -93,17 +93,18 @@ export default function ChatContainer({
       return;
     }
     loadingResponse === true && fetchReply();
-  }, [loadingResponse, chatHistory]);
+  }, [loadingResponse, knownHistory]);
 
   return (
     <div className="relative flex flex-col flex-1 overflow-hidden min-w-full block">
       <ChatHistory
-        history={chatHistory}
+        history={knownHistory}
         chatbot={chatbot}
         followUps={followUps}
         submit={handleSubmit}
         setMessage={setMessage}
-        setPendingCount={setPendingCount}
+        setPending={setPending}
+        setChatHistory={setChatHistory}
       />
       <PromptInput
         message={message}

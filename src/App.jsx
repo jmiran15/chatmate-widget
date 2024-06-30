@@ -1,57 +1,111 @@
 import useOpenChat from "./hooks/use-open-chat";
 import useSessionId from "./hooks/use-session";
 import useChatbot from "./hooks/use-chatbot";
-
 import Head from "@/components/Head";
 import OpenButton from "./components/open-button";
 import ChatWindow from "./components/chat-window";
 import { useMobileScreen } from "./utils/mobile";
 import useChat from "./hooks/use-chat";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import PendingMessages from "./components/pending-messages";
-import { API_PATH } from "./utils/constants";
 
 export default function App({ embedId }) {
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const sessionId = useSessionId(embedId);
-  const isMobile = useMobileScreen();
   const chatbot = useChatbot(embedId);
-  const { pendingCount, chatHistory, setChatHistory, loading } = useChat({
-    chatbot,
-    sessionId,
-  });
+  const isMobile = useMobileScreen();
 
-  const [pending, setPending] = useState(0);
-  const [starterMessages, setStarterMessages] = useState([]);
+  const [showStarterPreviews, setShowStarterPreviews] = useState(false);
+  const [dismissedStarterPreviews, setDismissedStarterPreviews] =
+    useState(false);
+  const [pendingStarterMessages, setPendingStarterMessages] = useState([]);
+  const { pending, setPending, chatHistory, setChatHistory, loading } = useChat(
+    {
+      chatbot,
+      sessionId,
+    }
+  );
+  const [delayedShow, setDelayedShow] = useState(false);
+
+  const findPendingStarterMessages = useCallback(
+    (messages, introMessages) => {
+      if (!introMessages || !messages.length) return [];
+      const starterSet = new Set(introMessages);
+      return messages.filter(
+        (msg, index) =>
+          msg.role !== "user" &&
+          starterSet.has(msg.content) &&
+          index < introMessages.length &&
+          !msg.seen
+      );
+    },
+    [chatHistory, chatbot]
+  );
 
   useEffect(() => {
-    setStarterMessages(
-      chatbot?.introMessages
-        ? () =>
-            chatHistory.filter((message) =>
-              chatbot.introMessages.includes(message.content)
-            )
-        : []
+    function getPreviewsDismissedState() {
+      if (!window || !embedId) return;
+
+      const STORAGE_IDENTIFIER = `chatmate_${embedId}_previews_dismissed`;
+      const dismissed = window.localStorage.getItem(STORAGE_IDENTIFIER);
+
+      if (!!dismissed) {
+        // console.log(`Previews were previously dismissed`);
+        setDismissedStarterPreviews(true);
+        return;
+      }
+
+      // console.log(`Previews were not previously dismissed`);
+      setDismissedStarterPreviews(false);
+    }
+    getPreviewsDismissedState();
+  }, [embedId]);
+
+  useEffect(() => {
+    if (!chatHistory || !chatbot) return;
+
+    if (dismissedStarterPreviews) {
+      // console.log(`Previews were previously dismissed, not showing`);
+      setShowStarterPreviews(false);
+      return;
+    } else {
+      // console.log(`Previews were not previously dismissed, showing`);
+      const pendingStarters = findPendingStarterMessages(
+        chatHistory,
+        chatbot.introMessages
+      );
+      if (!pendingStarters.length) {
+        // console.log(`No pending starters found`);
+        setShowStarterPreviews(false);
+        return;
+      }
+      setPendingStarterMessages(pendingStarters);
+      setShowStarterPreviews(true);
+    }
+  }, [chatHistory, chatbot, dismissedStarterPreviews]);
+
+  useEffect(() => {
+    const timer = setTimeout(
+      () => setDelayedShow(showStarterPreviews ? true : false),
+      showStarterPreviews ? 300 : 0
     );
-    setPending(pendingCount);
-  }, [pendingCount, chatbot]);
+    return () => clearTimeout(timer);
+  }, [showStarterPreviews]);
 
-  console.log("App -> pending", pending);
-  console.log("App -> starterMessages", starterMessages);
-  console.log("App -> chatHistory", chatHistory);
+  const handleDismiss = () => {
+    if (!window || !embedId) return;
 
-  if (!embedId) return null;
-  if (!chatbot) return null;
+    // console.log(`Dismissing previews`);
+    const STORAGE_IDENTIFIER = `chatmate_${embedId}_previews_dismissed`;
+    window.localStorage.setItem(STORAGE_IDENTIFIER, "true");
+    // console.log(`Marking previews as dismissed`);
 
-  const dismissPreviews = () => {
-    // Mark starter messages as seen
-    starterMessages.forEach((message) => {
-      fetch(`${API_PATH}/api/seen/${message.id}`, { method: "POST" });
-    });
-
-    console.log("dismissPreviews -> setStarterMessages", []);
-    setStarterMessages([]);
+    setDismissedStarterPreviews(true);
   };
+
+  if (!embedId || !chatbot) return null;
+
+  console.log("App.jsx - pending starter messages", pendingStarterMessages);
 
   return (
     <>
@@ -64,23 +118,27 @@ export default function App({ embedId }) {
             sessionId={sessionId}
             chatbot={chatbot}
             chatbotId={embedId}
-            pendingCount={pending}
-            setPendingCount={setPending}
+            setPending={setPending}
+            setChatHistory={setChatHistory}
+            chatHistory={chatHistory}
+            loading={loading}
           />
         )}
         {(!isMobile || !isChatOpen) && (
           <>
-            <PendingMessages
-              starterMessages={starterMessages}
-              openChat={() => toggleOpenChat(true)}
-              dismissPreviews={dismissPreviews}
-            />
+            {!isChatOpen && delayedShow && (
+              <PendingMessages
+                starterMessages={pendingStarterMessages}
+                openChat={() => toggleOpenChat(true)}
+                handleDismiss={handleDismiss}
+              />
+            )}
             <OpenButton
               embedId={embedId}
               isOpen={isChatOpen}
               toggleOpen={() => toggleOpenChat(!isChatOpen)}
               chatbot={chatbot}
-              pendingCount={pending}
+              pending={showStarterPreviews ? 0 : pending}
             />
           </>
         )}

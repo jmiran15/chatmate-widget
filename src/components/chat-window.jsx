@@ -10,20 +10,11 @@ export default function ChatWindow({
   sessionId,
   chatbot,
   chatbotId,
-  setPendingCount,
+  setPending,
+  setChatHistory,
+  chatHistory,
+  loading,
 }) {
-  const { pendingCount, chatHistory, setChatHistory, loading } = useChatHistory(
-    {
-      chatbot,
-      sessionId,
-    }
-  );
-
-  console.log("ChatWindow -> chatHistory + pendingCount", {
-    chatHistory,
-    pendingCount,
-  });
-
   const isMobile = useMobileScreen();
 
   if (loading) {
@@ -73,7 +64,8 @@ export default function ChatWindow({
         knownHistory={chatHistory}
         chatbot={chatbot}
         chatbotId={chatbotId}
-        setPendingCount={setPendingCount}
+        setPending={setPending}
+        setChatHistory={setChatHistory}
       />
     </div>
   );
