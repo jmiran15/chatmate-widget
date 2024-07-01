@@ -26,9 +26,21 @@ function isUrlMatch(restrictedUrl, currentUrl) {
   try {
     const restrictedUrlObj = new URL(cleanRestrictedUrl);
 
+    console.log("App.jsx - ", restrictedUrlObj);
+
     if (catchall) {
+      console.log(
+        "App.jsx - catchall",
+        currentUrl,
+        currentUrl.href.startsWith(restrictedUrlObj.href)
+      );
       return currentUrl.href.startsWith(restrictedUrlObj.href);
     } else {
+      console.log(
+        "App.jsx - not catchall",
+        currentUrl,
+        currentUrl.href === restrictedUrlObj.href
+      );
       return currentUrl.href === restrictedUrlObj.href;
     }
   } catch (error) {
