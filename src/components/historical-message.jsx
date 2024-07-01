@@ -6,7 +6,6 @@ import { API_PATH, colors } from "../utils/constants";
 import MessageDateTooltip from "./message-date-tooltip";
 import { AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { flushSync } from "react-dom";
 
 const DOMPurify = createDOMPurify(window);
 
@@ -43,39 +42,17 @@ const HistoricalMessage = React.memo(
     }, [msgId, seen]);
 
     useEffect(() => {
-      console.log(
-        "historical-message.jsx - useEffect - inView:",
-        inView,
-        "seen:",
-        seen
-      );
       if (inView && !seen) {
-        console.log("historical-message.jsx - useEffect - inView && !seen");
         markAsSeen().then((wasMarked) => {
           if (wasMarked) {
-            console.log(
-              "historical-message.jsx - useEffect - wasMarked",
-              wasMarked
-            );
             setPending((prevCount) => {
               const newVal = Math.max(0, prevCount - 1);
               return newVal;
             });
             setChatHistory((prevHistory) =>
               prevHistory.map((msg) => {
-                console.log(
-                  "historical-message.jsx - useEffect - map",
-                  msg,
-                  msgId
-                );
                 if (msg.id === msgId) {
                   const newMessage = { ...msg, seen: true };
-                  console.log("FOUND THE MESSAGE TO CHANGE", {
-                    msgId,
-                    msg,
-                    newMessage,
-                  });
-
                   return newMessage;
                 }
                 return msg;

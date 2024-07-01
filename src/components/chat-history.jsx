@@ -98,7 +98,7 @@ export default function ChatHistory({
       const isLastBotReply = isLastMessage && props.role === "assistant";
       const currentMessageDate = safeParseDate(props.createdAt);
 
-      console.log("props and props", props);
+      console.log("safeParseDate", currentMessageDate);
 
       let dateSeparator = null;
       if (

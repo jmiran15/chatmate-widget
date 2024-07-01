@@ -75,7 +75,7 @@ const OpenButton = React.memo(({ isOpen, toggleOpen, chatbot, pending }) => {
         </div>
         {pending > 0 && (
           <motion.div
-            className="absolute -top-1 -right-1 w-5 h-5"
+            className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center"
             initial={false}
             animate={{
               scale: 1,
@@ -83,8 +83,17 @@ const OpenButton = React.memo(({ isOpen, toggleOpen, chatbot, pending }) => {
               y: -2,
             }}
           >
-            <div className="absolute inset-0 bg-red-500 rounded-full" />
-            <div className="absolute inset-0 flex items-center justify-center text-white text-xs font-bold">
+            <div
+              className="w-full h-full rounded-full bg-gradient-to-br from-red-400 to-red-600"
+              style={{
+                boxShadow:
+                  "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24), inset 0 -1px 1px rgba(0,0,0,0.1)",
+              }}
+            />
+            <div
+              className="absolute inset-0 flex items-center justify-center text-white text-xs font-bold"
+              style={{ textShadow: "0 0.5px 1px rgba(0,0,0,0.1)" }}
+            >
               {pending > 9 ? "9+" : pending}
             </div>
           </motion.div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { API_PATH } from "../utils/constants";
 import { ChatResult, Chatbot, Message } from "../utils/types";
 import { v4 } from "uuid";
+import { format } from "date-fns";
 
 export default function useChat({
   chatbot,
@@ -233,6 +234,8 @@ function handleChat({
   _chatHistory: Message[];
 }) {
   const { uuid, textResponse, type, sources, error, close } = chatResult;
+  const currentDate = new Date();
+  const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
   switch (type) {
     case "abort": {
@@ -243,12 +246,14 @@ function handleChat({
           id: uuid,
           content: textResponse,
           role: "assistant",
+          createdAt: formattedDate,
         },
       ]);
       _chatHistory.push({
         id: uuid,
         content: textResponse,
         role: "assistant",
+        createdAt: formattedDate,
       });
       break;
     }
@@ -260,12 +265,14 @@ function handleChat({
           id: uuid,
           content: textResponse,
           role: "assistant",
+          createdAt: formattedDate,
         },
       ]);
       _chatHistory.push({
         id: uuid,
         content: textResponse,
         role: "assistant",
+        createdAt: formattedDate,
       });
       break;
     }
@@ -284,6 +291,7 @@ function handleChat({
           id: uuid,
           content: textResponse,
           role: "assistant",
+          createdAt: formattedDate,
         });
       }
       setChatHistory([..._chatHistory]);
