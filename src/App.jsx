@@ -75,6 +75,7 @@ export default function App({ embedId }) {
     }
   );
   const [delayedShow, setDelayedShow] = useState(false);
+  const [isRestricted, setIsRestricted] = useState(false);
 
   const findPendingStarterMessages = useCallback(
     (messages, introMessages) => {
@@ -155,7 +156,28 @@ export default function App({ embedId }) {
     };
 
     parseUrl();
+
+    // Set up an event listener for URL changes
+    const handleUrlChange = () => {
+      parseUrl();
+    };
+
+    window.addEventListener("popstate", handleUrlChange);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener("popstate", handleUrlChange);
+    };
   }, [embedId]);
+
+  useEffect(() => {
+    if (chatbot?.widgetRestrictedUrls && urlData.href) {
+      const restricted = Array.from(chatbot.widgetRestrictedUrls).some(
+        (restrictedUrl) => isUrlMatch(restrictedUrl, urlData)
+      );
+      setIsRestricted(restricted);
+    }
+  }, [urlData, chatbot?.widgetRestrictedUrls]);
 
   const handleDismiss = () => {
     if (!window || !embedId) return;
@@ -167,11 +189,6 @@ export default function App({ embedId }) {
 
     setDismissedStarterPreviews(true);
   };
-  const isRestricted = Array.from(chatbot?.widgetRestrictedUrls ?? []).some(
-    (restrictedUrl) => {
-      return isUrlMatch(restrictedUrl, urlData);
-    }
-  );
 
   if (!embedId || !chatbot || isRestricted) return null;
 
