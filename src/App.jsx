@@ -76,6 +76,7 @@ export default function App({ embedId }) {
   );
   const [delayedShow, setDelayedShow] = useState(false);
   const [isRestricted, setIsRestricted] = useState(false);
+  const lastCheckedUrl = useRef("");
 
   const findPendingStarterMessages = useCallback(
     (messages, introMessages) => {
@@ -142,34 +143,56 @@ export default function App({ embedId }) {
     return () => clearTimeout(timer);
   }, [showStarterPreviews]);
 
-  useEffect(() => {
-    const parseUrl = () => {
-      const location = getWindowLocation();
-      if (location) {
-        try {
-          const url = new URL(location.href);
-          setUrlData(url);
-        } catch (error) {
-          console.error("Error parsing URL:", error);
-        }
-      }
-    };
+  const parseUrl = useCallback(() => {
+    const location = getWindowLocation();
+    if (location && location.href !== lastCheckedUrl.current) {
+      lastCheckedUrl.current = location.href;
 
+      console.log(`App.jsx - URL change: ${location.href}`);
+      try {
+        const url = new URL(location.href);
+        setUrlData(url);
+      } catch (error) {
+        console.error("Error parsing URL:", error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     parseUrl();
 
-    // Set up an event listener for URL changes
-    const handleUrlChange = () => {
-      console.log("URL changed, parsing new URL");
-      parseUrl();
-    };
+    // Set up MutationObserver to watch for URL changes
+    const observer = new MutationObserver((mutations) => {
+      if (
+        mutations.some(
+          (mutation) =>
+            mutation.type === "attributes" && mutation.attributeName === "href"
+        )
+      ) {
+        parseUrl();
+      }
+    });
 
-    window.addEventListener("popstate", handleUrlChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      childList: false,
+      subtree: false,
+      attributeFilter: ["href"],
+    });
 
-    // Clean up the event listener
+    // Set up polling as a fallback
+    // const pollInterval = setInterval(parseUrl, 1000);
+
+    // Set up popstate event listener
+    window.addEventListener("popstate", parseUrl);
+
+    // Clean up
     return () => {
-      window.removeEventListener("popstate", handleUrlChange);
+      observer.disconnect();
+      clearInterval(pollInterval);
+      window.removeEventListener("popstate", parseUrl);
     };
-  }, [embedId]);
+  }, [parseUrl, embedId]);
 
   useEffect(() => {
     if (chatbot?.widgetRestrictedUrls && urlData.href) {
