@@ -4,7 +4,9 @@ export interface Chatbot {
   updatedAt: string;
   userId: string;
   publicName: string;
-  logoUrl: string;
+  originalLogoFilepath: string;
+  croppedLogoFilepath: string;
+  lastCrop: string;
   themeColor: string;
   introMessages: string[];
   openIcon: string;
@@ -13,6 +15,9 @@ export interface Chatbot {
   systemPrompt: string;
   model: string;
   responseLength: string;
+  containerRadius: String;
+  openButtonText: String;
+  widgetRestrictedUrls: String[];
 }
 
 export interface Message {

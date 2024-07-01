@@ -9,11 +9,38 @@ import useChat from "./hooks/use-chat";
 import { useEffect, useState, useCallback } from "react";
 import PendingMessages from "./components/pending-messages";
 
+function isBrowser() {
+  return typeof window !== "undefined" && window.document;
+}
+
+function getWindowLocation() {
+  return isBrowser() ? window.location : null;
+}
+
+function isUrlMatch(restrictedUrl, currentUrl) {
+  const catchall = restrictedUrl.endsWith("*");
+  const cleanRestrictedUrl = catchall
+    ? restrictedUrl.slice(0, -1)
+    : restrictedUrl;
+
+  try {
+    const restrictedUrlObj = new URL(cleanRestrictedUrl);
+
+    if (catchall) {
+      return currentUrl.href.startsWith(restrictedUrlObj.href);
+    } else {
+      return currentUrl.href === restrictedUrlObj.href;
+    }
+  } catch (error) {
+    return false;
+  }
+}
 export default function App({ embedId }) {
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const sessionId = useSessionId(embedId);
   const chatbot = useChatbot(embedId);
   const isMobile = useMobileScreen();
+  const [urlData, setUrlData] = useState({});
 
   const [showStarterPreviews, setShowStarterPreviews] = useState(false);
   const [dismissedStarterPreviews, setDismissedStarterPreviews] =
@@ -92,6 +119,22 @@ export default function App({ embedId }) {
     return () => clearTimeout(timer);
   }, [showStarterPreviews]);
 
+  useEffect(() => {
+    const parseUrl = () => {
+      const location = getWindowLocation();
+      if (location) {
+        try {
+          const url = new URL(location.href);
+          setUrlData(url);
+        } catch (error) {
+          console.error("Error parsing URL:", error);
+        }
+      }
+    };
+
+    parseUrl();
+  }, [embedId]);
+
   const handleDismiss = () => {
     if (!window || !embedId) return;
 
@@ -102,10 +145,13 @@ export default function App({ embedId }) {
 
     setDismissedStarterPreviews(true);
   };
+  const isRestricted = Array.from(chatbot?.widgetRestrictedUrls ?? []).some(
+    (restrictedUrl) => {
+      return isUrlMatch(restrictedUrl, urlData);
+    }
+  );
 
-  if (!embedId || !chatbot) return null;
-
-  console.log("App.jsx - pending starter messages", pendingStarterMessages);
+  if (!embedId || !chatbot || isRestricted) return null;
 
   return (
     <>
