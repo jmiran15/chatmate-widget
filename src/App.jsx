@@ -26,27 +26,37 @@ function isUrlMatch(restrictedUrl, currentUrl) {
   try {
     const restrictedUrlObj = new URL(cleanRestrictedUrl);
 
-    console.log("App.jsx - ", restrictedUrlObj);
+    const normalizedRestrictedPath = restrictedUrlObj.pathname.replace(
+      /\/$/,
+      ""
+    );
+    const normalizedCurrentPath = currentUrl.pathname.replace(/\/$/, "");
 
     if (catchall) {
+      // If catchall is true, check if currentUrl starts with restrictedUrl
       console.log(
-        "App.jsx - catchall",
-        currentUrl,
-        currentUrl.href.startsWith(restrictedUrlObj.href)
+        `App.jsx - catchall - currentUrl.origin: ${currentUrl.origin}, restrictedUrlObj.origin: ${restrictedUrlObj.origin}, normalizedCurrentPath: ${normalizedCurrentPath}, normalizedRestrictedPath: ${normalizedRestrictedPath}`
       );
-      return currentUrl.href.startsWith(restrictedUrlObj.href);
+      return (
+        currentUrl.origin === restrictedUrlObj.origin &&
+        normalizedCurrentPath.startsWith(normalizedRestrictedPath)
+      );
     } else {
+      // If catchall is false, check for exact match
       console.log(
-        "App.jsx - not catchall",
-        currentUrl,
-        currentUrl.href === restrictedUrlObj.href
+        `App.jsx - not catchall - currentUrl.origin: ${currentUrl.origin}, restrictedUrlObj.origin: ${restrictedUrlObj.origin}, normalizedCurrentPath: ${normalizedCurrentPath}, normalizedRestrictedPath: ${normalizedRestrictedPath}`
       );
-      return currentUrl.href === restrictedUrlObj.href;
+      return (
+        currentUrl.origin === restrictedUrlObj.origin &&
+        normalizedCurrentPath === normalizedRestrictedPath
+      );
     }
   } catch (error) {
+    // If there's a problem parsing the URL, return false
     return false;
   }
 }
+
 export default function App({ embedId }) {
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const sessionId = useSessionId(embedId);
