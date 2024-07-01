@@ -5,7 +5,7 @@ import MessageDateTooltip from "./message-date-tooltip";
 import { AnimatePresence } from "framer-motion";
 
 const PromptReply = forwardRef(
-  ({ uuid, reply, pending, error, sources = [], createdAt }, ref) => {
+  ({ msgId, reply, pending, error, sources = [], createdAt }, ref) => {
     const [showTooltip, setShowTooltip] = useState(false);
 
     if (!reply && sources.length === 0 && !pending && !error) return null;
@@ -41,7 +41,7 @@ const PromptReply = forwardRef(
 
     return (
       <div
-        key={uuid}
+        key={msgId}
         ref={ref}
         className="w-auto max-w-[75%] h-fit py-[17px] px-[20px] relative inline-block rounded-[10px] mb-[16px] bg-[#f2f2f2] text-black"
         onMouseEnter={() => setShowTooltip(true)}

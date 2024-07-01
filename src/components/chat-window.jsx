@@ -10,12 +10,11 @@ export default function ChatWindow({
   sessionId,
   chatbot,
   chatbotId,
+  setPending,
+  setChatHistory,
+  chatHistory,
+  loading,
 }) {
-  const { chatHistory, setChatHistory, loading } = useChatHistory({
-    chatbot,
-    sessionId,
-  });
-
   const isMobile = useMobileScreen();
 
   if (loading) {
@@ -65,6 +64,8 @@ export default function ChatWindow({
         knownHistory={chatHistory}
         chatbot={chatbot}
         chatbotId={chatbotId}
+        setPending={setPending}
+        setChatHistory={setChatHistory}
       />
     </div>
   );
