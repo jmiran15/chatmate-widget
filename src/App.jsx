@@ -159,6 +159,7 @@ export default function App({ embedId }) {
 
     // Set up an event listener for URL changes
     const handleUrlChange = () => {
+      console.log("URL changed, parsing new URL");
       parseUrl();
     };
 
@@ -178,6 +179,8 @@ export default function App({ embedId }) {
       setIsRestricted(restricted);
     }
   }, [urlData, chatbot?.widgetRestrictedUrls]);
+
+  console.log(`App.jsx - urlData: `, urlData);
 
   const handleDismiss = () => {
     if (!window || !embedId) return;
