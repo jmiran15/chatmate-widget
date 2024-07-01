@@ -9,12 +9,27 @@ import useChat from "./hooks/use-chat";
 import { useEffect, useState, useCallback } from "react";
 import PendingMessages from "./components/pending-messages";
 
+function isBrowser() {
+  return typeof window !== "undefined" && window.document;
+}
+
+function getWindowLocation() {
+  return isBrowser() ? window.location : null;
+}
+
 export default function App({ embedId }) {
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const sessionId = useSessionId(embedId);
   const chatbot = useChatbot(embedId);
   const isMobile = useMobileScreen();
-
+  const [urlData, setUrlData] = useState({
+    full: "",
+    protocol: "",
+    host: "",
+    pathname: "",
+    search: "",
+    hash: "",
+  });
   const [showStarterPreviews, setShowStarterPreviews] = useState(false);
   const [dismissedStarterPreviews, setDismissedStarterPreviews] =
     useState(false);
@@ -92,6 +107,29 @@ export default function App({ embedId }) {
     return () => clearTimeout(timer);
   }, [showStarterPreviews]);
 
+  useEffect(() => {
+    const parseUrl = () => {
+      const location = getWindowLocation();
+      if (location) {
+        try {
+          const url = new URL(location.href);
+          setUrlData({
+            full: url.href,
+            protocol: url.protocol.replace(":", ""),
+            host: url.host,
+            pathname: url.pathname,
+            search: url.search,
+            hash: url.hash,
+          });
+        } catch (error) {
+          console.error("Error parsing URL:", error);
+        }
+      }
+    };
+
+    parseUrl();
+  }, [embedId]);
+
   const handleDismiss = () => {
     if (!window || !embedId) return;
 
@@ -105,7 +143,7 @@ export default function App({ embedId }) {
 
   if (!embedId || !chatbot) return null;
 
-  console.log("App.jsx - pending starter messages", pendingStarterMessages);
+  console.log("App.jsx - current url", urlData);
 
   return (
     <>
