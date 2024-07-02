@@ -77,6 +77,22 @@ export default function App({ embedId }) {
   const [delayedShow, setDelayedShow] = useState(false);
   const [isRestricted, setIsRestricted] = useState(false);
   const lastCheckedUrl = useRef("");
+  const observerRef = useRef(null);
+
+  const parseUrl = useCallback(() => {
+    const location = getWindowLocation();
+
+    if (location && location.href !== lastCheckedUrl.current) {
+      console.log(`App.jsx - Parsing URL: ${location.href}`);
+      lastCheckedUrl.current = location.href;
+      try {
+        const url = new URL(location.href);
+        setUrlData(url);
+      } catch (error) {
+        console.error("Error parsing URL:", error);
+      }
+    }
+  }, []);
 
   const findPendingStarterMessages = useCallback(
     (messages, introMessages) => {
@@ -143,65 +159,54 @@ export default function App({ embedId }) {
     return () => clearTimeout(timer);
   }, [showStarterPreviews]);
 
-  const parseUrl = useCallback(() => {
-    const location = getWindowLocation();
-    if (location && location.href !== lastCheckedUrl.current) {
-      lastCheckedUrl.current = location.href;
-
-      console.log(`App.jsx - URL change: ${location.href}`);
-      try {
-        const url = new URL(location.href);
-        setUrlData(url);
-      } catch (error) {
-        console.error("Error parsing URL:", error);
-      }
-    }
-  }, []);
-
   useEffect(() => {
     parseUrl();
 
-    // Set up MutationObserver to watch for URL changes
-    const observer = new MutationObserver((mutations) => {
-      if (
-        mutations.some(
-          (mutation) =>
-            mutation.type === "attributes" && mutation.attributeName === "href"
-        )
-      ) {
-        parseUrl();
-      }
-    });
+    const setupObserver = () => {
+      if (!document.body) return;
 
-    observer.observe(document.documentElement, {
-      attributes: true,
-      childList: false,
-      subtree: false,
-      attributeFilter: ["href"],
-    });
+      // Set up MutationObserver to watch for URL changes
+      observerRef.current = new MutationObserver((mutations) => {
+        if (
+          mutations.some(
+            (mutation) =>
+              mutation.type === "childList" || mutation.type === "attributes"
+          )
+        ) {
+          parseUrl();
+        }
+      });
+
+      observerRef.current.observe(document.body, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
+    };
+
+    // Wait for the DOM to be ready
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", setupObserver);
+    } else {
+      setupObserver();
+    }
 
     // Set up polling as a fallback
-    // const pollInterval = setInterval(parseUrl, 1000);
+    const pollInterval = setInterval(parseUrl, 1000);
 
     // Set up popstate event listener
     window.addEventListener("popstate", parseUrl);
 
     // Clean up
     return () => {
-      observer.disconnect();
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
       clearInterval(pollInterval);
       window.removeEventListener("popstate", parseUrl);
+      document.removeEventListener("DOMContentLoaded", setupObserver);
     };
   }, [parseUrl, embedId]);
-
-  useEffect(() => {
-    if (chatbot?.widgetRestrictedUrls && urlData.href) {
-      const restricted = Array.from(chatbot.widgetRestrictedUrls).some(
-        (restrictedUrl) => isUrlMatch(restrictedUrl, urlData)
-      );
-      setIsRestricted(restricted);
-    }
-  }, [urlData, chatbot?.widgetRestrictedUrls]);
 
   console.log(`App.jsx - urlData: `, urlData);
 
