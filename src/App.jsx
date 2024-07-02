@@ -8,6 +8,9 @@ import { useMobileScreen } from "./utils/mobile";
 import useChat from "./hooks/use-chat";
 import { useEffect, useState, useCallback } from "react";
 import PendingMessages from "./components/pending-messages";
+import io from "socket.io-client";
+import { SocketProvider } from "./providers/socket";
+import { API_PATH } from "./utils/constants";
 
 function isBrowser() {
   return typeof window !== "undefined" && window.document;
@@ -34,18 +37,12 @@ function isUrlMatch(restrictedUrl, currentUrl) {
 
     if (catchall) {
       // If catchall is true, check if currentUrl starts with restrictedUrl
-      console.log(
-        `App.jsx - catchall - currentUrl.origin: ${currentUrl.origin}, restrictedUrlObj.origin: ${restrictedUrlObj.origin}, normalizedCurrentPath: ${normalizedCurrentPath}, normalizedRestrictedPath: ${normalizedRestrictedPath}`
-      );
       return (
         currentUrl.origin === restrictedUrlObj.origin &&
         normalizedCurrentPath.startsWith(normalizedRestrictedPath)
       );
     } else {
       // If catchall is false, check for exact match
-      console.log(
-        `App.jsx - not catchall - currentUrl.origin: ${currentUrl.origin}, restrictedUrlObj.origin: ${restrictedUrlObj.origin}, normalizedCurrentPath: ${normalizedCurrentPath}, normalizedRestrictedPath: ${normalizedRestrictedPath}`
-      );
       return (
         currentUrl.origin === restrictedUrlObj.origin &&
         normalizedCurrentPath === normalizedRestrictedPath
@@ -76,6 +73,7 @@ export default function App({ embedId }) {
   );
   const [delayedShow, setDelayedShow] = useState(false);
   const [isRestricted, setIsRestricted] = useState(false);
+  const [socket, setSocket] = useState();
 
   const findPendingStarterMessages = useCallback(
     (messages, introMessages) => {
@@ -159,7 +157,6 @@ export default function App({ embedId }) {
 
     // Set up an event listener for URL changes
     const handleUrlChange = () => {
-      console.log("URL changed, parsing new URL");
       parseUrl();
     };
 
@@ -180,8 +177,6 @@ export default function App({ embedId }) {
     }
   }, [urlData, chatbot?.widgetRestrictedUrls]);
 
-  console.log(`App.jsx - urlData: `, urlData);
-
   const handleDismiss = () => {
     if (!window || !embedId) return;
 
@@ -193,10 +188,38 @@ export default function App({ embedId }) {
     setDismissedStarterPreviews(true);
   };
 
+  useEffect(() => {
+    const socket = io(API_PATH);
+    setSocket(socket);
+    return () => {
+      socket.emit("widgetConnected", { sessionId, connected: false });
+      socket.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("confirmation", (data) => {
+      console.log(data);
+    });
+
+    socket.on("pollingWidgetStatus", (data) => {
+      if (data?.sessionId === sessionId) {
+        console.log("pollingWidgetStatus: ", data);
+        socket.emit("widgetConnected", { sessionId, connected: true });
+      }
+    });
+
+    // emit widget connected
+    socket.emit("widgetConnected", { sessionId, connected: true });
+  }, [socket, sessionId]);
+
   if (!embedId || !chatbot || isRestricted) return null;
 
+  console.log("socket: ", socket);
+
   return (
-    <>
+    <SocketProvider socket={socket}>
       <Head />
       <div>
         {isChatOpen && (
@@ -231,6 +254,6 @@ export default function App({ embedId }) {
           </>
         )}
       </div>
-    </>
+    </SocketProvider>
   );
 }

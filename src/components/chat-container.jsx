@@ -4,6 +4,8 @@ import PromptInput from "./prompt-input";
 import { streamChat } from "../hooks/use-chat";
 import { API_PATH } from "../utils/constants";
 import { format } from "date-fns";
+import { useSocket } from "../providers/socket";
+import axios from "axios";
 
 export default function ChatContainer({
   sessionId,
@@ -15,6 +17,8 @@ export default function ChatContainer({
 }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
+  const [isAgent, setIsAgent] = useState(false);
+  const socket = useSocket();
 
   // Resync history if the ref to known history changes
   // eg: cleared.
@@ -34,6 +38,28 @@ export default function ChatContainer({
     setMessage(event.target.value);
   };
 
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleIsAgent = (data) => {
+      if (sessionId === data.sessionId) {
+        console.log(`${sessionId} - isAgent: `, data.isAgent);
+        setIsAgent(data.isAgent);
+      }
+    };
+
+    socket.on("isAgent", handleIsAgent);
+
+    socket.emit("pollingAgent", { sessionId });
+
+    return () => {
+      socket.off("isAgent", handleIsAgent);
+      setIsAgent(false);
+    };
+  }, [socket, sessionId]);
+
+  console.log(`chat-container.jsx - isAgent: `, isAgent);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!message || message === "") return false;
@@ -41,22 +67,38 @@ export default function ChatContainer({
     const currentDate = new Date();
     const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
-    const prevChatHistory = [
-      ...knownHistory,
-      { content: message, role: "user", createdAt: formattedDate },
-      {
-        content: "",
-        role: "assistant",
-        pending: true,
-        userMessage: message,
-        animate: true,
-        createdAt: formattedDate,
-      },
-    ];
+    if (isAgent) {
+      const prevChatHistory = [
+        ...knownHistory,
+        { content: message, role: "user", createdAt: formattedDate },
+      ];
 
-    setChatHistory(prevChatHistory);
-    setMessage("");
-    setLoadingResponse(true);
+      await axios.post(`${API_PATH}/api/chat/${chatbot.id}/${sessionId}`, {
+        chatbot,
+        messages: prevChatHistory,
+        chattingWithAgent: true,
+      });
+
+      setChatHistory(prevChatHistory);
+      setMessage("");
+    } else {
+      const prevChatHistory = [
+        ...knownHistory,
+        { content: message, role: "user", createdAt: formattedDate },
+        {
+          content: "",
+          role: "assistant",
+          pending: true,
+          userMessage: message,
+          animate: true,
+          createdAt: formattedDate,
+        },
+      ];
+
+      setChatHistory(prevChatHistory);
+      setMessage("");
+      setLoadingResponse(true);
+    }
   };
 
   useEffect(() => {
@@ -92,7 +134,7 @@ export default function ChatContainer({
 
       return;
     }
-    loadingResponse === true && fetchReply();
+    loadingResponse === true && !isAgent && fetchReply();
   }, [loadingResponse, knownHistory]);
 
   return (
@@ -105,6 +147,7 @@ export default function ChatContainer({
         setMessage={setMessage}
         setPending={setPending}
         setChatHistory={setChatHistory}
+        sessionId={sessionId}
       />
       <PromptInput
         message={message}

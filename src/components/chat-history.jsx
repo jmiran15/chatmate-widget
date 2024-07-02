@@ -4,6 +4,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { CircleNotch } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import { format, isToday, isYesterday, isSameDay, parseISO } from "date-fns";
+import { useSocket } from "../providers/socket";
 
 // Helper function to safely parse dates
 const safeParseDate = (dateString) => {
@@ -27,6 +28,7 @@ export default function ChatHistory({
   setMessage,
   setPending,
   setChatHistory,
+  sessionId,
 }) {
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -98,8 +100,6 @@ export default function ChatHistory({
       const isLastBotReply = isLastMessage && props.role === "assistant";
       const currentMessageDate = safeParseDate(props.createdAt);
 
-      console.log("safeParseDate", currentMessageDate);
-
       let dateSeparator = null;
       if (
         currentMessageDate &&
@@ -153,6 +153,34 @@ export default function ChatHistory({
       );
     });
   };
+
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleThread = (data) => {
+      console.log("received data: ", data);
+      if (sessionId === data.sessionId) {
+        console.log(`${sessionId} - messagesChanged: `, data.messages);
+        setChatHistory(data.messages);
+      }
+    };
+
+    socket.on("messages", handleThread);
+
+    return () => {
+      socket.off("messages", handleThread);
+    };
+  }, [socket, sessionId]);
+
+  useEffect(() => {
+    // emit "messages" send entire history
+    if (!socket) return;
+
+    console.log("emitting; ", { sessionId, messages: history });
+    socket.emit("messages", { sessionId, messages: history });
+  }, [socket, sessionId, history]);
 
   return (
     <div
