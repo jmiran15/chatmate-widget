@@ -6,7 +6,7 @@ import OpenButton from "./components/open-button";
 import ChatWindow from "./components/chat-window";
 import { useMobileScreen } from "./utils/mobile";
 import useChat from "./hooks/use-chat";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import PendingMessages from "./components/pending-messages";
 
 function isBrowser() {
