@@ -6,7 +6,7 @@ import OpenButton from "./components/open-button";
 import ChatWindow from "./components/chat-window";
 import { useMobileScreen } from "./utils/mobile";
 import useChat from "./hooks/use-chat";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import PendingMessages from "./components/pending-messages";
 
 function isBrowser() {
@@ -76,23 +76,6 @@ export default function App({ embedId }) {
   );
   const [delayedShow, setDelayedShow] = useState(false);
   const [isRestricted, setIsRestricted] = useState(false);
-  const lastCheckedUrl = useRef("");
-  const observerRef = useRef(null);
-
-  const parseUrl = useCallback(() => {
-    const location = getWindowLocation();
-
-    if (location && location.href !== lastCheckedUrl.current) {
-      console.log(`App.jsx - Parsing URL: ${location.href}`);
-      lastCheckedUrl.current = location.href;
-      try {
-        const url = new URL(location.href);
-        setUrlData(url);
-      } catch (error) {
-        console.error("Error parsing URL:", error);
-      }
-    }
-  }, []);
 
   const findPendingStarterMessages = useCallback(
     (messages, introMessages) => {
@@ -160,53 +143,42 @@ export default function App({ embedId }) {
   }, [showStarterPreviews]);
 
   useEffect(() => {
+    const parseUrl = () => {
+      const location = getWindowLocation();
+      if (location) {
+        try {
+          const url = new URL(location.href);
+          setUrlData(url);
+        } catch (error) {
+          console.error("Error parsing URL:", error);
+        }
+      }
+    };
+
     parseUrl();
 
-    const setupObserver = () => {
-      if (!document.body) return;
-
-      // Set up MutationObserver to watch for URL changes
-      observerRef.current = new MutationObserver((mutations) => {
-        if (
-          mutations.some(
-            (mutation) =>
-              mutation.type === "childList" || mutation.type === "attributes"
-          )
-        ) {
-          parseUrl();
-        }
-      });
-
-      observerRef.current.observe(document.body, {
-        attributes: true,
-        childList: true,
-        subtree: true,
-      });
+    // Set up an event listener for URL changes
+    const handleUrlChange = () => {
+      console.log("URL changed, parsing new URL");
+      parseUrl();
     };
 
-    // Wait for the DOM to be ready
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", setupObserver);
-    } else {
-      setupObserver();
-    }
+    window.addEventListener("popstate", handleUrlChange);
 
-    // Set up polling as a fallback
-    const pollInterval = setInterval(parseUrl, 1000);
-
-    // Set up popstate event listener
-    window.addEventListener("popstate", parseUrl);
-
-    // Clean up
+    // Clean up the event listener
     return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-      clearInterval(pollInterval);
-      window.removeEventListener("popstate", parseUrl);
-      document.removeEventListener("DOMContentLoaded", setupObserver);
+      window.removeEventListener("popstate", handleUrlChange);
     };
-  }, [parseUrl, embedId]);
+  }, [embedId]);
+
+  useEffect(() => {
+    if (chatbot?.widgetRestrictedUrls && urlData.href) {
+      const restricted = Array.from(chatbot.widgetRestrictedUrls).some(
+        (restrictedUrl) => isUrlMatch(restrictedUrl, urlData)
+      );
+      setIsRestricted(restricted);
+    }
+  }, [urlData, chatbot?.widgetRestrictedUrls]);
 
   console.log(`App.jsx - urlData: `, urlData);
 
