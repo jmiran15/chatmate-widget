@@ -11,6 +11,7 @@ import PendingMessages from "./components/pending-messages";
 import io from "socket.io-client";
 import { SocketProvider } from "./providers/socket";
 import { API_PATH } from "./utils/constants";
+import { flushSync } from "react-dom";
 
 function isBrowser() {
   return typeof window !== "undefined" && window.document;
@@ -27,7 +28,7 @@ function isUrlMatch(restrictedUrl, currentUrl) {
     : restrictedUrl;
 
   try {
-    const restrictedUrlObj = new URL(cleanRestrictedUrl);
+    const restrictedUrlObj = new URL(cleanRestrictedUrl, currentUrl.origin);
 
     const normalizedRestrictedPath = restrictedUrlObj.pathname.replace(
       /\/$/,
@@ -35,21 +36,26 @@ function isUrlMatch(restrictedUrl, currentUrl) {
     );
     const normalizedCurrentPath = currentUrl.pathname.replace(/\/$/, "");
 
+    // console.log({
+    //   restriction: normalizedRestrictedPath,
+    //   current: normalizedCurrentPath,
+    // });
+
     if (catchall) {
-      // If catchall is true, check if currentUrl starts with restrictedUrl
+      // check if currentUrl starts with restrictedUrl
+
       return (
         currentUrl.origin === restrictedUrlObj.origin &&
         normalizedCurrentPath.startsWith(normalizedRestrictedPath)
       );
     } else {
-      // If catchall is false, check for exact match
+      // check for exact match
       return (
         currentUrl.origin === restrictedUrlObj.origin &&
         normalizedCurrentPath === normalizedRestrictedPath
       );
     }
   } catch (error) {
-    // If there's a problem parsing the URL, return false
     return false;
   }
 }
@@ -146,25 +152,63 @@ export default function App({ embedId }) {
       if (location) {
         try {
           const url = new URL(location.href);
-          setUrlData(url);
+          flushSync(() => {
+            setUrlData(url);
+          });
         } catch (error) {
           console.error("Error parsing URL:", error);
         }
       }
     };
 
-    parseUrl();
-
-    // Set up an event listener for URL changes
-    const handleUrlChange = () => {
-      parseUrl();
+    const handleUrlNavigation = (event) => {
+      try {
+        const url = new URL(event.destination.url);
+        setUrlData(url);
+      } catch (error) {
+        console.error("Error parsing URL:", error);
+      }
     };
 
-    window.addEventListener("popstate", handleUrlChange);
+    parseUrl();
 
-    // Clean up the event listener
+    // Check if Navigation API is supported
+    if (window.navigation) {
+      window.navigation.addEventListener("navigate", handleUrlNavigation);
+    } else {
+      // Fallback for browsers that don't support Navigation API
+      (() => {
+        let oldPushState = history.pushState;
+        history.pushState = function pushState() {
+          let ret = oldPushState.apply(this, arguments);
+          window.dispatchEvent(new Event("pushstate"));
+          window.dispatchEvent(new Event("locationchange"));
+          return ret;
+        };
+
+        let oldReplaceState = history.replaceState;
+        history.replaceState = function replaceState() {
+          let ret = oldReplaceState.apply(this, arguments);
+          window.dispatchEvent(new Event("replacestate"));
+          window.dispatchEvent(new Event("locationchange"));
+          return ret;
+        };
+
+        window.addEventListener("popstate", () => {
+          window.dispatchEvent(new Event("locationchange"));
+        });
+      })();
+
+      window.addEventListener("locationchange", parseUrl);
+    }
+
+    // Cleanup function
     return () => {
-      window.removeEventListener("popstate", handleUrlChange);
+      if (window.navigation) {
+        window.navigation.removeEventListener("navigate", handleUrlNavigation);
+      } else {
+        window.removeEventListener("locationchange", parseUrl);
+      }
     };
   }, [embedId]);
 
@@ -205,7 +249,6 @@ export default function App({ embedId }) {
 
     socket.on("pollingWidgetStatus", (data) => {
       if (data?.sessionId === sessionId) {
-        console.log("pollingWidgetStatus: ", data);
         socket.emit("widgetConnected", { sessionId, connected: true });
       }
     });
@@ -215,8 +258,6 @@ export default function App({ embedId }) {
   }, [socket, sessionId]);
 
   if (!embedId || !chatbot || isRestricted) return null;
-
-  console.log("socket: ", socket);
 
   return (
     <SocketProvider socket={socket}>
