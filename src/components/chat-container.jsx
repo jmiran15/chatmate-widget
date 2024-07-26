@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ChatHistory from "./chat-history";
 import PromptInput from "./prompt-input";
 import { streamChat } from "../hooks/use-chat";
@@ -6,6 +6,7 @@ import { API_PATH } from "../utils/constants";
 import { format } from "date-fns";
 import { useSocket } from "../providers/socket";
 import axios from "axios";
+import debounce from "lodash/debounce";
 
 export default function ChatContainer({
   sessionId,
@@ -14,6 +15,7 @@ export default function ChatContainer({
   chatbotId,
   setPending,
   setChatHistory,
+  handleUserActivity,
 }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
@@ -33,11 +35,15 @@ export default function ChatContainer({
   const [followUps, setFollowUps] = useState(
     showInitalStarterQuestions ? chatbot?.starterQuestions : []
   );
+  const debouncedHandleUserActivity = useCallback(
+    debounce(handleUserActivity, 300), // Adjust the debounce delay as needed
+    []
+  );
 
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
+    debouncedHandleUserActivity();
   };
-
   useEffect(() => {
     if (!socket) return;
 

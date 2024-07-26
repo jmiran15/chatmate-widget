@@ -14,6 +14,7 @@ export default function ChatWindow({
   setChatHistory,
   chatHistory,
   loading,
+  handleUserActivity,
 }) {
   const isMobile = useMobileScreen();
 
@@ -66,6 +67,7 @@ export default function ChatWindow({
         chatbotId={chatbotId}
         setPending={setPending}
         setChatHistory={setChatHistory}
+        handleUserActivity={handleUserActivity}
       />
     </div>
   );
