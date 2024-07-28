@@ -6,12 +6,13 @@ import OpenButton from "./components/open-button";
 import ChatWindow from "./components/chat-window";
 import { useMobileScreen } from "./utils/mobile";
 import useChat from "./hooks/use-chat";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import PendingMessages from "./components/pending-messages";
 import io from "socket.io-client";
 import { SocketProvider } from "./providers/socket";
 import { API_PATH } from "./utils/constants";
 import { flushSync } from "react-dom";
+import { formatDuration, intervalToDuration } from "date-fns";
 
 function isBrowser() {
   return typeof window !== "undefined" && window.document;
@@ -66,20 +67,246 @@ export default function App({ embedId }) {
   const chatbot = useChatbot(embedId);
   const isMobile = useMobileScreen();
   const [urlData, setUrlData] = useState({});
+  const { pending, setPending, chatHistory, setChatHistory, loading, chat } =
+    useChat({
+      chatbot,
+      sessionId,
+    });
+
+  console.log("chat.elapsedMs", chat?.elapsedMs);
+
+  const [activeTime, setActiveTime] = useState(Number(chat?.elapsedMs ?? 0));
+  const [isActive, setIsActive] = useState(false);
+  const startTimeRef = useRef(null);
+  const timeoutRef = useRef(null);
+
+  console.log("isActive", isActive);
+
+  const startTracking = useCallback(() => {
+    setIsActive(true);
+    startTimeRef.current = Date.now();
+  }, []);
+
+  const stopTracking = useCallback(() => {
+    if (isActive) {
+      setIsActive(false);
+      const endTime = Date.now();
+      const duration = endTime - (startTimeRef.current || endTime);
+      setActiveTime((prevTime) => prevTime + duration);
+      startTimeRef.current = null;
+      sendActiveTimeToServer();
+    }
+  }, [isActive]);
+
+  const resetInactivityTimer = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(stopTracking, 60000);
+  }, [stopTracking]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const [showStarterPreviews, setShowStarterPreviews] = useState(false);
   const [dismissedStarterPreviews, setDismissedStarterPreviews] =
     useState(false);
   const [pendingStarterMessages, setPendingStarterMessages] = useState([]);
-  const { pending, setPending, chatHistory, setChatHistory, loading } = useChat(
-    {
-      chatbot,
-      sessionId,
-    }
-  );
   const [delayedShow, setDelayedShow] = useState(false);
   const [isRestricted, setIsRestricted] = useState(false);
   const [socket, setSocket] = useState();
+
+  useEffect(() => {
+    console.log(`[TimeTracking] Chat open state changed: ${isChatOpen}`);
+    if (isChatOpen) {
+      console.log("[TimeTracking] Starting tracking");
+      startTracking();
+    } else {
+      console.log("[TimeTracking] Stopping tracking");
+      stopTracking();
+    }
+
+    const handleVisibilityChange = () => {
+      console.log(
+        `[TimeTracking] Visibility changed: ${document.hidden ? "hidden" : "visible"}`
+      );
+      if (document.hidden) {
+        stopTracking();
+      } else if (isChatOpen) {
+        startTracking();
+      }
+    };
+
+    const handleFocus = () => {
+      console.log("[TimeTracking] Window focused");
+      if (isChatOpen) startTracking();
+    };
+
+    const handleBlur = () => {
+      console.log("[TimeTracking] Window blurred");
+      stopTracking();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleBlur);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("blur", handleBlur);
+      console.log("[TimeTracking] Cleanup: Stopping tracking");
+      stopTracking();
+    };
+  }, [isChatOpen, startTracking, stopTracking]);
+
+  // Function to send active time to server
+  const sendActiveTimeToServer = useCallback(async () => {
+    if (activeTime > 0) {
+      console.log(
+        `[TimeTracking] Sending active time to server: ${Math.round(activeTime)} seconds`
+      );
+      try {
+        const response = await fetch(`${API_PATH}/api/track-active-time`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            sessionId,
+            embedId,
+            activeTime: Math.round(activeTime), // Convert to nearest second
+            timestamp: new Date().toISOString(),
+          }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to send active time data");
+        }
+        console.log("[TimeTracking] Successfully sent active time to server");
+      } catch (error) {
+        console.error("Error sending active time data:", error);
+        // Store failed attempt locally
+        const failedAttempts = JSON.parse(
+          localStorage.getItem(`chatmate_${embedId}_failed_time_sync`) || "[]"
+        );
+        failedAttempts.push({
+          activeTime: Math.round(activeTime),
+          timestamp: new Date().toISOString(),
+        });
+        localStorage.setItem(
+          `chatmate_${embedId}_failed_time_sync`,
+          JSON.stringify(failedAttempts)
+        );
+        console.log("[TimeTracking] Stored failed attempt locally");
+      }
+    }
+  }, [activeTime, sessionId, embedId]);
+
+  // Send active time to server every 5 minutes and when the component unmounts
+  useEffect(() => {
+    console.log("[TimeTracking] Setting up interval for sending active time");
+    const intervalId = setInterval(
+      () => {
+        console.log("[TimeTracking] Interval triggered: Sending active time");
+        sendActiveTimeToServer();
+      },
+      5 * 60 * 1000
+    );
+    return () => {
+      console.log(
+        "[TimeTracking] Cleanup: Clearing interval and sending final active time"
+      );
+      clearInterval(intervalId);
+      sendActiveTimeToServer();
+    };
+  }, [sendActiveTimeToServer]);
+
+  // Sync failed attempts when the chat is opened
+  useEffect(() => {
+    if (isChatOpen) {
+      console.log("[TimeTracking] Chat opened: Syncing failed attempts");
+      const syncFailedAttempts = async () => {
+        const failedAttempts = JSON.parse(
+          localStorage.getItem(`chatmate_${embedId}_failed_time_sync`) || "[]"
+        );
+        console.log(
+          `[TimeTracking] Found ${failedAttempts.length} failed attempts`
+        );
+        if (failedAttempts.length > 0) {
+          for (const attempt of failedAttempts) {
+            try {
+              await fetch(`${API_PATH}/api/track-active-time`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  sessionId,
+                  embedId,
+                  activeTime: attempt.activeTime,
+                  timestamp: attempt.timestamp,
+                }),
+              });
+              console.log(
+                "[TimeTracking] Successfully synced a failed attempt"
+              );
+              failedAttempts.shift();
+            } catch (error) {
+              console.error("Error syncing failed attempt:", error);
+              break;
+            }
+          }
+          localStorage.setItem(
+            `chatmate_${embedId}_failed_time_sync`,
+            JSON.stringify(failedAttempts)
+          );
+          console.log(
+            `[TimeTracking] Updated failed attempts in local storage. Remaining: ${failedAttempts.length}`
+          );
+        }
+      };
+      syncFailedAttempts();
+    }
+  }, [isChatOpen, sessionId, embedId]);
+
+  const sendBeacon = (data) => {
+    navigator.sendBeacon(
+      `${API_PATH}/api/track-active-time`,
+      JSON.stringify(data)
+    );
+  };
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      sendBeacon({
+        sessionId,
+        embedId,
+        activeTime: Math.round(activeTime),
+        timestamp: new Date().toISOString(),
+      });
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [activeTime, sessionId, embedId]);
+
+  // Memoized function to handle user activity
+  const handleUserActivity = useMemo(() => {
+    return () => {
+      if (isChatOpen) {
+        console.log(
+          "[TimeTracking] User activity detected: Resetting inactivity timer"
+        );
+        resetInactivityTimer();
+      }
+    };
+  }, [isChatOpen, resetInactivityTimer]);
 
   const findPendingStarterMessages = useCallback(
     (messages, introMessages) => {
@@ -263,6 +490,8 @@ export default function App({ embedId }) {
     <SocketProvider socket={socket}>
       <Head />
       <div>
+        {/* <ElapsedTimeDisplay activeTime={activeTime} /> */}
+
         {isChatOpen && (
           <ChatWindow
             closeChat={() => toggleOpenChat(false)}
@@ -274,6 +503,7 @@ export default function App({ embedId }) {
             setChatHistory={setChatHistory}
             chatHistory={chatHistory}
             loading={loading}
+            handleUserActivity={handleUserActivity}
           />
         )}
         {(!isMobile || !isChatOpen) && (
@@ -298,3 +528,31 @@ export default function App({ embedId }) {
     </SocketProvider>
   );
 }
+
+const ElapsedTimeDisplay = ({ activeTime }) => {
+  const duration = intervalToDuration({ start: 0, end: activeTime });
+  const formattedDuration = formatDuration(duration, {
+    format: ["hours", "minutes", "seconds"],
+    zero: true,
+    delimiter: ":",
+    padding: true,
+  });
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 9999,
+        color: "red",
+        fontSize: "24px",
+        fontWeight: "bold",
+        textShadow: "1px 1px 2px black",
+      }}
+    >
+      {formattedDuration}
+    </div>
+  );
+};

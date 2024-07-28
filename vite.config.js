@@ -3,9 +3,21 @@ import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "url";
 import react from "@vitejs/plugin-react";
 import image from "@rollup/plugin-image";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
-  plugins: [react(), image()],
+  plugins: [
+    react(),
+    image(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: "public/timeTracker.js",
+          dest: "",
+        },
+      ],
+    }),
+  ],
   define: {
     // In dev, we need to disable this, but in prod, we need to enable it
     "process.env.NODE_ENV": JSON.stringify("production"),
@@ -35,11 +47,23 @@ export default defineConfig({
       formats: ["umd"],
       fileName: (_format) => `chatmate-chat-widget.js`,
     },
+    // rollupOptions: {
+    //   external: [
+    //     // Reduces transformation time by 50% and we don't even use this variant, so we can ignore.
+    //     /@phosphor-icons\/react\/dist\/ssr/,
+    //   ],
+    // },
     rollupOptions: {
-      external: [
-        // Reduces transformation time by 50% and we don't even use this variant, so we can ignore.
-        /@phosphor-icons\/react\/dist\/ssr/,
-      ],
+      external: [/@phosphor-icons\/react\/dist\/ssr/],
+      output: {
+        entryFileNames: "chatmate-chat-widget.js",
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name === "timeTracker.js") {
+            return "timeTracker.js";
+          }
+          return "[name].[ext]";
+        },
+      },
     },
     commonjsOptions: {
       transformMixedEsModules: true,

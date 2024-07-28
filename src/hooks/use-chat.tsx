@@ -16,6 +16,7 @@ export default function useChat({
   const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState([]);
   const [pendingCount, setPendingCount] = useState(0);
+  const [chat, setChat] = useState({});
 
   useEffect(() => {
     async function fetchChatHistory() {
@@ -27,7 +28,7 @@ export default function useChat({
         url: `/api/chat/${chatbot.id}/${sessionId}`,
       })
         .then((res) => {
-          const { messages, unseenMessagesCount } = res.data;
+          const { chat, messages, unseenMessagesCount } = res.data;
           console.log("unsenMessagesCount", unseenMessagesCount);
 
           const formattedMessages = messages.map((msg: Message) => ({
@@ -38,6 +39,7 @@ export default function useChat({
           }));
           setMessages(formattedMessages);
           setPendingCount(unseenMessagesCount);
+          setChat(chat);
           setLoading(false);
         })
         .catch((error) => {
@@ -68,6 +70,7 @@ export default function useChat({
     pending: pendingCount,
     setPending: setPendingCount,
     chatHistory: messages,
+    chat,
     setChatHistory: setMessages,
     loading,
   };
