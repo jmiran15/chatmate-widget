@@ -12,7 +12,6 @@ import io from "socket.io-client";
 import { SocketProvider } from "./providers/socket";
 import { API_PATH } from "./utils/constants";
 import { flushSync } from "react-dom";
-import useActiveTimeTracker from "./hooks/useTimeTracking";
 import { formatDuration, intervalToDuration } from "date-fns";
 
 function isBrowser() {
@@ -63,7 +62,6 @@ function isUrlMatch(restrictedUrl, currentUrl) {
 }
 
 export default function App({ embedId }) {
-  const initialElapsedMs = "0"; // TODO - we get this from the useChat hook - can just save as string
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const sessionId = useSessionId(embedId);
   const chatbot = useChatbot(embedId);
@@ -74,11 +72,10 @@ export default function App({ embedId }) {
       chatbot,
       sessionId,
     });
-  // const { activeTime, startTracking, stopTracking, resetInactivityTimer } =
-  //   useActiveTimeTracker(initialElapsedNs);
 
-  console.log("initialElapsedMs", Number(initialElapsedMs));
-  const [activeTime, setActiveTime] = useState(Number(initialElapsedMs));
+  console.log("chat.elapsedMs", chat?.elapsedMs);
+
+  const [activeTime, setActiveTime] = useState(Number(chat?.elapsedMs ?? 0));
   const [isActive, setIsActive] = useState(false);
   const startTimeRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -97,6 +94,7 @@ export default function App({ embedId }) {
       const duration = endTime - (startTimeRef.current || endTime);
       setActiveTime((prevTime) => prevTime + duration);
       startTimeRef.current = null;
+      sendActiveTimeToServer();
     }
   }, [isActive]);
 
@@ -492,7 +490,7 @@ export default function App({ embedId }) {
     <SocketProvider socket={socket}>
       <Head />
       <div>
-        <ElapsedTimeDisplay activeTime={activeTime} />
+        {/* <ElapsedTimeDisplay activeTime={activeTime} /> */}
 
         {isChatOpen && (
           <ChatWindow
