@@ -66,9 +66,6 @@ export default function App({ embedId }) {
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const sessionId = useSessionId(embedId);
   const chatbot = useChatbot(embedId);
-
-  console.log("chatbot", chatbot);
-
   const isMobile = useMobileScreen();
   const [urlData, setUrlData] = useState({});
   const { pending, setPending, chatHistory, setChatHistory, loading, chat } =
