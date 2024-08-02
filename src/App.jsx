@@ -13,6 +13,7 @@ import { SocketProvider } from "./providers/socket";
 import { API_PATH } from "./utils/constants";
 import { flushSync } from "react-dom";
 import { formatDuration, intervalToDuration } from "date-fns";
+import { usePingInstallation } from "./hooks/use-ping-installation";
 
 function isBrowser() {
   return typeof window !== "undefined" && window.document;
@@ -80,6 +81,7 @@ export default function App({ embedId }) {
   const startTimeRef = useRef(null);
   const timeoutRef = useRef(null);
 
+  usePingInstallation(chatbot);
   console.log("isActive", isActive);
 
   const startTracking = useCallback(() => {
@@ -462,6 +464,7 @@ export default function App({ embedId }) {
   useEffect(() => {
     const socket = io(API_PATH);
     setSocket(socket);
+
     return () => {
       socket.emit("widgetConnected", { sessionId, connected: false });
       socket.close();
