@@ -68,21 +68,24 @@ export default function App({ embedId }) {
   const chatbot = useChatbot(embedId);
   const isMobile = useMobileScreen();
   const [urlData, setUrlData] = useState({});
-  const { pending, setPending, chatHistory, setChatHistory, loading, chat } =
-    useChat({
-      chatbot,
-      sessionId,
-    });
-
-  console.log("chat.elapsedMs", chat?.elapsedMs);
+  const {
+    pending,
+    setPending,
+    chatHistory,
+    setChatHistory,
+    loading,
+    chat,
+    resetSession,
+  } = useChat({
+    chatbot,
+    sessionId,
+  });
 
   const [activeTime, setActiveTime] = useState(Number(chat?.elapsedMs ?? 0));
   const [isActive, setIsActive] = useState(false);
   const startTimeRef = useRef(null);
   const timeoutRef = useRef(null);
-
   usePingInstallation(chatbot);
-  console.log("isActive", isActive);
 
   const startTracking = useCallback(() => {
     setIsActive(true);
@@ -507,6 +510,7 @@ export default function App({ embedId }) {
             chatHistory={chatHistory}
             loading={loading}
             handleUserActivity={handleUserActivity}
+            resetSession={resetSession}
           />
         )}
         {(!isMobile || !isChatOpen) && (

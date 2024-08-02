@@ -3,7 +3,6 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import { BoltIcon, EnvelopeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useMobileScreen } from "@/utils/mobile";
 import { colors } from "../utils/constants";
-import { resetSession } from "../hooks/use-chat";
 
 export default function ChatWindowHeader({
   sessionId,
@@ -11,14 +10,16 @@ export default function ChatWindowHeader({
   closeChat,
   setChatHistory,
   chatbot,
+  resetSession,
 }) {
   const [showingOptions, setShowOptions] = useState(false);
   const isMobile = useMobileScreen();
 
   const handleChatReset = async () => {
-    await resetSession(embedId, sessionId);
-    setChatHistory([]);
-    setShowOptions(false);
+    const res = await resetSession();
+    if (res) {
+      setShowOptions(false);
+    }
   };
 
   return (

@@ -15,6 +15,7 @@ export default function ChatWindow({
   chatHistory,
   loading,
   handleUserActivity,
+  resetSession,
 }) {
   const isMobile = useMobileScreen();
 
@@ -32,6 +33,7 @@ export default function ChatWindow({
           closeChat={closeChat}
           setChatHistory={setChatHistory}
           chatbot={chatbot}
+          resetSession={resetSession}
         />
         <ChatHistoryLoading />
       </div>
@@ -58,6 +60,7 @@ export default function ChatWindow({
         closeChat={closeChat}
         setChatHistory={setChatHistory}
         chatbot={chatbot}
+        resetSession={resetSession}
       />
       <ChatContainer
         sessionId={sessionId}

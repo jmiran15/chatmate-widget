@@ -1,6 +1,6 @@
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { API_PATH } from "../utils/constants";
 import { ChatResult, Chatbot, Message } from "../utils/types";
 import { v4 } from "uuid";
@@ -18,53 +18,72 @@ export default function useChat({
   const [pendingCount, setPendingCount] = useState(0);
   const [chat, setChat] = useState({});
 
-  useEffect(() => {
-    async function fetchChatHistory() {
-      if (!sessionId || !chatbot) return;
+  const fetchChatHistory = useCallback(async () => {
+    if (!sessionId || !chatbot) return;
 
-      axios({
-        method: "get",
-        baseURL: API_PATH,
-        url: `/api/chat/${chatbot.id}/${sessionId}`,
+    axios({
+      method: "get",
+      baseURL: API_PATH,
+      url: `/api/chat/${chatbot.id}/${sessionId}`,
+    })
+      .then((res) => {
+        const { chat, messages, unseenMessagesCount } = res.data;
+        console.log("unsenMessagesCount", unseenMessagesCount);
+
+        const formattedMessages = messages.map((msg: Message) => ({
+          ...msg,
+          sender: msg.role === "user" ? "user" : "system",
+          textResponse: msg.content,
+          close: false,
+        }));
+        setMessages(formattedMessages);
+        setPendingCount(unseenMessagesCount);
+        setChat(chat);
+        setLoading(false);
       })
-        .then((res) => {
-          const { chat, messages, unseenMessagesCount } = res.data;
-          console.log("unsenMessagesCount", unseenMessagesCount);
-
-          const formattedMessages = messages.map((msg: Message) => ({
-            ...msg,
-            sender: msg.role === "user" ? "user" : "system",
-            textResponse: msg.content,
-            close: false,
-          }));
-          setMessages(formattedMessages);
-          setPendingCount(unseenMessagesCount);
-          setChat(chat);
-          setLoading(false);
-        })
-        .catch((error) => {
-          setMessages([]);
-          setLoading(false);
-          if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            console.log(error.response.data);
-            console.log(error.response.status);
-            console.log(error.response.headers);
-          } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-            // http.ClientRequest in node.js
-            console.log(error.request);
-          } else {
-            // Something happened in setting up the request that triggered an Error
-            console.log("Error", error.message);
-          }
-          console.log(error.config);
-        });
-    }
-    fetchChatHistory();
+      .catch((error) => {
+        setMessages([]);
+        setLoading(false);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+        console.log(error.config);
+      });
   }, [sessionId, chatbot]);
+
+  useEffect(() => {
+    fetchChatHistory();
+  }, [fetchChatHistory]);
+
+  const resetSession = useCallback(async () => {
+    console.log("embedId", chatbot.id);
+    console.log("sessionId", sessionId);
+    return axios({
+      method: "delete",
+      baseURL: API_PATH,
+      url: `/api/chat/${chatbot.id}/${sessionId}`,
+    })
+      .then(async () => {
+        await fetchChatHistory();
+        return true;
+      })
+      .catch((error) => {
+        console.error("Error resetting session:", error);
+        return false;
+      });
+  }, [chatbot, sessionId, fetchChatHistory]);
 
   return {
     pending: pendingCount,
@@ -73,23 +92,8 @@ export default function useChat({
     chat,
     setChatHistory: setMessages,
     loading,
+    resetSession, // Return the resetSession function
   };
-}
-
-export async function resetSession({
-  embedId,
-  sessionId,
-}: {
-  embedId: string;
-  sessionId: string;
-}) {
-  return axios({
-    method: "delete",
-    baseURL: API_PATH,
-    url: `/api/chat/${embedId}/${sessionId}`,
-  })
-    .then(() => true)
-    .catch(() => false);
 }
 
 export async function streamChat({
