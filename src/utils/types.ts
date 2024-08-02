@@ -18,6 +18,11 @@ export interface Chatbot {
   containerRadius: String;
   openButtonText: String;
   widgetRestrictedUrls: String[];
+
+  // installation stuff
+  installed: boolean;
+  lastPingedAt: string;
+  embeddedOn: string;
 }
 
 export interface Message {

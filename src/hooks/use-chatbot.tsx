@@ -13,6 +13,7 @@ export default function useChatbot(chatbotId: string): Chatbot | null {
       url: `/api/chatbot/${chatbotId}`,
     })
       .then((res) => {
+        console.log("res.data", res.data);
         setChatbot(res.data);
       })
       .catch((error) => {

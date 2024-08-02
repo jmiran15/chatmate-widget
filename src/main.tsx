@@ -29,5 +29,4 @@ class MyWidgetElement extends HTMLElement {
 }
 
 customElements.define("my-widget", MyWidgetElement);
-
 document.body.appendChild(new MyWidgetElement());
