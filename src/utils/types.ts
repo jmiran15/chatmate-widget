@@ -23,6 +23,8 @@ export interface Chatbot {
   installed: boolean;
   lastPingedAt: string;
   embeddedOn: string;
+
+  widgetPosition: "BOTTOM_RIGHT" | "BOTTOM_LEFT";
 }
 
 export interface Message {

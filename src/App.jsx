@@ -1,19 +1,19 @@
-import useOpenChat from "./hooks/use-open-chat";
-import useSessionId from "./hooks/use-session";
-import useChatbot from "./hooks/use-chatbot";
 import Head from "@/components/Head";
-import OpenButton from "./components/open-button";
-import ChatWindow from "./components/chat-window";
-import { useMobileScreen } from "./utils/mobile";
-import useChat from "./hooks/use-chat";
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import PendingMessages from "./components/pending-messages";
+import { formatDuration, intervalToDuration } from "date-fns";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import io from "socket.io-client";
+import ChatWindow from "./components/chat-window";
+import OpenButton from "./components/open-button";
+import PendingMessages from "./components/pending-messages";
+import useChat from "./hooks/use-chat";
+import useChatbot from "./hooks/use-chatbot";
+import useOpenChat from "./hooks/use-open-chat";
+import { usePingInstallation } from "./hooks/use-ping-installation";
+import useSessionId from "./hooks/use-session";
 import { SocketProvider } from "./providers/socket";
 import { API_PATH } from "./utils/constants";
-import { flushSync } from "react-dom";
-import { formatDuration, intervalToDuration } from "date-fns";
-import { usePingInstallation } from "./hooks/use-ping-installation";
+import { useMobileScreen } from "./utils/mobile";
 
 function isBrowser() {
   return typeof window !== "undefined" && window.document;
@@ -517,6 +517,7 @@ export default function App({ embedId }) {
           <>
             {!isChatOpen && delayedShow && (
               <PendingMessages
+                chatbot={chatbot}
                 starterMessages={pendingStarterMessages}
                 openChat={() => toggleOpenChat(true)}
                 handleDismiss={handleDismiss}

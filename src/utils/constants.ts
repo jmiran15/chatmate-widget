@@ -1,5 +1,7 @@
 export const CHAT_UI_REOPEN = "___chatmate-chat-widget-open___";
 export const API_PATH = "https://chatmate.so";
+// export const API_PATH = "http://localhost:3000";
+
 export const colors = {
   zinc: "zinc-900",
   red: "red-600",

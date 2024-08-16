@@ -174,12 +174,9 @@ const customCss = `
   transform: scale(1.1);
 }
 
-
 .chat-window-custom {
-  transform-origin: right bottom;
   height: min(704px, 100% - 104px);
   box-shadow: rgba(0, 0, 0, 0.16) 0px 5px 40px;
-  transition: width 200ms ease 0s, height 200ms ease 0s, max-height 200ms ease 0s, transform 300ms cubic-bezier(0, 1.2, 1, 1) 0s, opacity 83ms ease-out 0s;
 }
 
 .chat-header-bottom-border {

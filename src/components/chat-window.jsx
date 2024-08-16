@@ -1,8 +1,7 @@
-import ChatWindowHeader from "./chat-header";
-import useChatHistory from "../hooks/use-chat";
-import ChatContainer from "./chat-container";
-import { ChatHistoryLoading } from "./chat-history";
 import { useMobileScreen } from "@/utils/mobile";
+import ChatContainer from "./chat-container";
+import ChatWindowHeader from "./chat-header";
+import { ChatHistoryLoading } from "./chat-history";
 
 export default function ChatWindow({
   closeChat,
@@ -18,13 +17,15 @@ export default function ChatWindow({
   resetSession,
 }) {
   const isMobile = useMobileScreen();
+  const isLeftAligned = chatbot.widgetPosition === "BOTTOM_LEFT";
 
   if (loading) {
     return (
       <div
-        className="flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-[9999] min-h-[80px] w-[400px] max-h-[704px] opacity-100 overflow-hidden chat-window-custom"
+        className="flex flex-col flex-1 fixed bottom-[84px] z-[9999] min-h-[80px] w-[400px] max-h-[704px] opacity-100 overflow-hidden chat-window-custom"
         style={{
           borderRadius: isMobile ? "0rem" : chatbot.containerRadius + "rem",
+          ...(isMobile ? {} : { [isLeftAligned ? "left" : "right"]: "20px" }),
         }}
       >
         <ChatWindowHeader
@@ -44,7 +45,7 @@ export default function ChatWindow({
     "flex flex-col flex-1 fixed bottom-0 right-0 z-[9999] opacity-100 overflow-hidden h-dvh w-dvw";
 
   const desktopStyle =
-    "flex flex-col flex-1 fixed bottom-[84px] right-[20px] z-[9999] min-h-[80px] w-[400px] max-h-[704px] opacity-100 overflow-hidden chat-window-custom";
+    "flex flex-col flex-1 fixed bottom-[84px] z-[9999] min-h-[80px] w-[400px] max-h-[704px] opacity-100 overflow-hidden chat-window-custom";
 
   setEventDelegatorForCodeSnippets();
   return (
@@ -52,6 +53,7 @@ export default function ChatWindow({
       className={isMobile ? mobileStyle : desktopStyle}
       style={{
         borderRadius: isMobile ? "0rem" : chatbot.containerRadius + "rem",
+        ...(isMobile ? {} : { [isLeftAligned ? "left" : "right"]: "20px" }),
       }}
     >
       <ChatWindowHeader

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
 import {
-  PlusIcon,
-  ChevronDoubleUpIcon,
   ChatBubbleLeftEllipsisIcon,
+  ChevronDoubleUpIcon,
   ChevronDownIcon,
+  PlusIcon,
 } from "@heroicons/react/24/outline";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import { colors } from "../utils/constants";
-import { motion, AnimatePresence } from "framer-motion";
 
 const CHAT_ICONS = {
   plus: PlusIcon,
@@ -23,6 +23,8 @@ const OpenButton = React.memo(({ isOpen, toggleOpen, chatbot, pending }) => {
     }
   }, [isOpen]);
 
+  const isLeftAligned = chatbot.widgetPosition === "BOTTOM_LEFT";
+
   const ChatIcon = CHAT_ICONS[chatbot?.openIcon] || CHAT_ICONS.plus;
   const buttonClasses = `flex items-center justify-center p-0 rounded-full bg-${
     colors[chatbot?.themeColor]
@@ -31,7 +33,7 @@ const OpenButton = React.memo(({ isOpen, toggleOpen, chatbot, pending }) => {
 
   return (
     <motion.div
-      className="fixed bottom-[20px] right-[20px] z-[9999]"
+      className="fixed bottom-[20px] z-[9999]"
       initial={!isOpen ? { y: 100, opacity: 0 } : { y: 0, opacity: 1 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{
@@ -39,6 +41,9 @@ const OpenButton = React.memo(({ isOpen, toggleOpen, chatbot, pending }) => {
         stiffness: 260,
         damping: 20,
         duration: 0.5,
+      }}
+      style={{
+        [isLeftAligned ? "left" : "right"]: "20px",
       }}
     >
       <motion.div

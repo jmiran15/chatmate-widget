@@ -1,16 +1,18 @@
-import React, { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Message } from "src/utils/types";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useState } from "react";
+import { Chatbot, Message } from "src/utils/types";
 
 const PendingMessages = ({
   starterMessages,
   openChat,
   handleDismiss,
+  chatbot,
 }: {
   starterMessages: Message[];
   openChat: () => void;
   handleDismiss: () => void;
+  chatbot: Chatbot;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -18,14 +20,18 @@ const PendingMessages = ({
     return null;
   }
 
+  const isLeftAligned = chatbot.widgetPosition === "BOTTOM_LEFT";
   const visiblePreviews = starterMessages.slice(0, 2);
   const remainingCount = Math.max(0, starterMessages.length - 2);
 
   return (
     <div
-      className="fixed bottom-[88px] right-[20px] z-[9998] max-w-[300px] space-y-2"
+      className="fixed bottom-[88px] z-[9998] max-w-[300px] space-y-2"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      style={{
+        [isLeftAligned ? "left" : "right"]: "20px",
+      }}
     >
       <AnimatePresence>
         {isHovered && (
@@ -38,7 +44,7 @@ const PendingMessages = ({
               e.stopPropagation();
               handleDismiss();
             }}
-            className="absolute -top-2 right-0 bg-gray-200 rounded-full p-1 shadow-md z-10"
+            className={`absolute -top-2 ${isLeftAligned ? "left-0" : "right-0"} bg-gray-200 rounded-full p-1 shadow-md z-10`}
           >
             <XMarkIcon className="w-4 h-4 text-gray-600" />
           </motion.button>
@@ -58,7 +64,7 @@ const PendingMessages = ({
 
       {remainingCount > 0 && (
         <div
-          className="text-sm text-blue-600 cursor-pointer hover:underline text-right"
+          className={`text-sm text-blue-600 cursor-pointer hover:underline ${isLeftAligned ? "text-left" : "text-right"}`}
           onClick={openChat}
         >
           View {remainingCount} more
