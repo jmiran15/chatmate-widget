@@ -35,6 +35,7 @@ export interface Message {
   content: string | null;
   chatId?: string;
   seen?: boolean;
+  close?: boolean;
 }
 
 export interface ChatResult {

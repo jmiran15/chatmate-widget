@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import { format } from "date-fns";
+import debounce from "lodash/debounce";
+import { useCallback, useEffect, useState } from "react";
+import { streamChat } from "../hooks/use-chat";
+import { useSocket } from "../providers/socket";
+import { API_PATH } from "../utils/constants";
 import ChatHistory from "./chat-history";
 import PromptInput from "./prompt-input";
-import { streamChat } from "../hooks/use-chat";
-import { API_PATH } from "../utils/constants";
-import { format } from "date-fns";
-import { useSocket } from "../providers/socket";
-import axios from "axios";
-import debounce from "lodash/debounce";
 
 export default function ChatContainer({
   sessionId,
@@ -119,6 +119,8 @@ export default function ChatContainer({
       }
 
       if (loadingResponse) setFollowUps([]);
+
+      console.log("chat-container.jsx - knownHistory: ", knownHistory);
 
       const _chatHistory = await streamChat({
         chatbot,

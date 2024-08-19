@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Warning } from "@phosphor-icons/react";
 import renderMarkdown from "@/utils/markdown";
+import { Warning } from "@phosphor-icons/react";
 import createDOMPurify from "dompurify";
+import { AnimatePresence } from "framer-motion";
+import React, { useCallback, useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { API_PATH, colors } from "../utils/constants";
 import MessageDateTooltip from "./message-date-tooltip";
-import { AnimatePresence } from "framer-motion";
-import { useInView } from "react-intersection-observer";
 
 const DOMPurify = createDOMPurify(window);
 
@@ -21,6 +21,7 @@ const HistoricalMessage = React.memo(
     seen,
     setPending,
     setChatHistory,
+    close,
   }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const [ref, inView] = useInView({
@@ -29,7 +30,7 @@ const HistoricalMessage = React.memo(
     });
 
     const markAsSeen = useCallback(async () => {
-      if (!seen && msgId) {
+      if (!seen && msgId && close) {
         try {
           await fetch(`${API_PATH}/api/seen/${msgId}`, { method: "POST" });
           return true;
@@ -39,7 +40,7 @@ const HistoricalMessage = React.memo(
         }
       }
       return false;
-    }, [msgId, seen]);
+    }, [msgId, seen, close]);
 
     useEffect(() => {
       if (inView && !seen) {

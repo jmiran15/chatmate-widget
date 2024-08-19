@@ -1,10 +1,10 @@
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import axios from "axios";
-import { useEffect, useState, useCallback } from "react";
+import { format } from "date-fns";
+import { useCallback, useEffect, useState } from "react";
+import { v4 } from "uuid";
 import { API_PATH } from "../utils/constants";
 import { ChatResult, Chatbot, Message } from "../utils/types";
-import { v4 } from "uuid";
-import { format } from "date-fns";
 
 export default function useChat({
   chatbot,
@@ -28,7 +28,6 @@ export default function useChat({
     })
       .then((res) => {
         const { chat, messages, unseenMessagesCount } = res.data;
-        console.log("unsenMessagesCount", unseenMessagesCount);
 
         const formattedMessages = messages.map((msg: Message) => ({
           ...msg,
@@ -132,6 +131,7 @@ export async function streamChat({
       chatbot,
       messages: remHistory.map((msg) => {
         return {
+          id: msg.id,
           role: msg.role === "user" ? "user" : "assistant",
           content: msg.content,
         };
@@ -291,6 +291,7 @@ function handleChat({
         const updatedHistory = {
           ...existingHistory,
           content: (existingHistory.content ?? "") + (textResponse ?? ""),
+          close,
         };
         _chatHistory[chatIdx] = updatedHistory;
       } else {
@@ -299,6 +300,7 @@ function handleChat({
           content: textResponse,
           role: "assistant",
           createdAt: formattedDate,
+          close,
         });
       }
       setChatHistory([..._chatHistory]);

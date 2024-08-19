@@ -1,10 +1,10 @@
+import { CircleNotch } from "@phosphor-icons/react";
+import { format, isSameDay, isToday, isYesterday, parseISO } from "date-fns";
+import debounce from "lodash.debounce";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { useSocket } from "../providers/socket";
 import HistoricalMessage from "./historical-message";
 import PromptReply from "./prompt-reply";
-import { Fragment, useEffect, useRef, useState } from "react";
-import { CircleNotch } from "@phosphor-icons/react";
-import debounce from "lodash.debounce";
-import { format, isToday, isYesterday, isSameDay, parseISO } from "date-fns";
-import { useSocket } from "../providers/socket";
 
 // Helper function to safely parse dates
 const safeParseDate = (dateString) => {
@@ -142,6 +142,7 @@ export default function ChatHistory({
             seen={props.seen}
             setPending={setPending}
             setChatHistory={setChatHistory}
+            close={props.close || true}
           />
         );
 
