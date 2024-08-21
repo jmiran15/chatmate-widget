@@ -1,5 +1,5 @@
 import Head from "@/components/Head";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import io from "socket.io-client";
 import ChatWindow from "./components/chat-window";
@@ -11,6 +11,7 @@ import useChatbot from "./hooks/use-chatbot";
 import { usePingInstallation } from "./hooks/use-ping-installation";
 import useSessionId from "./hooks/use-session";
 import useOpenChat from "./hooks/useOpenChat";
+import { usePendingMessages } from "./hooks/usePendingMessages";
 import { useTimeTracking } from "./hooks/useTimeTracking";
 import { SocketProvider } from "./providers/socket";
 import { API_PATH } from "./utils/constants";
@@ -87,82 +88,23 @@ export default function App({ embedId }) {
     embedId,
     initialActiveTime: chat?.elapsedMs || 0,
   });
+  const {
+    showStarterPreviews,
+    handleDismiss,
+    pendingStarterMessages,
+    delayedShow,
+  } = usePendingMessages({
+    chatHistory,
+    chatbot,
+    embedId,
+  });
 
   usePingInstallation(chatbot);
 
-  const [showStarterPreviews, setShowStarterPreviews] = useState(false);
-  const [dismissedStarterPreviews, setDismissedStarterPreviews] =
-    useState(false);
-  const [pendingStarterMessages, setPendingStarterMessages] = useState([]);
-  const [delayedShow, setDelayedShow] = useState(false);
   const [isRestricted, setIsRestricted] = useState(false);
   const [socket, setSocket] = useState();
 
-  const findPendingStarterMessages = useCallback(
-    (messages, introMessages) => {
-      if (!introMessages || !messages.length) return [];
-      const starterSet = new Set(introMessages);
-      return messages.filter(
-        (msg, index) =>
-          msg.role !== "user" &&
-          starterSet.has(msg.content) &&
-          index < introMessages.length &&
-          !msg.seen
-      );
-    },
-    [chatHistory, chatbot]
-  );
-
-  useEffect(() => {
-    function getPreviewsDismissedState() {
-      if (!window || !embedId) return;
-
-      const STORAGE_IDENTIFIER = `chatmate_${embedId}_previews_dismissed`;
-      const dismissed = window.localStorage.getItem(STORAGE_IDENTIFIER);
-
-      if (!!dismissed) {
-        // console.log(`Previews were previously dismissed`);
-        setDismissedStarterPreviews(true);
-        return;
-      }
-
-      // console.log(`Previews were not previously dismissed`);
-      setDismissedStarterPreviews(false);
-    }
-    getPreviewsDismissedState();
-  }, [embedId]);
-
-  useEffect(() => {
-    if (!chatHistory || !chatbot) return;
-
-    if (dismissedStarterPreviews) {
-      // console.log(`Previews were previously dismissed, not showing`);
-      setShowStarterPreviews(false);
-      return;
-    } else {
-      // console.log(`Previews were not previously dismissed, showing`);
-      const pendingStarters = findPendingStarterMessages(
-        chatHistory,
-        chatbot.introMessages
-      );
-      if (!pendingStarters.length) {
-        // console.log(`No pending starters found`);
-        setShowStarterPreviews(false);
-        return;
-      }
-      setPendingStarterMessages(pendingStarters);
-      setShowStarterPreviews(true);
-    }
-  }, [chatHistory, chatbot, dismissedStarterPreviews]);
-
-  useEffect(() => {
-    const timer = setTimeout(
-      () => setDelayedShow(showStarterPreviews ? true : false),
-      showStarterPreviews ? 300 : 0
-    );
-    return () => clearTimeout(timer);
-  }, [showStarterPreviews]);
-
+  // restrict url stuff - getting correct url data on nav
   useEffect(() => {
     const parseUrl = () => {
       const location = getWindowLocation();
@@ -229,6 +171,7 @@ export default function App({ embedId }) {
     };
   }, [embedId]);
 
+  // restrict url stuff - checking if url is restricted and setting the state
   useEffect(() => {
     if (chatbot?.widgetRestrictedUrls && urlData.href) {
       const restricted = Array.from(chatbot.widgetRestrictedUrls).some(
@@ -238,17 +181,7 @@ export default function App({ embedId }) {
     }
   }, [urlData, chatbot?.widgetRestrictedUrls]);
 
-  const handleDismiss = () => {
-    if (!window || !embedId) return;
-
-    // console.log(`Dismissing previews`);
-    const STORAGE_IDENTIFIER = `chatmate_${embedId}_previews_dismissed`;
-    window.localStorage.setItem(STORAGE_IDENTIFIER, "true");
-    // console.log(`Marking previews as dismissed`);
-
-    setDismissedStarterPreviews(true);
-  };
-
+  // socket
   useEffect(() => {
     const socket = io(API_PATH);
     setSocket(socket);
@@ -259,6 +192,7 @@ export default function App({ embedId }) {
     };
   }, []);
 
+  // socket
   useEffect(() => {
     if (!socket) return;
     socket.on("confirmation", (data) => {
