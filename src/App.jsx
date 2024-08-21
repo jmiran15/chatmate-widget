@@ -85,6 +85,7 @@ export default function App({ embedId }) {
     isChatOpen,
     sessionId,
     embedId,
+    initialActiveTime: chat?.elapsedMs || 0,
   });
 
   usePingInstallation(chatbot);

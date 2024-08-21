@@ -12,15 +12,21 @@ export function useTimeTracking({
   isChatOpen,
   sessionId,
   embedId,
+  initialActiveTime = 0,
 }: {
   isChatOpen: boolean;
   sessionId: string;
   embedId: string;
+  initialActiveTime?: number;
 }) {
-  const [activeTime, setActiveTime] = useState<number>(0);
+  const [activeTime, setActiveTime] = useState<number>(initialActiveTime);
   const [isActive, setIsActive] = useState<boolean>(false);
   const startTimeRef = useRef<number | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setActiveTime(initialActiveTime);
+  }, [initialActiveTime]);
 
   const startTracking = useCallback(() => {
     setIsActive(true);
