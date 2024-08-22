@@ -1,8 +1,10 @@
-// vite.config.js
-import { defineConfig } from "vite";
-import { fileURLToPath, URL } from "url";
-import react from "@vitejs/plugin-react";
 import image from "@rollup/plugin-image";
+import terser from "@rollup/plugin-terser";
+import react from "@vitejs/plugin-react";
+import { visualizer } from "rollup-plugin-visualizer";
+import { fileURLToPath, URL } from "url";
+import { defineConfig } from "vite";
+import compression from "vite-plugin-compression";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
@@ -17,9 +19,15 @@ export default defineConfig({
         },
       ],
     }),
+    compression({ algorithm: "brotli", ext: ".br" }),
+    compression({ algorithm: "gzip", ext: ".gz" }),
+    visualizer({
+      filename: "dist/stats.html",
+      gzipSize: true,
+      brotliSize: true,
+    }),
   ],
   define: {
-    // In dev, we need to disable this, but in prod, we need to enable it
     "process.env.NODE_ENV": JSON.stringify("production"),
   },
   resolve: {
@@ -28,31 +36,15 @@ export default defineConfig({
         find: "@",
         replacement: fileURLToPath(new URL("./src", import.meta.url)),
       },
-      {
-        process: "process/browser",
-        stream: "stream-browserify",
-        zlib: "browserify-zlib",
-        util: "util",
-        find: /^~.+/,
-        replacement: (val) => {
-          return val.replace(/^~/, "");
-        },
-      },
     ],
   },
   build: {
     lib: {
       entry: "src/main.tsx",
       name: "Chatmate",
-      formats: ["umd"],
+      formats: ["es"],
       fileName: (_format) => `chatmate-chat-widget.js`,
     },
-    // rollupOptions: {
-    //   external: [
-    //     // Reduces transformation time by 50% and we don't even use this variant, so we can ignore.
-    //     /@phosphor-icons\/react\/dist\/ssr/,
-    //   ],
-    // },
     rollupOptions: {
       external: [/@phosphor-icons\/react\/dist\/ssr/],
       output: {
@@ -61,28 +53,63 @@ export default defineConfig({
           if (assetInfo.name === "timeTracker.js") {
             return "timeTracker.js";
           }
-          return "[name].[ext]";
+          return "[name].[hash].[ext]";
+        },
+        manualChunks: {
+          react: ["react", "react-dom"],
+          vendor: [
+            "date-fns",
+            "dompurify",
+            "framer-motion",
+            "he",
+            "highlight.js",
+            "lodash",
+            "markdown-it",
+            "uuid",
+          ],
         },
       },
+      plugins: [
+        terser({
+          format: {
+            comments: false,
+          },
+          compress: {
+            drop_console: true,
+            drop_debugger: true,
+          },
+        }),
+      ],
     },
     commonjsOptions: {
       transformMixedEsModules: true,
     },
     cssCodeSplit: false,
-    assetsInlineLimit: 100000000,
-    minify: "esbuild",
+    assetsInlineLimit: 8192, // 8KB
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    sourcemap: false,
     outDir: "dist",
     emptyOutDir: true,
-    inlineDynamicImports: true,
-    assetsDir: "",
-    sourcemap: "inline",
+    chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
-    esbuildOptions: {
-      define: {
-        global: "globalThis",
-      },
-      plugins: [],
-    },
+    include: [
+      "react",
+      "react-dom",
+      "date-fns",
+      "dompurify",
+      "framer-motion",
+      "he",
+      "highlight.js",
+      "lodash",
+      "markdown-it",
+      "uuid",
+    ],
   },
 });
