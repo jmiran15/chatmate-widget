@@ -28,6 +28,7 @@ export default function ChatContainer({
     setFollowUps,
   } = useSessionContext();
   const { isAgent } = useIsAgent({ sessionId });
+  console.log("isAgent", isAgent);
   // const isAgent = false;
 
   const showInitalStarterQuestions = useMemo(() => {
@@ -42,10 +43,10 @@ export default function ChatContainer({
 
   const debouncedHandleUserActivity = useCallback(
     debounce(handleUserActivity, 300),
-    []
+    [],
   );
   const handleMessageChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setMessage(event.target.value);
     debouncedHandleUserActivity();

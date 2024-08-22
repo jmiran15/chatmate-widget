@@ -16,13 +16,13 @@ class MyWidgetElement extends HTMLElement {
     root.render(
       <React.StrictMode>
         <App embedId={embedId} />
-      </React.StrictMode>
+      </React.StrictMode>,
     );
   }
 
   getScriptSettings() {
     const currentScript = document.querySelector(
-      "script[data-chatmate-widget-script]"
+      "script[data-chatmate-widget-script]",
     ) as HTMLScriptElement;
     return Object.assign({}, currentScript?.dataset || {});
   }

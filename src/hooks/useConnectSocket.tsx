@@ -3,18 +3,16 @@ import { io, type Socket } from "socket.io-client";
 import { API_PATH } from "../utils/constants";
 
 export function useConnectSocket() {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    if (!socket) {
-      const newSocket = io(API_PATH);
-      setSocket(newSocket);
+    const socket = io(API_PATH);
+    setSocket(socket);
 
-      return () => {
-        newSocket.close();
-      };
-    }
-  }, [socket]);
+    return () => {
+      socket.close();
+    };
+  }, []);
 
   return socket;
 }

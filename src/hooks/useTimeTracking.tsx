@@ -75,7 +75,7 @@ export function useTimeTracking({
         console.error("Error sending active time data:", error);
         // Store failed attempt locally
         const failedAttempts = JSON.parse(
-          localStorage.getItem(`chatmate_${embedId}_failed_time_sync`) || "[]"
+          localStorage.getItem(`chatmate_${embedId}_failed_time_sync`) || "[]",
         );
         failedAttempts.push({
           activeTime: Math.round(activeTime),
@@ -83,7 +83,7 @@ export function useTimeTracking({
         });
         localStorage.setItem(
           `chatmate_${embedId}_failed_time_sync`,
-          JSON.stringify(failedAttempts)
+          JSON.stringify(failedAttempts),
         );
       }
     }
@@ -93,7 +93,7 @@ export function useTimeTracking({
     if (isChatOpen) {
       const syncFailedAttempts = async () => {
         const failedAttempts = JSON.parse(
-          localStorage.getItem(`chatmate_${embedId}_failed_time_sync`) || "[]"
+          localStorage.getItem(`chatmate_${embedId}_failed_time_sync`) || "[]",
         );
 
         if (failedAttempts.length > 0) {
@@ -120,7 +120,7 @@ export function useTimeTracking({
           }
           localStorage.setItem(
             `chatmate_${embedId}_failed_time_sync`,
-            JSON.stringify(failedAttempts)
+            JSON.stringify(failedAttempts),
           );
         }
       };
@@ -180,7 +180,7 @@ export function useTimeTracking({
   const sendBeacon = (data: ActiveTimePayload) => {
     navigator.sendBeacon(
       `${API_PATH}/api/track-active-time`,
-      JSON.stringify(data)
+      JSON.stringify(data),
     );
   };
 

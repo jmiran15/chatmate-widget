@@ -31,7 +31,7 @@ export function usePingInstallation(chatbot: Chatbot | null) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(installationData),
-          }
+          },
         );
 
         if (!response.ok) {

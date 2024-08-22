@@ -27,7 +27,7 @@ function isUrlMatch({
 
     const normalizedRestrictedPath = restrictedUrlObj.pathname.replace(
       /\/$/,
-      ""
+      "",
     );
     const normalizedCurrentPath = currentUrl.pathname.replace(/\/$/, "");
 
@@ -91,7 +91,7 @@ export function useIsRestricted({ chatbot }: { chatbot: Chatbot | null }) {
     if ("navigation" in window && window.navigation) {
       (window.navigation as any).addEventListener(
         "navigate",
-        handleUrlNavigation
+        handleUrlNavigation,
       );
     } else {
       // Fallback for browsers that don't support Navigation API
@@ -129,7 +129,7 @@ export function useIsRestricted({ chatbot }: { chatbot: Chatbot | null }) {
       if ("navigation" in window && window.navigation) {
         (window.navigation as any).removeEventListener(
           "navigate",
-          handleUrlNavigation
+          handleUrlNavigation,
         );
       } else {
         window.removeEventListener("locationchange", parseUrl);
@@ -140,9 +140,9 @@ export function useIsRestricted({ chatbot }: { chatbot: Chatbot | null }) {
   useEffect(() => {
     if (chatbot?.widgetRestrictedUrls && urlData?.href) {
       const restricted = Array.from(
-        chatbot.widgetRestrictedUrls as string[]
+        chatbot.widgetRestrictedUrls as string[],
       ).some((restrictedUrl) =>
-        isUrlMatch({ restrictedUrl, currentUrl: urlData })
+        isUrlMatch({ restrictedUrl, currentUrl: urlData }),
       );
       setIsRestricted(restricted);
     }

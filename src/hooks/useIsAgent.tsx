@@ -30,7 +30,5 @@ export function useIsAgent({ sessionId }: { sessionId: string }) {
     };
   }, [socket, sessionId]);
 
-  console.log("isAgent from useIsAgent: ", isAgent);
-
   return { isAgent, setIsAgent };
 }

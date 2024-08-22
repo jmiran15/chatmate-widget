@@ -5,7 +5,7 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Chatbot } from "src/utils/types";
 import { colors } from "../utils/constants";
 
@@ -37,12 +37,21 @@ const OpenButton = React.memo(
 
     const isLeftAligned = chatbot.widgetPosition === "BOTTOM_LEFT";
 
-    const ChatIcon =
-      CHAT_ICONS[(chatbot?.openIcon || "plus") as keyof typeof CHAT_ICONS] ||
-      CHAT_ICONS.plus;
-    const buttonClasses = `flex items-center justify-center p-0 rounded-full bg-${
-      colors[chatbot?.themeColor as keyof typeof colors]
-    } text-white text-2xl border-none shadow-lg focus:outline-none cursor-pointer box-content m-0`;
+    const ChatIcon = useMemo(
+      () =>
+        CHAT_ICONS[(chatbot?.openIcon || "plus") as keyof typeof CHAT_ICONS] ||
+        CHAT_ICONS.plus,
+      [chatbot?.openIcon],
+    );
+
+    const buttonClasses = useMemo(
+      () =>
+        `flex items-center justify-center p-0 rounded-full bg-${
+          colors[chatbot?.themeColor as keyof typeof colors]
+        } text-white text-2xl border-none shadow-lg focus:outline-none cursor-pointer box-content m-0`,
+      [chatbot?.themeColor],
+    );
+
     const iconClasses = "text-white w-[24px] h-[24px]";
 
     return (
@@ -123,7 +132,7 @@ const OpenButton = React.memo(
         </motion.div>
       </motion.div>
     );
-  }
+  },
 );
 
 export default OpenButton;

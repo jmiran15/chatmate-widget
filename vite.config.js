@@ -6,20 +6,11 @@ import { visualizer } from "rollup-plugin-visualizer";
 import { fileURLToPath, URL } from "url";
 import { defineConfig } from "vite";
 import compression from "vite-plugin-compression";
-import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
   plugins: [
     react(),
     image(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: "public/timeTracker.js",
-          dest: "",
-        },
-      ],
-    }),
     compression({ algorithm: "brotli", ext: ".br" }),
     compression({ algorithm: "gzip", ext: ".gz" }),
     visualizer({
@@ -80,7 +71,7 @@ export default defineConfig({
             comments: false,
           },
           compress: {
-            drop_console: true,
+            drop_console: false,
             drop_debugger: true,
           },
         }),

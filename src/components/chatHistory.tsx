@@ -1,7 +1,14 @@
 import { ArrowDown, CircleNotch } from "@phosphor-icons/react";
 import { format, isSameDay, isToday, isYesterday, parseISO } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
 import debounce from "lodash/debounce";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { RenderableMessage } from "../hooks/useSession";
 import { useSessionContext } from "../providers/session";
 import { useSocket } from "../providers/socket";
@@ -28,15 +35,11 @@ const safeParseDate = (dateString: string) => {
   }
 };
 
-export default function ChatHistory({
-  followUps,
-  handleSubmit,
-  setMessage,
-}: {
+const ChatHistory: React.FC<{
   followUps: string[];
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   setMessage: (message: string) => void;
-}) {
+}> = ({ followUps, handleSubmit, setMessage }) => {
   const { sessionId, messages, setMessages } = useSessionContext();
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -45,18 +48,14 @@ export default function ChatHistory({
   const lastFollowUpRef = useRef<HTMLButtonElement>(null);
 
   const scrollToLastFollowUp = useCallback(() => {
-    if (lastFollowUpRef.current) {
-      lastFollowUpRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    lastFollowUpRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   const scrollToBottom = useCallback(() => {
-    if (chatHistoryRef.current) {
-      chatHistoryRef.current.scrollTo({
-        top: chatHistoryRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
+    chatHistoryRef.current?.scrollTo({
+      top: chatHistoryRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, []);
 
   const handleScroll = useCallback(() => {
@@ -83,11 +82,7 @@ export default function ChatHistory({
 
   useEffect(() => {
     if (isAtBottom) {
-      if (followUps.length > 0) {
-        scrollToLastFollowUp();
-      } else {
-        scrollToBottom();
-      }
+      followUps.length > 0 ? scrollToLastFollowUp() : scrollToBottom();
     } else {
       setShowScrollButton(true);
     }
@@ -117,9 +112,17 @@ export default function ChatHistory({
 
       const messageComponent =
         isLastBotReply && props.loading ? (
-          <PromptReply ref={isLastMessage ? replyRef : null} message={props} />
+          <PromptReply
+            ref={isLastMessage ? replyRef : null}
+            message={props}
+            chatHistoryRef={chatHistoryRef}
+          />
         ) : (
-          <HistoricalMessage key={props.id || index} message={props} />
+          <HistoricalMessage
+            key={props.id || index}
+            message={props}
+            chatHistoryRef={chatHistoryRef}
+          />
         );
 
       return (
@@ -138,11 +141,12 @@ export default function ChatHistory({
 
     const handleThread = (data: MessagesEvent) => {
       if (sessionId === data.sessionId) {
+        console.log("Received messages", data.messages);
         setMessages(
           data.messages.map((message: Message) => ({
             ...message,
             streaming: false,
-          }))
+          })),
         );
       }
     };
@@ -161,10 +165,10 @@ export default function ChatHistory({
 
   if (messages.length === 0) {
     return (
-      <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
+      <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
         <div className="flex h-full flex-col items-center justify-center">
           <p className="text-slate-400 text-sm font-base py-4 text-center">
-            {"Send a chat to get started!"}
+            Send a chat to get started!
           </p>
         </div>
       </div>
@@ -178,40 +182,62 @@ export default function ChatHistory({
         id="chat-history"
         ref={chatHistoryRef}
       >
-        {renderMessages()}
-        {followUps.length > 0 && (
-          <div className="flex flex-col items-end space-y-2 mb-4">
-            {followUps.map((followUp, i) => (
-              <form
-                key={i}
-                onSubmit={handleSubmit}
-                className="border border-input bg-white hover:bg-[#f2f2f2] rounded-[10px] relative px-3 py-2 w-auto max-w-[75%] h-fit"
-              >
-                <button
-                  ref={i === followUps.length - 1 ? lastFollowUpRef : null}
-                  type="submit"
-                  className="text-left whitespace-normal break-words flex flex-col gap-y-1 text-black text-sm select-text"
-                  onClick={() => setMessage(followUp)}
+        <AnimatePresence>
+          {renderMessages()}
+          {followUps.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="flex flex-col items-end space-y-2 mb-4"
+            >
+              {followUps.map((followUp, i) => (
+                <motion.form
+                  key={i}
+                  onSubmit={handleSubmit}
+                  className="border border-input bg-white hover:bg-[#f2f2f2] rounded-[10px] relative px-3 py-2 w-auto max-w-[75%] h-fit"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
                 >
-                  {followUp}
-                </button>
-              </form>
-            ))}
-          </div>
-        )}
+                  <button
+                    ref={i === followUps.length - 1 ? lastFollowUpRef : null}
+                    type="submit"
+                    className="text-left whitespace-normal break-words flex flex-col gap-y-1 text-black text-sm select-text"
+                    onClick={() => setMessage(followUp)}
+                  >
+                    {followUp}
+                  </button>
+                </motion.form>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-      {showScrollButton && (
-        <button
-          className="absolute bottom-4 right-4 bg-primary text-white rounded-full p-2 shadow-md hover:bg-primary-dark transition-colors duration-200"
-          onClick={scrollToBottom}
-          aria-label="Scroll to bottom"
-        >
-          <ArrowDown size={24} />
-        </button>
-      )}
+      <AnimatePresence>
+        {showScrollButton && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            whileHover={{ scale: 1.1 }}
+            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-gray-600 rounded-full p-2 shadow-lg hover:bg-gray-100 transition-all duration-200"
+            onClick={scrollToBottom}
+            aria-label="Scroll to bottom"
+            style={{
+              boxShadow:
+                "0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)",
+            }}
+          >
+            <ArrowDown size={20} />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
-}
+};
+
+export default React.memo(ChatHistory);
 
 export function ChatHistoryLoading() {
   return (

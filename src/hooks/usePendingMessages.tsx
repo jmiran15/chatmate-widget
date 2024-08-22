@@ -34,10 +34,10 @@ export function usePendingMessages({
           message.content &&
           starterSet.has(message.content) &&
           index < introMessages.length &&
-          !message.seen
+          !message.seen,
       );
     },
-    [chatHistory, chatbot]
+    [chatHistory, chatbot],
   );
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export function usePendingMessages({
   useEffect(() => {
     const timer = setTimeout(
       () => setDelayedShow(showStarterPreviews ? true : false),
-      showStarterPreviews ? 300 : 0
+      showStarterPreviews ? 300 : 0,
     );
     return () => clearTimeout(timer);
   }, [showStarterPreviews]);
