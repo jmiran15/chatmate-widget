@@ -1,8 +1,7 @@
-import { motion } from "framer-motion";
 import { format } from "date-fns";
+import { motion } from "framer-motion";
 
 const MessageDateTooltip = ({ date }) => {
-  console.log("date", date);
 
   const formattedDate = format(new Date(date), "MMM d, yyyy 'at' h:mm a");
 

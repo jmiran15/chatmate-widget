@@ -25,7 +25,8 @@ const HistoricalMessage = React.memo(
     });
 
     const markAsSeen = useCallback(async () => {
-      if (!seen && id && !streaming) {
+      if (!seen && id && !streaming && !error && role !== "user") {
+        console.log("Marking as seen", { id, seen, streaming });
         try {
           await fetch(`${API_PATH}/api/seen/${id}`, { method: "POST" });
           return true;

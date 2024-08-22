@@ -39,7 +39,6 @@ export function usePingInstallation(chatbot: Chatbot | null) {
         }
 
         const { chatbot: updatedChatbot } = await response.json();
-        console.log("Installation status updated:", updatedChatbot);
       } catch (error) {
         console.error("Error updating installation status:", error);
       }

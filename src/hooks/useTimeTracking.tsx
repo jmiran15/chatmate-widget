@@ -159,7 +159,6 @@ export function useTimeTracking({
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
       window.removeEventListener("blur", handleBlur);
-      console.log("[TimeTracking] Cleanup: Stopping tracking");
       stopTracking();
     };
   }, [isChatOpen, startTracking, stopTracking]);

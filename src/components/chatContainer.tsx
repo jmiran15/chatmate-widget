@@ -28,6 +28,7 @@ export default function ChatContainer({
     setFollowUps,
   } = useSessionContext();
   const { isAgent } = useIsAgent({ sessionId });
+  // const isAgent = false;
 
   const showInitalStarterQuestions = useMemo(() => {
     return messages.length <= (chatbot?.introMessages?.length || 0);
