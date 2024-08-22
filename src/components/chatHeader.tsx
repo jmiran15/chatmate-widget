@@ -65,16 +65,26 @@ const ChatWindowHeader = React.memo(
   },
 );
 
-const HeaderButton = React.memo(({ onClick, ariaLabel, children }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-label={ariaLabel}
-    className="w-12 h-12 bg-transparent border-none rounded-lg flex items-center justify-center text-white settings-button chat-header-btn transition-colors duration-200 hover:bg-white/10"
-  >
-    {children}
-  </button>
-));
+const HeaderButton = React.memo(
+  ({
+    onClick,
+    ariaLabel,
+    children,
+  }: {
+    onClick: () => void;
+    ariaLabel: string;
+    children: React.ReactNode;
+  }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className="w-12 h-12 bg-transparent border-none rounded-lg flex items-center justify-center text-white settings-button chat-header-btn transition-colors duration-200 hover:bg-white/10"
+    >
+      {children}
+    </button>
+  ),
+);
 
 const OptionsMenu = React.memo(
   ({ showing, resetChat }: { showing: boolean; resetChat: () => void }) => {

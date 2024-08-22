@@ -20,14 +20,7 @@ const HistoricalMessage: React.FC<{
   const { setPendingCount, setMessages } = useSessionContext();
   const [showTooltip, setShowTooltip] = useState(false);
   const messageRef = useRef<HTMLDivElement>(null);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    chatContainerRef.current = document.getElementById(
-      "chat-history",
-    ) as HTMLDivElement;
-  }, []);
 
   const markAsSeen = useCallback(async () => {
     if (!seen && id && !streaming && !error && role !== "user") {
@@ -97,7 +90,10 @@ const HistoricalMessage: React.FC<{
     >
       <AnimatePresence>
         {showTooltip && (
-          <MessageDateTooltip date={createdAt} parentRef={chatHistoryRef} />
+          <MessageDateTooltip
+            date={createdAt ?? new Date()}
+            parentRef={chatHistoryRef}
+          />
         )}
       </AnimatePresence>
       {error ? (
