@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { API_PATH } from "../utils/constants";
-import { Chatbot } from "src/utils/types";
+import { Chatbot } from "../utils/types";
 
 interface InstallationData {
   lastPingedAt: Date;

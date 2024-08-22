@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
-import { Chatbot, Message } from "src/utils/types";
+import { Chatbot, Message } from "../utils/types";
 
 const PendingMessages = ({
   starterMessages,

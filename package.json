@@ -31,6 +31,8 @@
   },
   "devDependencies": {
     "@rollup/plugin-image": "^3.0.3",
+    "@types/dompurify": "^3.0.5",
+    "@types/lodash": "^4.17.7",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@types/uuid": "^10.0.0",

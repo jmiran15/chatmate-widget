@@ -1,23 +1,15 @@
-import { useMobileScreen } from "@/utils/mobile";
-import ChatContainer from "./chat-container";
-import ChatWindowHeader from "./chat-header";
-import { ChatHistoryLoading } from "./chat-history";
+import { useChatbot } from "../providers/chatbot";
+import { useSessionContext } from "../providers/session";
+import { useMobileScreen } from "../utils/mobile";
+import ChatContainer from "./chatContainer";
+import ChatWindowHeader from "./chatHeader";
+import { ChatHistoryLoading } from "./chatHistory";
 
-export default function ChatWindow({
-  closeChat,
-  embedId,
-  sessionId,
-  chatbot,
-  chatbotId,
-  setPending,
-  setChatHistory,
-  chatHistory,
-  loading,
-  handleUserActivity,
-  resetSession,
-}) {
+export default function ChatWindow({ handleUserActivity }) {
+  const chatbot = useChatbot();
   const isMobile = useMobileScreen();
   const isLeftAligned = chatbot.widgetPosition === "BOTTOM_LEFT";
+  const { loading } = useSessionContext();
 
   if (loading) {
     return (
@@ -28,14 +20,7 @@ export default function ChatWindow({
           ...(isMobile ? {} : { [isLeftAligned ? "left" : "right"]: "20px" }),
         }}
       >
-        <ChatWindowHeader
-          sessionId={sessionId}
-          embedId={embedId}
-          closeChat={closeChat}
-          setChatHistory={setChatHistory}
-          chatbot={chatbot}
-          resetSession={resetSession}
-        />
+        <ChatWindowHeader />
         <ChatHistoryLoading />
       </div>
     );
@@ -56,24 +41,8 @@ export default function ChatWindow({
         ...(isMobile ? {} : { [isLeftAligned ? "left" : "right"]: "20px" }),
       }}
     >
-      <ChatWindowHeader
-        sessionId={sessionId}
-        embedId={embedId}
-        closeChat={closeChat}
-        setChatHistory={setChatHistory}
-        chatbot={chatbot}
-        resetSession={resetSession}
-      />
-      <ChatContainer
-        sessionId={sessionId}
-        embedId={embedId}
-        knownHistory={chatHistory}
-        chatbot={chatbot}
-        chatbotId={chatbotId}
-        setPending={setPending}
-        setChatHistory={setChatHistory}
-        handleUserActivity={handleUserActivity}
-      />
+      <ChatWindowHeader />
+      <ChatContainer handleUserActivity={handleUserActivity} />
     </div>
   );
 }

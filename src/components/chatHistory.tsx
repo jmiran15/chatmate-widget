@@ -1,13 +1,21 @@
 import { CircleNotch } from "@phosphor-icons/react";
 import { format, isSameDay, isToday, isYesterday, parseISO } from "date-fns";
-import debounce from "lodash.debounce";
+import debounce from "lodash/debounce";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { RenderableMessage } from "../hooks/useSession";
+import { useSessionContext } from "../providers/session";
 import { useSocket } from "../providers/socket";
-import HistoricalMessage from "./historical-message";
-import PromptReply from "./prompt-reply";
+import { Message } from "../utils/types";
+import HistoricalMessage from "./historicalMessage";
+import PromptReply from "./promptReply";
+
+type MessagesEvent = {
+  sessionId: string;
+  messages: Message[];
+};
 
 // Helper function to safely parse dates
-const safeParseDate = (dateString) => {
+const safeParseDate = (dateString: string) => {
   if (!dateString) return null;
 
   try {
@@ -20,26 +28,19 @@ const safeParseDate = (dateString) => {
   }
 };
 
-export default function ChatHistory({
-  history = [],
-  chatbot,
-  followUps,
-  submit,
-  setMessage,
-  setPending,
-  setChatHistory,
-  sessionId,
-}) {
+export default function ChatHistory() {
+  const { sessionId, messages, setMessages } = useSessionContext();
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const chatHistoryRef = useRef(null);
-  const lastFollowUpRef = useRef(null);
 
-  const scrollToLastFollowUp = () => {
-    if (lastFollowUpRef.current) {
-      lastFollowUpRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  const chatHistoryRef = useRef<HTMLDivElement>(null);
+  // const lastFollowUpRef = useRef(null);
+
+  // const scrollToLastFollowUp = () => {
+  //   if (lastFollowUpRef.current) {
+  //     lastFollowUpRef.current.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // };
 
   const scrollToBottom = () => {
     if (chatHistoryRef.current) {
@@ -50,13 +51,17 @@ export default function ChatHistory({
     }
   };
 
+  // useEffect(() => {
+  //   if (followUps.length > 0) {
+  //     scrollToLastFollowUp();
+  //   } else {
+  //     scrollToBottom();
+  //   }
+  // }, [history, followUps.length]);
+
   useEffect(() => {
-    if (followUps.length > 0) {
-      scrollToLastFollowUp();
-    } else {
-      scrollToBottom();
-    }
-  }, [history, followUps.length]);
+    scrollToBottom();
+  }, [messages]);
 
   const handleScroll = () => {
     if (!chatHistoryRef.current) return;
@@ -80,7 +85,7 @@ export default function ChatHistory({
     watchScrollEvent();
   }, []);
 
-  if (history.length === 0) {
+  if (messages.length === 0) {
     return (
       <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
         <div className="flex h-full flex-col items-center justify-center">
@@ -93,14 +98,14 @@ export default function ChatHistory({
   }
 
   const renderMessages = () => {
-    let lastMessageDate = null;
+    let lastMessageDate: Date | null = null;
 
-    return history.map((props, index) => {
-      const isLastMessage = index === history.length - 1;
+    return messages.map((props: RenderableMessage, index) => {
+      const isLastMessage = index === messages.length - 1;
       const isLastBotReply = isLastMessage && props.role === "assistant";
-      const currentMessageDate = safeParseDate(props.createdAt);
+      const currentMessageDate = safeParseDate(props.createdAt ?? "");
 
-      let dateSeparator = null;
+      let dateSeparator: React.ReactNode = null;
       if (
         currentMessageDate &&
         (!lastMessageDate || !isSameDay(lastMessageDate, currentMessageDate))
@@ -115,35 +120,10 @@ export default function ChatHistory({
       }
 
       const messageComponent =
-        isLastBotReply && props.animate ? (
-          <PromptReply
-            key={props.id || index}
-            ref={isLastMessage ? replyRef : null}
-            msgId={props.id}
-            reply={props.content}
-            pending={props.pending}
-            sources={props.sources}
-            error={props.error}
-            closed={props.closed}
-            createdAt={props.createdAt}
-          />
+        isLastBotReply && props.loading ? (
+          <PromptReply ref={isLastMessage ? replyRef : null} message={props} />
         ) : (
-          <HistoricalMessage
-            key={props.id || index}
-            msgId={props.id}
-            message={props.content}
-            role={props.role}
-            sources={props.sources}
-            chatId={props.chatId}
-            feedbackScore={props.feedbackScore}
-            error={props.error}
-            chatbot={chatbot}
-            createdAt={props.createdAt}
-            seen={props.seen}
-            setPending={setPending}
-            setChatHistory={setChatHistory}
-            close={props.close || true}
-          />
+          <HistoricalMessage key={props.id || index} message={props} />
         );
 
       return (
@@ -160,11 +140,15 @@ export default function ChatHistory({
   useEffect(() => {
     if (!socket) return;
 
-    const handleThread = (data) => {
-      console.log("received data: ", data);
+    const handleThread = (data: MessagesEvent) => {
       if (sessionId === data.sessionId) {
         console.log(`${sessionId} - messagesChanged: `, data.messages);
-        setChatHistory(data.messages);
+        setMessages(
+          data.messages.map((message: Message) => ({
+            ...message,
+            streaming: false,
+          }))
+        );
       }
     };
 
@@ -176,12 +160,11 @@ export default function ChatHistory({
   }, [socket, sessionId]);
 
   useEffect(() => {
-    // emit "messages" send entire history
     if (!socket) return;
 
-    console.log("emitting; ", { sessionId, messages: history });
-    socket.emit("messages", { sessionId, messages: history });
-  }, [socket, sessionId, history]);
+    console.log("emitting; ", { sessionId, messages });
+    socket.emit("messages", { sessionId, messages });
+  }, [socket, sessionId, messages]);
 
   return (
     <div
@@ -190,8 +173,9 @@ export default function ChatHistory({
       ref={chatHistoryRef}
     >
       {renderMessages()}
-      {/* followUps */}
-      {followUps.length > 0 ? (
+      {/* followUps - turn into it's own component*/}
+
+      {/* {followUps.length > 0 ? (
         followUps.map((followUp, i) => {
           const isLastFollowUp = i === followUps.length - 1;
 
@@ -216,7 +200,7 @@ export default function ChatHistory({
         })
       ) : (
         <></>
-      )}
+      )} */}
     </div>
   );
 }
@@ -233,7 +217,7 @@ export function ChatHistoryLoading() {
   );
 }
 
-const DateSeparator = ({ date }) => {
+const DateSeparator = ({ date }: { date: string }) => {
   const parsedDate = safeParseDate(date);
 
   if (!parsedDate) {

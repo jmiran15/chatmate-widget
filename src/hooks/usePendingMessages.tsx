@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { Chatbot, Message } from "src/utils/types";
+import { Chatbot, Message } from "../utils/types";
 
 export function usePendingMessages({
   chatHistory,
   chatbot,
   embedId,
 }: {
-  chatHistory: Message[];
-  chatbot: Chatbot;
+  chatHistory: Message[] | null;
+  chatbot: Chatbot | null;
   embedId: string;
 }) {
   const [pendingStarterMessages, setPendingStarterMessages] = useState<
