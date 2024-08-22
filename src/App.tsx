@@ -46,6 +46,8 @@ export default function App({ embedId }: { embedId: string }) {
   useWidgetConnection({ socket, sessionId });
   usePingInstallation(chatbot);
 
+  console.log("open: ", isChatOpen);
+
   if (!embedId || !chatbot || isRestricted) return null;
 
   return (

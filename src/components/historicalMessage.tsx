@@ -14,7 +14,7 @@ const DOMPurify = createDOMPurify(window);
 
 const HistoricalMessage = React.memo(
   ({ message }: { message: RenderableMessage }) => {
-    const { id, content, role, createdAt, seen, close, error } = message;
+    const { id, content, role, createdAt, seen, streaming, error } = message;
     const chatbot = useChatbot();
     const { setPendingCount, setMessages } = useSessionContext();
     const [showTooltip, setShowTooltip] = useState(() => false);
@@ -25,7 +25,7 @@ const HistoricalMessage = React.memo(
     });
 
     const markAsSeen = useCallback(async () => {
-      if (!seen && id && close) {
+      if (!seen && id && !streaming) {
         try {
           await fetch(`${API_PATH}/api/seen/${id}`, { method: "POST" });
           return true;
@@ -35,7 +35,7 @@ const HistoricalMessage = React.memo(
         }
       }
       return false;
-    }, [id, seen, close]);
+    }, [id, seen, streaming]);
 
     useEffect(() => {
       if (inView && !seen) {

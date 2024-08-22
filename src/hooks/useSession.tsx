@@ -95,13 +95,24 @@ export default function useSession({
       });
   }, [embedId, sessionId, fetchSessionMessages]);
 
-  console.log("messages", messages);
-
   const streamChat = async ({
     message,
   }: {
     message: string;
   }): Promise<void> => {
+    const currentDate = new Date();
+    const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+    const _messages = [
+      ...messages,
+      {
+        id: v4(),
+        content: message,
+        role: "user",
+        createdAt: formattedDate,
+        streaming: false,
+      },
+    ];
+
     const ctrl = new AbortController();
 
     await fetchEventSource(`${API_PATH}/api/chat/${embedId}/${sessionId}`, {
@@ -130,6 +141,7 @@ export default function useSession({
             .then((serverResponse) => {
               handleChat({
                 sseMessage: serverResponse,
+                _messages,
               });
             })
             .catch(() => {
@@ -141,6 +153,7 @@ export default function useSession({
                   streaming: false,
                   error: `An error occurred while streaming response. Code ${response.status}`,
                 },
+                _messages,
               });
             });
           ctrl.abort();
@@ -154,6 +167,7 @@ export default function useSession({
               streaming: false,
               error: `An error occurred while streaming response. Unknown Error.`,
             },
+            _messages,
           });
           ctrl.abort();
           throw new Error("Unknown Error");
@@ -164,6 +178,7 @@ export default function useSession({
           const sseMessage = JSON.parse(msg.data);
           handleChat({
             sseMessage,
+            _messages,
           });
         } catch {}
       },
@@ -176,6 +191,7 @@ export default function useSession({
             streaming: false,
             error: `An error occurred while streaming response. ${err.message}`,
           },
+          _messages,
         });
         ctrl.abort();
         throw new Error();
@@ -183,7 +199,13 @@ export default function useSession({
     });
   };
 
-  function handleChat({ sseMessage }: { sseMessage: SSEMessage }) {
+  function handleChat({
+    sseMessage,
+    _messages,
+  }: {
+    sseMessage: SSEMessage;
+    _messages: RenderableMessage[];
+  }) {
     const { id, textResponse, type, error, streaming } = sseMessage;
     const currentDate = new Date();
     const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
@@ -191,8 +213,8 @@ export default function useSession({
     switch (type) {
       case "abort": {
         setLoading(false);
-        setMessages((messages) => [
-          ...messages,
+        setMessages((prevMessages) => [
+          ...prevMessages,
           {
             id,
             content: "",
@@ -204,50 +226,33 @@ export default function useSession({
             loading: false,
           },
         ]);
-
         break;
       }
       case "textResponseChunk": {
-        // console.log("textResponseChunk", sseMessage, messages);
-        const chatIdx = messages.findIndex((chat) => chat.id === id);
+        const chatIdx = _messages.findIndex((chat) => chat.id === id);
 
         if (chatIdx !== -1) {
-          console.log(
-            "updating message textResponseChunk",
-            sseMessage,
-            messages
-          );
-          const existingMessage = { ...messages[chatIdx] };
+          const existingMessage = { ..._messages[chatIdx] };
           const updatedMessage = {
             ...existingMessage,
             content: (existingMessage.content ?? "") + (textResponse ?? ""),
             streaming,
           };
-          setMessages(
-            messages.map((msg, idx) => (idx === chatIdx ? updatedMessage : msg))
-          );
+          _messages[chatIdx] = updatedMessage;
         } else {
-          console.log(
-            "creating message textResponseChunk",
-            sseMessage,
-            messages
-          );
-
-          setMessages((messages) => [
-            ...messages,
-            {
-              id,
-              content: textResponse,
-              role: "assistant",
-              createdAt: formattedDate,
-              updatedAt: formattedDate,
-              streaming,
-              error: undefined,
-              loading: false,
-            },
-          ]);
+          _messages.push({
+            id,
+            content: textResponse ?? "",
+            role: "assistant",
+            createdAt: formattedDate,
+            updatedAt: formattedDate,
+            streaming,
+            error: undefined,
+            loading: false,
+          });
         }
 
+        setMessages([..._messages]);
         if (!streaming) {
           setLoading(false);
         }

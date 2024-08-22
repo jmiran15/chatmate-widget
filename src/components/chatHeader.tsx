@@ -8,7 +8,7 @@ import { colors } from "../utils/constants";
 import { useMobileScreen } from "../utils/mobile";
 
 export default function ChatWindowHeader() {
-  const { toggleOpenChat } = useOpenChat();
+  const { isChatOpen, toggleOpenChat } = useOpenChat();
   const [showingOptions, setShowOptions] = useState(false);
   const { resetSession } = useSessionContext();
   const chatbot = useChatbot();
@@ -22,9 +22,11 @@ export default function ChatWindowHeader() {
   };
 
   const closeChat = useCallback(() => {
+    console.log("closing chat");
     toggleOpenChat(false);
   }, [toggleOpenChat]);
 
+  console.log("isChatOpen: ", isChatOpen);
   return (
     <nav
       className={`flex flex-col p-[8px] chat-header-bottom-border bg-${colors[(chatbot?.themeColor ?? "zinc") as keyof typeof colors]}`}
