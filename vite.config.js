@@ -1,6 +1,7 @@
 import image from "@rollup/plugin-image";
 import terser from "@rollup/plugin-terser";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-swc";
+import esbuild from "rollup-plugin-esbuild";
 import { visualizer } from "rollup-plugin-visualizer";
 import { fileURLToPath, URL } from "url";
 import { defineConfig } from "vite";
@@ -25,6 +26,10 @@ export default defineConfig({
       filename: "dist/stats.html",
       gzipSize: true,
       brotliSize: true,
+    }),
+    esbuild({
+      minify: true,
+      target: "es2015",
     }),
   ],
   define: {
@@ -86,7 +91,8 @@ export default defineConfig({
     },
     cssCodeSplit: false,
     assetsInlineLimit: 8192, // 8KB
-    minify: "terser",
+    // minify: "terser",
+    minify: false, // Disable Vite's default minification
     terserOptions: {
       compress: {
         drop_console: true,
