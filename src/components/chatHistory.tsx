@@ -28,19 +28,27 @@ const safeParseDate = (dateString: string) => {
   }
 };
 
-export default function ChatHistory() {
+export default function ChatHistory({
+  followUps,
+  handleSubmit,
+  setMessage,
+}: {
+  followUps: string[];
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  setMessage: (message: string) => void;
+}) {
   const { sessionId, messages, setMessages } = useSessionContext();
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
 
   const chatHistoryRef = useRef<HTMLDivElement>(null);
-  // const lastFollowUpRef = useRef(null);
+  const lastFollowUpRef = useRef<HTMLButtonElement>(null);
 
-  // const scrollToLastFollowUp = () => {
-  //   if (lastFollowUpRef.current) {
-  //     lastFollowUpRef.current.scrollIntoView({ behavior: "smooth" });
-  //   }
-  // };
+  const scrollToLastFollowUp = () => {
+    if (lastFollowUpRef.current) {
+      lastFollowUpRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const scrollToBottom = () => {
     if (chatHistoryRef.current) {
@@ -51,17 +59,13 @@ export default function ChatHistory() {
     }
   };
 
-  // useEffect(() => {
-  //   if (followUps.length > 0) {
-  //     scrollToLastFollowUp();
-  //   } else {
-  //     scrollToBottom();
-  //   }
-  // }, [history, followUps.length]);
-
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (followUps.length > 0) {
+      scrollToLastFollowUp();
+    } else {
+      scrollToBottom();
+    }
+  }, [messages, followUps.length]);
 
   const handleScroll = () => {
     if (!chatHistoryRef.current) return;
@@ -113,7 +117,7 @@ export default function ChatHistory() {
         dateSeparator = (
           <DateSeparator
             key={`date-${props.createdAt}`}
-            date={props.createdAt}
+            date={props.createdAt ?? ""}
           />
         );
         lastMessageDate = currentMessageDate;
@@ -142,7 +146,6 @@ export default function ChatHistory() {
 
     const handleThread = (data: MessagesEvent) => {
       if (sessionId === data.sessionId) {
-        console.log(`${sessionId} - messagesChanged: `, data.messages);
         setMessages(
           data.messages.map((message: Message) => ({
             ...message,
@@ -161,8 +164,6 @@ export default function ChatHistory() {
 
   useEffect(() => {
     if (!socket) return;
-
-    console.log("emitting; ", { sessionId, messages });
     socket.emit("messages", { sessionId, messages });
   }, [socket, sessionId, messages]);
 
@@ -175,14 +176,14 @@ export default function ChatHistory() {
       {renderMessages()}
       {/* followUps - turn into it's own component*/}
 
-      {/* {followUps.length > 0 ? (
+      {followUps.length > 0 ? (
         followUps.map((followUp, i) => {
           const isLastFollowUp = i === followUps.length - 1;
 
           return (
             <form
               key={i}
-              onSubmit={submit}
+              onSubmit={handleSubmit}
               className="mb-[16px] border border-input bg-white hover:bg-[#f2f2f2] rounded-[10px] relative px-3 py-2 w-auto max-w-[75%] h-fit inline-block ml-auto"
             >
               <button
@@ -200,7 +201,7 @@ export default function ChatHistory() {
         })
       ) : (
         <></>
-      )} */}
+      )}
     </div>
   );
 }

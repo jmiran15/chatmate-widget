@@ -2,7 +2,6 @@ import React, { createContext, useContext } from "react";
 import { RenderableMessage } from "../hooks/useSession";
 
 interface SessionContextType {
-  isAgent: boolean;
   sessionId: string;
   loading: boolean;
   messages: RenderableMessage[];
@@ -11,6 +10,8 @@ interface SessionContextType {
   setPendingCount: React.Dispatch<React.SetStateAction<number>>;
   resetSession: () => Promise<boolean>;
   streamChat: (params: { message: string }) => Promise<void>;
+  followUps: string[];
+  setFollowUps: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);

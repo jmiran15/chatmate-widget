@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from "react";
 import { v4 } from "uuid";
 import { API_PATH } from "../utils/constants";
 import { Message, SSEMessage } from "../utils/types";
-import { useIsAgent } from "./useIsAgent";
 
 export type RenderableMessage = Message & {
   streaming: boolean;
@@ -28,8 +27,9 @@ export default function useSession({
   const [loading, setLoading] = useState<boolean>(true);
   const [messages, setMessages] = useState<RenderableMessage[]>([]);
   const [pendingCount, setPendingCount] = useState<number>(0);
-  const { isAgent } = useIsAgent({ sessionId });
   const [chat, setChat] = useState<any | null>(null);
+  // at the end of successful streamChat SSE - i.e got SSE message with streaming === false, initiate follow up questions, set followUps
+  const [followUps, setFollowUps] = useState<string[]>([]); // reset at the beginning of streamChat?
 
   const fetchSessionMessages = useCallback(async () => {
     if (!sessionId || !embedId) return;
@@ -159,7 +159,7 @@ export default function useSession({
           ctrl.abort();
           throw new Error();
         } else {
-          handleChat({
+          await handleChat({
             sseMessage: {
               id: v4(),
               type: "abort",
@@ -176,7 +176,7 @@ export default function useSession({
       async onmessage(msg) {
         try {
           const sseMessage = JSON.parse(msg.data);
-          handleChat({
+          await handleChat({
             sseMessage,
             _messages,
           });
@@ -199,7 +199,7 @@ export default function useSession({
     });
   };
 
-  function handleChat({
+  async function handleChat({
     sseMessage,
     _messages,
   }: {
@@ -254,6 +254,8 @@ export default function useSession({
 
         setMessages([..._messages]);
         if (!streaming) {
+          await generateFollowUps({ messages: _messages });
+
           setLoading(false);
         }
         break;
@@ -263,8 +265,26 @@ export default function useSession({
     }
   }
 
+  async function generateFollowUps({
+    messages,
+  }: {
+    messages: RenderableMessage[];
+  }) {
+    const followUpRes = await fetch(`${API_PATH}/api/generatefollowups`, {
+      method: "POST",
+      body: JSON.stringify({
+        history: messages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+      }),
+    });
+
+    const { followUps } = await followUpRes.json();
+    return setFollowUps(followUps);
+  }
+
   return {
-    isAgent,
     sessionId,
     loading,
     messages,
@@ -274,5 +294,7 @@ export default function useSession({
     resetSession,
     streamChat,
     chat,
+    followUps,
+    setFollowUps,
   };
 }

@@ -1,13 +1,17 @@
 import { BoltIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import useOpenChat from "../hooks/useOpenChat";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
 import { colors } from "../utils/constants";
 import { useMobileScreen } from "../utils/mobile";
 
-export default function ChatWindowHeader() {
+export default function ChatWindowHeader({
+  closeChat,
+}: {
+  closeChat: () => void;
+}) {
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const [showingOptions, setShowOptions] = useState(false);
   const { resetSession } = useSessionContext();
@@ -21,12 +25,6 @@ export default function ChatWindowHeader() {
     }
   };
 
-  const closeChat = useCallback(() => {
-    console.log("closing chat");
-    toggleOpenChat(false);
-  }, [toggleOpenChat]);
-
-  console.log("isChatOpen: ", isChatOpen);
   return (
     <nav
       className={`flex flex-col p-[8px] chat-header-bottom-border bg-${colors[(chatbot?.themeColor ?? "zinc") as keyof typeof colors]}`}

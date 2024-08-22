@@ -5,10 +5,16 @@ import ChatContainer from "./chatContainer";
 import ChatWindowHeader from "./chatHeader";
 import { ChatHistoryLoading } from "./chatHistory";
 
-export default function ChatWindow({ handleUserActivity }) {
+export default function ChatWindow({
+  handleUserActivity,
+  closeChat,
+}: {
+  handleUserActivity: () => void;
+  closeChat: () => void;
+}) {
   const chatbot = useChatbot();
   const isMobile = useMobileScreen();
-  const isLeftAligned = chatbot.widgetPosition === "BOTTOM_LEFT";
+  const isLeftAligned = chatbot?.widgetPosition === "BOTTOM_LEFT";
   const { loading } = useSessionContext();
 
   if (loading) {
@@ -16,11 +22,11 @@ export default function ChatWindow({ handleUserActivity }) {
       <div
         className="flex flex-col flex-1 fixed bottom-[84px] z-[9999] min-h-[80px] w-[400px] max-h-[704px] opacity-100 overflow-hidden chat-window-custom"
         style={{
-          borderRadius: isMobile ? "0rem" : chatbot.containerRadius + "rem",
+          borderRadius: isMobile ? "0rem" : chatbot?.containerRadius + "rem",
           ...(isMobile ? {} : { [isLeftAligned ? "left" : "right"]: "20px" }),
         }}
       >
-        <ChatWindowHeader />
+        <ChatWindowHeader closeChat={closeChat} />
         <ChatHistoryLoading />
       </div>
     );
@@ -37,11 +43,11 @@ export default function ChatWindow({ handleUserActivity }) {
     <div
       className={isMobile ? mobileStyle : desktopStyle}
       style={{
-        borderRadius: isMobile ? "0rem" : chatbot.containerRadius + "rem",
+        borderRadius: isMobile ? "0rem" : chatbot?.containerRadius + "rem",
         ...(isMobile ? {} : { [isLeftAligned ? "left" : "right"]: "20px" }),
       }}
     >
-      <ChatWindowHeader />
+      <ChatWindowHeader closeChat={closeChat} />
       <ChatContainer handleUserActivity={handleUserActivity} />
     </div>
   );

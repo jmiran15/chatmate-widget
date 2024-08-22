@@ -2,7 +2,7 @@ import ChatWindow from "./components/chatWindow";
 import { ElapsedTimeDisplay } from "./components/ElapsedTimeDisplay";
 import Head from "./components/Head";
 import OpenButton from "./components/open-button";
-import PendingMessages from "./components/pending-messages";
+import PendingMessages from "./components/pendingMessages";
 import useChatbot from "./hooks/useChatbot";
 import { useConnectSocket } from "./hooks/useConnectSocket";
 import { useIsRestricted } from "./hooks/useIsRestricted";
@@ -19,6 +19,7 @@ import { SocketProvider } from "./providers/socket";
 import { useMobileScreen } from "./utils/mobile";
 
 export default function App({ embedId }: { embedId: string }) {
+  const socket = useConnectSocket();
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const isMobile = useMobileScreen();
   const sessionId = useSessionId(embedId);
@@ -42,11 +43,8 @@ export default function App({ embedId }: { embedId: string }) {
     embedId,
   });
   const isRestricted = useIsRestricted({ chatbot });
-  const socket = useConnectSocket();
   useWidgetConnection({ socket, sessionId });
   usePingInstallation(chatbot);
-
-  console.log("open: ", isChatOpen);
 
   if (!embedId || !chatbot || isRestricted) return null;
 
@@ -60,7 +58,10 @@ export default function App({ embedId }: { embedId: string }) {
             <ElapsedTimeDisplay activeTime={activeTime} />
 
             {isChatOpen && (
-              <ChatWindow handleUserActivity={handleUserActivity} />
+              <ChatWindow
+                handleUserActivity={handleUserActivity}
+                closeChat={() => toggleOpenChat(false)}
+              />
             )}
             {(!isMobile || !isChatOpen) && (
               <>

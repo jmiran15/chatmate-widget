@@ -11,7 +11,10 @@ export function useIsAgent({ sessionId }: { sessionId: string }) {
   const [isAgent, setIsAgent] = useState(false);
   const socket = useSocket();
 
+  console.log("socket from hoo: ", socket);
+
   useEffect(() => {
+    console.log("in the usee");
     if (!socket) return;
 
     const handleIsAgent = (data: IsAgentEvent) => {
@@ -22,6 +25,7 @@ export function useIsAgent({ sessionId }: { sessionId: string }) {
 
     socket.on("isAgent", handleIsAgent);
 
+    console.log("emiting ");
     socket.emit("pollingAgent", { sessionId });
 
     return () => {
@@ -29,6 +33,8 @@ export function useIsAgent({ sessionId }: { sessionId: string }) {
       setIsAgent(false);
     };
   }, [socket, sessionId]);
+
+  console.log("isAgent from useIsAgent: ", isAgent);
 
   return { isAgent, setIsAgent };
 }
