@@ -112,6 +112,7 @@ export default function useSession({
         streaming: false,
       },
     ];
+    // setFollowUps([]); // reset followUps
 
     const ctrl = new AbortController();
 

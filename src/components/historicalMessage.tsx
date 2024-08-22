@@ -8,7 +8,7 @@ import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
 import { API_PATH, colors } from "../utils/constants";
 import renderMarkdown from "../utils/markdown";
-import MessageDateTooltip from "./message-date-tooltip";
+import MessageDateTooltip from "./messageDateTooltip";
 
 const DOMPurify = createDOMPurify(window);
 

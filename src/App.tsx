@@ -1,7 +1,7 @@
 import ChatWindow from "./components/chatWindow";
 import { ElapsedTimeDisplay } from "./components/ElapsedTimeDisplay";
 import Head from "./components/Head";
-import OpenButton from "./components/open-button";
+import OpenButton from "./components/openButton";
 import PendingMessages from "./components/pendingMessages";
 import useChatbot from "./hooks/useChatbot";
 import { useConnectSocket } from "./hooks/useConnectSocket";

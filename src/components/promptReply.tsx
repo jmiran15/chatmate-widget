@@ -3,7 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import { forwardRef, memo, useState } from "react";
 import { RenderableMessage } from "../hooks/useSession";
 import renderMarkdown from "../utils/markdown";
-import MessageDateTooltip from "./message-date-tooltip";
+import MessageDateTooltip from "./messageDateTooltip";
 
 const PromptReply = forwardRef(
   ({ message }: { message: RenderableMessage }, ref) => {
