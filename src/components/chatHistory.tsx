@@ -40,7 +40,7 @@ const ChatHistory: React.FC<{
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   setMessage: (message: string) => void;
 }> = ({ followUps, handleSubmit, setMessage }) => {
-  const { sessionId, messages, setMessages } = useSessionContext();
+  const { chat, sessionId, messages, setMessages } = useSessionContext();
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -146,7 +146,7 @@ const ChatHistory: React.FC<{
           data.messages.map((message: Message) => ({
             ...message,
             streaming: false,
-          })),
+          }))
         );
       }
     };
@@ -160,8 +160,8 @@ const ChatHistory: React.FC<{
 
   useEffect(() => {
     if (!socket) return;
-    socket.emit("messages", { sessionId, messages });
-  }, [socket, sessionId, messages]);
+    socket.emit("messages", { sessionId: chat.id, messages });
+  }, [socket, chat, messages]);
 
   if (messages.length === 0) {
     return (

@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { RenderableMessage } from "../hooks/useSession";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
+import { useSocket } from "../providers/socket";
 import { API_PATH, colors } from "../utils/constants";
 import renderMarkdown from "../utils/markdown";
 import MessageDateTooltip from "./messageDateTooltip";
@@ -15,16 +16,30 @@ const HistoricalMessage: React.FC<{
   message: RenderableMessage;
   chatHistoryRef: React.RefObject<HTMLDivElement>;
 }> = React.memo(({ message, chatHistoryRef }) => {
-  const { id, content, role, createdAt, seen, streaming, error } = message;
+  const { id, chatId, content, role, createdAt, seenByUser, streaming, error } =
+    message;
   const chatbot = useChatbot();
   const { setPendingCount, setMessages } = useSessionContext();
   const [showTooltip, setShowTooltip] = useState(false);
   const messageRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const socket = useSocket();
 
   const markAsSeen = useCallback(async () => {
-    if (!seen && id && !streaming && !error && role !== "user") {
+    if (
+      !seenByUser &&
+      id &&
+      !streaming &&
+      !error &&
+      role !== "user" &&
+      socket
+    ) {
       try {
+        // if (socket) {
+        // send socket message for optimistic update
+        socket.emit("seenAgentMessage", { chatId: chatId, messageId: id });
+        // }
+
         await fetch(`${API_PATH}/api/seen/${id}`, { method: "POST" });
         return true;
       } catch (error) {
@@ -33,7 +48,7 @@ const HistoricalMessage: React.FC<{
       }
     }
     return false;
-  }, [id, seen, streaming, error, role]);
+  }, [id, seenByUser, streaming, error, role, socket]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -44,7 +59,7 @@ const HistoricalMessage: React.FC<{
         root: null,
         rootMargin: "0px",
         threshold: 0.1,
-      },
+      }
     );
 
     if (messageRef.current) {
@@ -59,19 +74,19 @@ const HistoricalMessage: React.FC<{
   }, []);
 
   useEffect(() => {
-    if (isVisible && !seen) {
+    if (isVisible && !seenByUser) {
       markAsSeen().then((wasMarked) => {
         if (wasMarked) {
           setPendingCount((prevCount: number) => Math.max(0, prevCount - 1));
           setMessages((messages: RenderableMessage[]) =>
             messages.map((msg) =>
-              msg.id === id ? { ...msg, seen: true } : msg,
-            ),
+              msg.id === id ? { ...msg, seenByUser: true } : msg
+            )
           );
         }
       });
     }
-  }, [isVisible, seen, markAsSeen, setPendingCount, setMessages, id]);
+  }, [isVisible, seenByUser, markAsSeen, setPendingCount, setMessages, id]);
 
   const messageClasses = `w-auto max-w-[75%] h-fit py-[17px] px-[20px] relative inline-block rounded-[10px] mb-[16px] ${
     error

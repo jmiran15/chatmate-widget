@@ -12,6 +12,7 @@ interface SessionContextType {
   streamChat: (params: { message: string }) => Promise<void>;
   followUps: string[];
   setFollowUps: React.Dispatch<React.SetStateAction<string[]>>;
+  chat: any | null;
 }
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);

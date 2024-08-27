@@ -33,7 +33,8 @@ export interface Message {
   role: string;
   content: string | null;
   chatId?: string;
-  seen?: boolean;
+  seenByUser?: boolean;
+  seenByAgent?: boolean;
   close?: boolean;
 }
 

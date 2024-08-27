@@ -19,6 +19,7 @@ export default function ChatContainer({
   const [message, setMessage] = useState(() => ""); // this could go inside the prompt input?
   const chatbot = useChatbot();
   const {
+    chat,
     sessionId,
     messages,
     setMessages,
@@ -27,9 +28,7 @@ export default function ChatContainer({
     followUps,
     setFollowUps,
   } = useSessionContext();
-  const { isAgent } = useIsAgent({ sessionId });
-  console.log("isAgent", isAgent);
-  // const isAgent = false;
+  const { isAgent } = useIsAgent({ chatId: chat?.id || "" });
 
   const showInitalStarterQuestions = useMemo(() => {
     return messages.length <= (chatbot?.introMessages?.length || 0);
@@ -43,10 +42,10 @@ export default function ChatContainer({
 
   const debouncedHandleUserActivity = useCallback(
     debounce(handleUserActivity, 300),
-    [],
+    []
   );
   const handleMessageChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>,
+    event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setMessage(event.target.value);
     debouncedHandleUserActivity();
@@ -61,6 +60,8 @@ export default function ChatContainer({
 
     switch (isAgent) {
       case true: {
+        setFollowUps([]);
+
         const prevChatHistory = [
           ...messages,
           {
@@ -69,6 +70,8 @@ export default function ChatContainer({
             role: "user",
             createdAt: formattedDate,
             streaming: false,
+            seenByUser: true,
+            seenByAgent: false,
           },
         ];
 
@@ -90,6 +93,8 @@ export default function ChatContainer({
             role: "user",
             createdAt: formattedDate,
             streaming: false,
+            seenByUser: true,
+            seenByAgent: false,
           },
           {
             id: v4(),
@@ -98,6 +103,7 @@ export default function ChatContainer({
             createdAt: formattedDate,
             streaming: true,
             loading: true,
+            seenByAgent: true,
           },
         ];
 
@@ -105,11 +111,17 @@ export default function ChatContainer({
         setMessages(prevChatHistory);
         setMessage("");
         fetchReply();
+        // if (loading) setFollowUps([]);
+
+        // return await streamChat({
+        //   message,
+        // });
         break;
       }
     }
   };
 
+  // TODO - just do this in the above
   async function fetchReply() {
     if (!message) {
       return false;

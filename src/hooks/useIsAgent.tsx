@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { useSocket } from "../providers/socket";
 
 type IsAgentEvent = {
-  sessionId: string;
+  chatId: string;
   isAgent: boolean;
 };
 
 // is there an agent for this session - live?
-export function useIsAgent({ sessionId }: { sessionId: string }) {
+export function useIsAgent({ chatId }: { chatId: string }) {
   const [isAgent, setIsAgent] = useState(false);
   const socket = useSocket();
 
@@ -15,20 +15,20 @@ export function useIsAgent({ sessionId }: { sessionId: string }) {
     if (!socket) return;
 
     const handleIsAgent = (data: IsAgentEvent) => {
-      if (sessionId === data.sessionId) {
+      if (chatId === data.chatId) {
         setIsAgent(data.isAgent);
       }
     };
 
     socket.on("isAgent", handleIsAgent);
 
-    socket.emit("pollingAgent", { sessionId });
+    socket.emit("pollingAgent", { chatId });
 
     return () => {
       socket.off("isAgent", handleIsAgent);
       setIsAgent(false);
     };
-  }, [socket, sessionId]);
+  }, [socket, chatId]);
 
   return { isAgent, setIsAgent };
 }
