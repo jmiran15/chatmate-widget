@@ -17,7 +17,7 @@ import HistoricalMessage from "./historicalMessage";
 import PromptReply from "./promptReply";
 
 type MessagesEvent = {
-  sessionId: string;
+  chatId: string;
   messages: Message[];
 };
 
@@ -140,8 +140,7 @@ const ChatHistory: React.FC<{
     if (!socket) return;
 
     const handleThread = (data: MessagesEvent) => {
-      if (sessionId === data.sessionId) {
-        console.log("Received messages", data.messages);
+      if (chat.id === data.chatId) {
         setMessages(
           data.messages.map((message: Message) => ({
             ...message,
@@ -156,11 +155,11 @@ const ChatHistory: React.FC<{
     return () => {
       socket.off("messages", handleThread);
     };
-  }, [socket, sessionId]);
+  }, [socket, chat]);
 
   useEffect(() => {
     if (!socket) return;
-    socket.emit("messages", { sessionId: chat.id, messages });
+    socket.emit("messages", { chatId: chat.id, messages });
   }, [socket, chat, messages]);
 
   if (messages.length === 0) {
