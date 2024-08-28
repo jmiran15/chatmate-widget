@@ -53,7 +53,7 @@ export default function ChatContainer({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!message || message === "") return false;
+    if (!message || message.trim() === "") return false;
 
     const currentDate = new Date();
     const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
