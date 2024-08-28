@@ -40,7 +40,7 @@ const ChatHistory: React.FC<{
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   setMessage: (message: string) => void;
 }> = ({ followUps, handleSubmit, setMessage }) => {
-  const { chat, sessionId, messages, setMessages } = useSessionContext();
+  const { chat, setFollowUps, messages, setMessages } = useSessionContext();
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -147,6 +147,7 @@ const ChatHistory: React.FC<{
             streaming: false,
           }))
         );
+        setFollowUps([]);
       }
     };
 
