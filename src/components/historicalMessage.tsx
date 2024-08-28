@@ -35,12 +35,20 @@ const HistoricalMessage: React.FC<{
       socket
     ) {
       try {
-        // if (socket) {
-        // send socket message for optimistic update
-        socket.emit("seenAgentMessage", { chatId: chatId, messageId: id });
-        // }
+        const currentDate = new Date().toISOString();
+        socket.emit("seenAgentMessage", {
+          chatId,
+          messageId: id,
+          seenAt: currentDate,
+        });
 
-        await fetch(`${API_PATH}/api/seen/${id}`, { method: "POST" });
+        await fetch(`${API_PATH}/api/seen/${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ seenAt: currentDate }),
+        });
         return true;
       } catch (error) {
         console.error("Error marking message as seen:", error);
