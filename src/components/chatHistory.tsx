@@ -9,17 +9,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { RenderableMessage } from "../hooks/useSession";
+import { Message } from "src/utils/types";
 import { useSessionContext } from "../providers/session";
 import { useSocket } from "../providers/socket";
-import { Message } from "../utils/types";
 import HistoricalMessage from "./historicalMessage";
 import PromptReply from "./promptReply";
-
-type MessagesEvent = {
-  chatId: string;
-  messages: Message[];
-};
 
 // Helper function to safely parse dates
 const safeParseDate = (dateString: string) => {
@@ -91,10 +85,10 @@ const ChatHistory: React.FC<{
   const renderMessages = () => {
     let lastMessageDate: Date | null = null;
 
-    return messages.map((props: RenderableMessage, index) => {
+    return messages.map((props: Message, index) => {
       const isLastMessage = index === messages.length - 1;
       const isLastBotReply = isLastMessage && props.role === "assistant";
-      const currentMessageDate = safeParseDate(props.createdAt ?? "");
+      const currentMessageDate = safeParseDate(props.createdAt.toISOString());
 
       let dateSeparator: React.ReactNode = null;
       if (
@@ -104,7 +98,7 @@ const ChatHistory: React.FC<{
         dateSeparator = (
           <DateSeparator
             key={`date-${props.createdAt}`}
-            date={props.createdAt ?? ""}
+            date={props.createdAt.toISOString()}
           />
         );
         lastMessageDate = currentMessageDate;
@@ -136,32 +130,68 @@ const ChatHistory: React.FC<{
 
   const socket = useSocket();
 
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleThread = (data: MessagesEvent) => {
+  const handleThread = useCallback(
+    (data: { chatId: string; message: any }) => {
       if (chat.id === data.chatId) {
-        setMessages(
-          data.messages.map((message: Message) => ({
-            ...message,
-            streaming: false,
-          }))
-        );
+        setMessages((prevThread) => {
+          const newMessage = data.message;
+          const newMessageTime = new Date(newMessage.createdAt).getTime();
+
+          // Check if the message already exists
+          const existingIndex = prevThread.findIndex(
+            (m) => m.id === newMessage.id
+          );
+          if (existingIndex !== -1) {
+            // Update existing message
+            const updatedThread = [...prevThread];
+            updatedThread[existingIndex] = {
+              ...updatedThread[existingIndex],
+              ...newMessage,
+              seenByAgent: updatedThread[existingIndex].seenByAgent,
+              seenByUser: updatedThread[existingIndex].seenByUser,
+              seenByUserAt:
+                updatedThread[existingIndex].seenByUserAt ||
+                newMessage.seenByUserAt,
+            };
+            return updatedThread;
+          }
+
+          // Find the correct insertion position
+          let insertIndex = prevThread.length;
+          for (let i = prevThread.length - 1; i >= 0; i--) {
+            const currentMessageTime = new Date(
+              prevThread[i].createdAt
+            ).getTime();
+            if (currentMessageTime <= newMessageTime) {
+              insertIndex = i + 1;
+              break;
+            }
+          }
+
+          // Insert the new message at the correct position
+          const updatedThread = [...prevThread];
+          updatedThread.splice(insertIndex, 0, {
+            ...newMessage,
+            createdAt: new Date(newMessage.createdAt),
+            updatedAt: new Date(newMessage.updatedAt),
+          });
+          return updatedThread;
+        });
         setFollowUps([]);
       }
-    };
-
-    socket.on("messages", handleThread);
-
-    return () => {
-      socket.off("messages", handleThread);
-    };
-  }, [socket, chat]);
+    },
+    [chat?.id, setMessages, setFollowUps]
+  );
 
   useEffect(() => {
     if (!socket) return;
-    socket.emit("messages", { chatId: chat.id, messages });
-  }, [socket, chat, messages]);
+
+    socket.on("new message", handleThread);
+
+    return () => {
+      socket.off("new message", handleThread);
+    };
+  }, [socket, chat]);
 
   if (messages.length === 0) {
     return (

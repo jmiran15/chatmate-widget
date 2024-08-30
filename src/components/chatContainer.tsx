@@ -1,12 +1,13 @@
 import axios from "axios";
-import { format } from "date-fns";
 import debounce from "lodash/debounce";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { StreamChatRequest } from "src/hooks/useSession";
+import { Message } from "src/utils/types";
 import { v4 } from "uuid";
 import { useIsAgent } from "../hooks/useIsAgent";
-import { StreamChatRequest } from "../hooks/useSession";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
+import { useSocket } from "../providers/socket";
 import { API_PATH } from "../utils/constants";
 import ChatHistory from "./chatHistory";
 import PromptInput from "./promptInput";
@@ -28,7 +29,8 @@ export default function ChatContainer({
     followUps,
     setFollowUps,
   } = useSessionContext();
-  const { isAgent } = useIsAgent({ chatId: chat?.id || "" });
+  const socket = useSocket();
+  const { isAgent } = useIsAgent({ chatId: chat?.id || "", socket });
 
   const showInitalStarterQuestions = useMemo(() => {
     return messages.length <= (chatbot?.introMessages?.length || 0);
@@ -54,85 +56,81 @@ export default function ChatContainer({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!message || message.trim() === "") return false;
+    setFollowUps([]);
 
     const currentDate = new Date();
-    const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+    // const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+
+    const newMessage = {
+      id: v4(),
+      createdAt: currentDate,
+      updatedAt: currentDate,
+      role: "user",
+      content: message,
+      chatId: chat?.id,
+      streaming: false,
+      seenByUser: true,
+      seenByAgent: false,
+      seenByUserAt: currentDate,
+    } as Message;
+
+    if (socket) {
+      socket.emit("new message", {
+        chatId: chat?.id,
+        message: newMessage,
+      });
+    }
 
     switch (isAgent) {
       case true: {
-        setFollowUps([]);
-
-        const prevChatHistory = [
-          ...messages,
-          {
-            id: v4(),
-            content: message,
-            role: "user",
-            createdAt: formattedDate,
-            streaming: false,
-            seenByUser: true,
-            seenByAgent: false,
-          },
-        ];
-
-        await axios.post(`${API_PATH}/api/chat/${chatbot?.id}/${sessionId}`, {
-          messages: prevChatHistory,
-          chattingWithAgent: true,
-        } as StreamChatRequest);
+        const prevChatHistory = [...messages, newMessage];
 
         setMessages(prevChatHistory);
         setMessage("");
-        break;
+
+        return await axios.post(
+          `${API_PATH}/api/chat/${chatbot?.id}/${sessionId}`,
+          {
+            // messages: prevChatHistory.map((m) => ({
+            //   id: m.id,
+            //   content: m.content,
+            //   role: m.role,
+            //   createdAt: m.createdAt,
+            //   seenByUser: m.seenByUser,
+            //   seenByAgent: m.seenByAgent,
+            // })),
+            messages: prevChatHistory,
+            chattingWithAgent: true,
+          } as StreamChatRequest
+        );
       }
       case false: {
         const prevChatHistory = [
           ...messages,
+          newMessage,
           {
             id: v4(),
-            content: message,
-            role: "user",
-            createdAt: formattedDate,
-            streaming: false,
-            seenByUser: true,
-            seenByAgent: false,
-          },
-          {
-            id: v4(),
-            content: "",
+            chatId: chat?.id,
+            createdAt: currentDate,
+            updatedAt: currentDate,
             role: "assistant",
-            createdAt: formattedDate,
+            content: "",
             streaming: true,
             loading: true,
             seenByAgent: true,
-          },
+          } as Message,
         ];
 
         // there might be a race condition here
         setMessages(prevChatHistory);
         setMessage("");
-        fetchReply();
-        // if (loading) setFollowUps([]);
 
-        // return await streamChat({
-        //   message,
-        // });
-        break;
+        return await streamChat({
+          message,
+        });
       }
     }
   };
-
-  // TODO - just do this in the above
-  async function fetchReply() {
-    if (!message) {
-      return false;
-    }
-
-    if (loading) setFollowUps([]);
-
-    return await streamChat({
-      message,
-    });
-  }
 
   return (
     <div className="relative flex flex-col flex-1 overflow-hidden min-w-full block">

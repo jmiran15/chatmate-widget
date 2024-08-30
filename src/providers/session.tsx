@@ -1,11 +1,11 @@
 import React, { createContext, useContext } from "react";
-import { RenderableMessage } from "../hooks/useSession";
+import { Message } from "src/utils/types";
 
 interface SessionContextType {
   sessionId: string;
   loading: boolean;
-  messages: RenderableMessage[];
-  setMessages: React.Dispatch<React.SetStateAction<RenderableMessage[]>>;
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   pendingCount: number;
   setPendingCount: React.Dispatch<React.SetStateAction<number>>;
   resetSession: () => Promise<boolean>;

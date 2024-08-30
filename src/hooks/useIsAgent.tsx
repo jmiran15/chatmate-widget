@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSocket } from "../providers/socket";
+import { type Socket } from "socket.io-client";
 
 type IsAgentEvent = {
   chatId: string;
@@ -7,9 +7,15 @@ type IsAgentEvent = {
 };
 
 // is there an agent for this session - live?
-export function useIsAgent({ chatId }: { chatId: string }) {
+export function useIsAgent({
+  chatId,
+  socket,
+}: {
+  chatId: string;
+  socket: Socket | undefined;
+}) {
   const [isAgent, setIsAgent] = useState(false);
-  const socket = useSocket();
+  // const socket = useSocket();
 
   useEffect(() => {
     if (!socket) return;

@@ -1,16 +1,11 @@
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import axios from "axios";
-import { format } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
+import { type Socket } from "socket.io-client";
 import { v4 } from "uuid";
 import { API_PATH } from "../utils/constants";
 import { Message, SSEMessage } from "../utils/types";
-
-export type RenderableMessage = Message & {
-  streaming: boolean;
-  loading?: boolean;
-  error?: string;
-};
+import { useIsAgent } from "./useIsAgent";
 
 export type StreamChatRequest = {
   messages: Message[];
@@ -20,16 +15,18 @@ export type StreamChatRequest = {
 export default function useSession({
   embedId,
   sessionId,
+  socket,
 }: {
   embedId: string;
   sessionId: string;
+  socket: Socket | undefined;
 }) {
   const [loading, setLoading] = useState<boolean>(true);
-  const [messages, setMessages] = useState<RenderableMessage[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [pendingCount, setPendingCount] = useState<number>(0);
   const [chat, setChat] = useState<any | null>(null);
-  // at the end of successful streamChat SSE - i.e got SSE message with streaming === false, initiate follow up questions, set followUps
-  const [followUps, setFollowUps] = useState<string[]>([]); // reset at the beginning of streamChat?
+  const [followUps, setFollowUps] = useState<string[]>([]);
+  const { isAgent } = useIsAgent({ chatId: chat?.id, socket });
 
   const fetchSessionMessages = useCallback(async () => {
     if (!sessionId || !embedId) return;
@@ -45,9 +42,15 @@ export default function useSession({
         const formattedMessages = messages.map((msg: Message) => ({
           ...msg,
           streaming: false,
-          error: null,
+          error: undefined,
           loading: false,
+          createdAt: new Date(msg.createdAt),
+          updatedAt: new Date(msg.updatedAt),
+          seenByUserAt: msg.seenByUserAt
+            ? new Date(msg.seenByUserAt)
+            : undefined,
         }));
+
         setMessages(formattedMessages);
         setPendingCount(unseenMessagesCount);
         setChat(chat);
@@ -101,16 +104,21 @@ export default function useSession({
     message: string;
   }): Promise<void> => {
     const currentDate = new Date();
-    const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+    // const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+
     const _messages = [
       ...messages,
       {
         id: v4(),
+        chatId: chat?.id,
         content: message,
         role: "user",
-        createdAt: formattedDate,
+        createdAt: currentDate,
+        updatedAt: currentDate,
         streaming: false,
-      },
+        loading: false,
+        error: null,
+      } as Message,
     ];
     setFollowUps([]); // reset followUps
 
@@ -120,7 +128,7 @@ export default function useSession({
       method: "POST",
       body: JSON.stringify({
         messages: [
-          ...messages.map((message: RenderableMessage) => ({
+          ...messages.map((message: Message) => ({
             role: message.role,
             content: message.content,
           })),
@@ -205,11 +213,11 @@ export default function useSession({
     _messages,
   }: {
     sseMessage: SSEMessage;
-    _messages: RenderableMessage[];
+    _messages: Message[];
   }) {
     const { id, textResponse, type, error, streaming } = sseMessage;
     const currentDate = new Date();
-    const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+    //    const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
     switch (type) {
       case "abort": {
@@ -218,11 +226,12 @@ export default function useSession({
           ...prevMessages,
           {
             id,
-            content: "",
-            error: error ?? undefined,
+            createdAt: currentDate,
+            updatedAt: currentDate,
             role: "assistant",
-            createdAt: formattedDate,
-            updatedAt: formattedDate,
+            content: "",
+            chatId: chat?.id,
+            error: error,
             streaming,
             loading: false,
           },
@@ -243,19 +252,31 @@ export default function useSession({
         } else {
           _messages.push({
             id,
+            chatId: chat?.id,
             content: textResponse ?? "",
             role: "assistant",
-            createdAt: formattedDate,
-            updatedAt: formattedDate,
+            createdAt: currentDate,
+            updatedAt: currentDate,
             streaming,
-            error: undefined,
+            error: null,
             loading: false,
           });
         }
 
         setMessages([..._messages]);
         if (!streaming) {
-          await generateFollowUps({ messages: _messages });
+          // send the final message?
+          if (socket) {
+            const lastMessage = _messages[_messages.length - 1];
+            socket.emit("new message", {
+              chatId: chat?.id,
+              message: lastMessage,
+            });
+          }
+
+          if (!isAgent) {
+            await generateFollowUps({ messages: _messages });
+          }
 
           setLoading(false);
         }
@@ -266,11 +287,7 @@ export default function useSession({
     }
   }
 
-  async function generateFollowUps({
-    messages,
-  }: {
-    messages: RenderableMessage[];
-  }) {
+  async function generateFollowUps({ messages }: { messages: Message[] }) {
     const followUpRes = await fetch(`${API_PATH}/api/generatefollowups`, {
       method: "POST",
       body: JSON.stringify({

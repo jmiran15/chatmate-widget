@@ -1,14 +1,14 @@
 import { Warning } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
-import { RenderableMessage } from "../hooks/useSession";
 import renderMarkdown from "../utils/markdown";
 import MessageDateTooltip from "./messageDateTooltip";
+import { Message } from "src/utils/types";
 
 const PromptReply = React.forwardRef<
   HTMLDivElement,
   {
-    message: RenderableMessage;
+    message: Message;
     chatHistoryRef: React.RefObject<HTMLDivElement>;
   }
 >(({ message, chatHistoryRef }, ref) => {

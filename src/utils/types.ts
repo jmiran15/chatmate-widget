@@ -25,18 +25,44 @@ export interface Chatbot {
   widgetPosition?: "BOTTOM_RIGHT" | "BOTTOM_LEFT";
 }
 
+enum ActivityType {
+  REQUESTED_LIVE_CHAT = "REQUESTED_LIVE_CHAT",
+  AGENT_JOINED = "AGENT_JOINED",
+  AGENT_LEFT = "AGENT_LEFT",
+}
+
 // this is supposed to be the message type in in api.chatmate
-export interface Message {
+interface PrismaMessage {
   id: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: Date;
+  updatedAt: Date;
   role: string;
-  content: string | null;
-  chatId?: string;
+  content: string;
+  chatId: string;
   seenByUser?: boolean;
   seenByAgent?: boolean;
-  close?: boolean;
+  seenByUserAt?: Date;
+  activity?: ActivityType;
 }
+
+type TypingState = "typing" | "typed";
+
+interface TypingInformation {
+  isPreview?: boolean;
+  isTyping?: boolean;
+  typingState?: TypingState;
+  typedContents?: string;
+}
+
+interface StreamingInformation {
+  streaming?: boolean;
+  loading?: boolean;
+  error: string | null;
+}
+export interface Message
+  extends PrismaMessage,
+    TypingInformation,
+    StreamingInformation {}
 
 // this is the SSE type in api.chatmate
 export interface SSEMessage {

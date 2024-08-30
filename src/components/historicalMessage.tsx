@@ -1,8 +1,9 @@
 import { Warning } from "@phosphor-icons/react";
 import createDOMPurify from "dompurify";
 import { AnimatePresence } from "framer-motion";
+import debounce from "lodash/debounce";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { RenderableMessage } from "../hooks/useSession";
+import { Message } from "src/utils/types";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
 import { useSocket } from "../providers/socket";
@@ -13,7 +14,7 @@ import MessageDateTooltip from "./messageDateTooltip";
 const DOMPurify = createDOMPurify(window);
 
 const HistoricalMessage: React.FC<{
-  message: RenderableMessage;
+  message: Message;
   chatHistoryRef: React.RefObject<HTMLDivElement>;
 }> = React.memo(({ message, chatHistoryRef }) => {
   const { id, chatId, content, role, createdAt, seenByUser, streaming, error } =
@@ -58,6 +59,18 @@ const HistoricalMessage: React.FC<{
     return false;
   }, [id, seenByUser, streaming, error, role, socket]);
 
+  const checkVisibility = useCallback(() => {
+    if (messageRef.current) {
+      const rect = messageRef.current.getBoundingClientRect();
+      const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+      setIsVisible(isVisible);
+    }
+  }, []);
+
+  const debouncedCheckVisibility = useCallback(debounce(checkVisibility, 100), [
+    checkVisibility,
+  ]);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -74,19 +87,29 @@ const HistoricalMessage: React.FC<{
       observer.observe(messageRef.current);
     }
 
+    window.addEventListener("scroll", debouncedCheckVisibility);
+    window.addEventListener("resize", debouncedCheckVisibility);
+
+    // Initial check
+    checkVisibility();
+
     return () => {
       if (messageRef.current) {
         observer.unobserve(messageRef.current);
       }
+      window.removeEventListener("scroll", debouncedCheckVisibility);
+      window.removeEventListener("resize", debouncedCheckVisibility);
     };
-  }, []);
+  }, [debouncedCheckVisibility, checkVisibility]);
 
   useEffect(() => {
+    console.log("testing mark seen: ", { isVisible, MESSAGE: message });
     if (isVisible && !seenByUser) {
+      console.log("marking as seen");
       markAsSeen().then((wasMarked) => {
         if (wasMarked) {
           setPendingCount((prevCount: number) => Math.max(0, prevCount - 1));
-          setMessages((messages: RenderableMessage[]) =>
+          setMessages((messages: Message[]) =>
             messages.map((msg) =>
               msg.id === id ? { ...msg, seenByUser: true } : msg
             )

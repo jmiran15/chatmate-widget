@@ -29,12 +29,12 @@ const PromptInput: React.FC<{
     buttonDisabled,
   }) => {
     const { chat } = useSessionContext();
-    const { isAgent } = useIsAgent({ chatId: chat.id });
+    const socket = useSocket();
+    const { isAgent } = useIsAgent({ chatId: chat.id, socket });
     const formRef = useRef<HTMLFormElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [isTyping, setIsTyping] = useState(false);
     const chatbot = useChatbot();
-    const socket = useSocket();
 
     useEffect(() => {
       console.log("isAgent", isAgent);

@@ -24,7 +24,7 @@ export default function App({ embedId }: { embedId: string }) {
   const isMobile = useMobileScreen();
   const sessionId = useSessionId(embedId);
   const chatbot = useChatbot(embedId);
-  const session = useSession({ embedId, sessionId });
+  const session = useSession({ embedId, sessionId, socket });
 
   const { activeTime, handleUserActivity } = useTimeTracking({
     isChatOpen,
