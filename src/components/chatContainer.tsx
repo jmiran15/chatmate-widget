@@ -74,13 +74,6 @@ export default function ChatContainer({
       seenByUserAt: currentDate,
     } as Message;
 
-    if (socket) {
-      socket.emit("new message", {
-        chatId: chat?.id,
-        message: newMessage,
-      });
-    }
-
     switch (isAgent) {
       case true: {
         const prevChatHistory = [...messages, newMessage];
@@ -88,21 +81,20 @@ export default function ChatContainer({
         setMessages(prevChatHistory);
         setMessage("");
 
-        return await axios.post(
-          `${API_PATH}/api/chat/${chatbot?.id}/${sessionId}`,
-          {
-            // messages: prevChatHistory.map((m) => ({
-            //   id: m.id,
-            //   content: m.content,
-            //   role: m.role,
-            //   createdAt: m.createdAt,
-            //   seenByUser: m.seenByUser,
-            //   seenByAgent: m.seenByAgent,
-            // })),
-            messages: prevChatHistory,
-            chattingWithAgent: true,
-          } as StreamChatRequest
-        );
+        await axios.post(`${API_PATH}/api/chat/${chatbot?.id}/${sessionId}`, {
+          messages: prevChatHistory,
+          chattingWithAgent: true,
+        } as StreamChatRequest);
+
+        // emit after the message has been created
+        if (socket) {
+          socket.emit("new message", {
+            chatId: chat?.id,
+            message: newMessage,
+          });
+        }
+
+        break;
       }
       case false: {
         const prevChatHistory = [
@@ -121,7 +113,6 @@ export default function ChatContainer({
           } as Message,
         ];
 
-        // there might be a race condition here
         setMessages(prevChatHistory);
         setMessage("");
 

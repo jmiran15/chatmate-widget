@@ -152,6 +152,8 @@ const ChatHistory: React.FC<{
               seenByUserAt:
                 updatedThread[existingIndex].seenByUserAt ||
                 newMessage.seenByUserAt,
+              createdAt: updatedThread[existingIndex].createdAt,
+              updatedAt: new Date(newMessage.updatedAt),
             };
             return updatedThread;
           }

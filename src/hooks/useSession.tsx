@@ -106,20 +106,19 @@ export default function useSession({
     const currentDate = new Date();
     // const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
-    const _messages = [
-      ...messages,
-      {
-        id: v4(),
-        chatId: chat?.id,
-        content: message,
-        role: "user",
-        createdAt: currentDate,
-        updatedAt: currentDate,
-        streaming: false,
-        loading: false,
-        error: null,
-      } as Message,
-    ];
+    const newMessage = {
+      id: v4(),
+      chatId: chat?.id,
+      content: message,
+      role: "user",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+      streaming: false,
+      loading: false,
+      error: null,
+    } as Message;
+
+    const _messages = [...messages, newMessage];
     setFollowUps([]); // reset followUps
 
     const ctrl = new AbortController();
@@ -143,6 +142,12 @@ export default function useSession({
       openWhenHidden: true,
       async onopen(response) {
         if (response.ok) {
+          if (socket) {
+            socket.emit("new message", {
+              chatId: chat?.id,
+              message: newMessage,
+            });
+          }
           return;
         } else if (response.status >= 400) {
           await response
@@ -265,7 +270,6 @@ export default function useSession({
 
         setMessages([..._messages]);
         if (!streaming) {
-          // send the final message?
           if (socket) {
             const lastMessage = _messages[_messages.length - 1];
             socket.emit("new message", {
