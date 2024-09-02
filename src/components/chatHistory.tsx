@@ -15,6 +15,11 @@ import { useSocket } from "../providers/socket";
 import HistoricalMessage from "./historicalMessage";
 import PromptReply from "./promptReply";
 
+interface AgentTyping {
+  chatId: string;
+  isTyping: boolean;
+}
+
 // Helper function to safely parse dates
 const safeParseDate = (dateString: string) => {
   if (!dateString) return null;
@@ -40,6 +45,7 @@ const ChatHistory: React.FC<{
   const [showScrollButton, setShowScrollButton] = useState(false);
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const lastFollowUpRef = useRef<HTMLButtonElement>(null);
+  const socket = useSocket();
 
   const scrollToLastFollowUp = useCallback(() => {
     lastFollowUpRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -105,7 +111,8 @@ const ChatHistory: React.FC<{
       }
 
       const messageComponent =
-        isLastBotReply && props.loading ? (
+        (isLastBotReply && props.loading) ||
+        (props.isPreview && props.isTyping) ? (
           <PromptReply
             ref={isLastMessage ? replyRef : null}
             message={props}
@@ -128,7 +135,56 @@ const ChatHistory: React.FC<{
     });
   };
 
-  const socket = useSocket();
+  const debouncedSetThread = useCallback(
+    debounce((updateFn: (prevThread: Message[]) => Message[]) => {
+      setMessages(updateFn);
+    }, 50),
+    []
+  );
+
+  const handleUserTyping = useCallback(
+    (data: AgentTyping) => {
+      if (chat.id !== data.chatId) return;
+
+      debouncedSetThread((prevThread) => {
+        const lastMessage = prevThread[prevThread.length - 1];
+        const isTypingMessage =
+          lastMessage?.role === "assistant" &&
+          lastMessage?.isPreview &&
+          lastMessage?.isTyping;
+
+        if (isTypingMessage === data.isTyping) {
+          return prevThread; // No change needed
+        }
+
+        if (data.isTyping) {
+          return [
+            ...prevThread,
+            {
+              id: `preview-${Date.now()}`,
+              role: "assistant",
+              isPreview: true,
+              isTyping: true,
+              content: "",
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              chatId: chat.id,
+              clusterId: null,
+              seenByUser: undefined,
+              seenByAgent: undefined,
+              seenByUserAt: undefined,
+              activity: undefined,
+              loading: true,
+              error: null,
+            },
+          ];
+        }
+
+        return isTypingMessage ? prevThread.slice(0, -1) : prevThread;
+      });
+    },
+    [chat?.id, debouncedSetThread]
+  );
 
   const handleThread = useCallback(
     (data: { chatId: string; message: any }) => {
@@ -189,9 +245,11 @@ const ChatHistory: React.FC<{
     if (!socket) return;
 
     socket.on("new message", handleThread);
+    socket.on("agent typing", handleUserTyping);
 
     return () => {
       socket.off("new message", handleThread);
+      socket.off("agent typing", handleUserTyping);
     };
   }, [socket, chat]);
 

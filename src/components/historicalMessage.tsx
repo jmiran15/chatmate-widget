@@ -37,11 +37,6 @@ const HistoricalMessage: React.FC<{
     ) {
       try {
         const currentDate = new Date().toISOString();
-        socket.emit("seenAgentMessage", {
-          chatId,
-          messageId: id,
-          seenAt: currentDate,
-        });
 
         await fetch(`${API_PATH}/api/seen/${id}`, {
           method: "POST",
@@ -49,6 +44,11 @@ const HistoricalMessage: React.FC<{
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ seenAt: currentDate }),
+        });
+        socket.emit("seenAgentMessage", {
+          chatId,
+          messageId: id,
+          seenAt: currentDate,
         });
         return true;
       } catch (error) {
@@ -103,9 +103,7 @@ const HistoricalMessage: React.FC<{
   }, [debouncedCheckVisibility, checkVisibility]);
 
   useEffect(() => {
-    console.log("testing mark seen: ", { isVisible, MESSAGE: message });
     if (isVisible && !seenByUser) {
-      console.log("marking as seen");
       markAsSeen().then((wasMarked) => {
         if (wasMarked) {
           setPendingCount((prevCount: number) => Math.max(0, prevCount - 1));
@@ -126,6 +124,10 @@ const HistoricalMessage: React.FC<{
         ? `bg-${colors[(chatbot?.themeColor ?? "zinc") as keyof typeof colors]} text-white ml-auto`
         : "bg-[#f2f2f2] text-black"
   }`;
+
+  if (message.activity) {
+    return <TextSeparator text={message.content} className="mb-[16px]" />;
+  }
 
   return (
     <div
@@ -165,3 +167,25 @@ const HistoricalMessage: React.FC<{
 });
 
 export default HistoricalMessage;
+
+interface TextSeparatorProps {
+  text: string;
+  className?: string;
+  lineColor?: string;
+  textColor?: string;
+}
+
+function TextSeparator({
+  text,
+  className = "",
+  lineColor = "border-gray-300",
+  textColor = "text-gray-500",
+}: TextSeparatorProps) {
+  return (
+    <div className={`flex items-center w-full ${className}`}>
+      <div className={`flex-grow border-t ${lineColor}`}></div>
+      <span className={`flex-shrink mx-4 text-xs ${textColor}`}>{text}</span>
+      <div className={`flex-grow border-t ${lineColor}`}></div>
+    </div>
+  );
+}

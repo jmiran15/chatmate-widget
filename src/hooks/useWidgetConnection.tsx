@@ -5,6 +5,8 @@ interface PollingWidgetStatus {
   sessionId: string;
 }
 
+// Change these types - should send some bool indicating wether user is online or not, and then a last active time (use for last seen field)
+
 export function useWidgetConnection({
   socket,
   sessionId,

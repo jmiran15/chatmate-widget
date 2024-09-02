@@ -37,10 +37,8 @@ const PromptInput: React.FC<{
     const chatbot = useChatbot();
 
     useEffect(() => {
-      console.log("isAgent", isAgent);
       if (isAgent) {
         const contents = message.trim();
-        console.log("contents", contents);
         if (contents) {
           if (isTyping) {
             sendEvent({
@@ -88,7 +86,6 @@ const PromptInput: React.FC<{
     const handleSubmitForm = useCallback(
       (e: React.FormEvent<HTMLFormElement>) => {
         setIsTyping(false);
-        console.log("not typing - handleSubmitForm");
         sendEvent({ isTyping: false });
         handleSubmit(e);
       },
@@ -127,7 +124,6 @@ const PromptInput: React.FC<{
           setIsTyping(true);
           sendTypingEvent(contents);
         } else {
-          console.log("not typing - handleTextareaChange");
           setIsTyping(false);
           sendEvent({ isTyping: false });
         }
