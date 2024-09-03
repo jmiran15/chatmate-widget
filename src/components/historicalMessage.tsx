@@ -2,7 +2,13 @@ import { Warning } from "@phosphor-icons/react";
 import createDOMPurify from "dompurify";
 import { AnimatePresence } from "framer-motion";
 import debounce from "lodash/debounce";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Message } from "src/utils/types";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
@@ -126,7 +132,16 @@ const HistoricalMessage: React.FC<{
   }`;
 
   if (message.activity) {
-    return <TextSeparator text={message.content} className="mb-[16px]" />;
+    return (
+      <>
+        <TextSeparator
+          ref={messageRef}
+          text={message.content}
+          className="mb-[16px]"
+        />
+        <p>Seen by user: {seenByUser ? "Yes" : "No"}</p>
+      </>
+    );
   }
 
   return (
@@ -144,6 +159,7 @@ const HistoricalMessage: React.FC<{
           />
         )}
       </AnimatePresence>
+      <p>Seen by user: {seenByUser ? "Yes" : "No"}</p>
       {error ? (
         <div className="p-2 rounded-lg bg-red-50 text-red-500">
           <span className="inline-block">
@@ -175,17 +191,24 @@ interface TextSeparatorProps {
   textColor?: string;
 }
 
-function TextSeparator({
-  text,
-  className = "",
-  lineColor = "border-gray-300",
-  textColor = "text-gray-500",
-}: TextSeparatorProps) {
-  return (
-    <div className={`flex items-center w-full ${className}`}>
-      <div className={`flex-grow border-t ${lineColor}`}></div>
-      <span className={`flex-shrink mx-4 text-xs ${textColor}`}>{text}</span>
-      <div className={`flex-grow border-t ${lineColor}`}></div>
-    </div>
-  );
-}
+const TextSeparator = forwardRef<HTMLDivElement, TextSeparatorProps>(
+  (
+    {
+      text,
+      className = "",
+      lineColor = "border-gray-300",
+      textColor = "text-gray-500",
+    },
+    ref
+  ) => {
+    return (
+      <div ref={ref} className={`flex items-center w-full ${className}`}>
+        <div className={`flex-grow border-t ${lineColor}`}></div>
+        <span className={`flex-shrink mx-4 text-xs ${textColor}`}>{text}</span>
+        <div className={`flex-grow border-t ${lineColor}`}></div>
+      </div>
+    );
+  }
+);
+
+TextSeparator.displayName = "TextSeparator";

@@ -51,6 +51,11 @@ export default function useSession({
             : undefined,
         }));
 
+        console.log({
+          messages,
+          unseenMessagesCount,
+        });
+
         setMessages(formattedMessages);
         setPendingCount(unseenMessagesCount);
         setChat(chat);
@@ -104,9 +109,7 @@ export default function useSession({
     message: string;
   }): Promise<void> => {
     const currentDate = new Date();
-    // const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-
-    const newMessage = {
+    const newUserMessage = {
       id: v4(),
       chatId: chat?.id,
       content: message,
@@ -118,8 +121,26 @@ export default function useSession({
       error: null,
     } as Message;
 
-    const _messages = [...messages, newMessage];
-    setFollowUps([]); // reset followUps
+    const dummyId = v4();
+
+    const dummyAssistantMessage = {
+      id: dummyId,
+      chatId: chat?.id,
+      createdAt: currentDate,
+      updatedAt: currentDate,
+      role: "assistant",
+      content: "",
+      streaming: true,
+      loading: true,
+      seenByAgent: true,
+    } as Message;
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      newUserMessage,
+      dummyAssistantMessage,
+    ]);
+    setFollowUps([]);
 
     const ctrl = new AbortController();
 
@@ -145,7 +166,7 @@ export default function useSession({
           if (socket) {
             socket.emit("new message", {
               chatId: chat?.id,
-              message: newMessage,
+              message: newUserMessage,
             });
           }
           return;
@@ -155,7 +176,7 @@ export default function useSession({
             .then((serverResponse) => {
               handleChat({
                 sseMessage: serverResponse,
-                _messages,
+                dummyId,
               });
             })
             .catch(() => {
@@ -167,7 +188,7 @@ export default function useSession({
                   streaming: false,
                   error: `An error occurred while streaming response. Code ${response.status}`,
                 },
-                _messages,
+                dummyId,
               });
             });
           ctrl.abort();
@@ -181,7 +202,7 @@ export default function useSession({
               streaming: false,
               error: `An error occurred while streaming response. Unknown Error.`,
             },
-            _messages,
+            dummyId,
           });
           ctrl.abort();
           throw new Error("Unknown Error");
@@ -192,7 +213,7 @@ export default function useSession({
           const sseMessage = JSON.parse(msg.data);
           await handleChat({
             sseMessage,
-            _messages,
+            dummyId,
           });
         } catch {}
       },
@@ -205,7 +226,7 @@ export default function useSession({
             streaming: false,
             error: `An error occurred while streaming response. ${err.message}`,
           },
-          _messages,
+          dummyId,
         });
         ctrl.abort();
         throw new Error();
@@ -215,20 +236,22 @@ export default function useSession({
 
   async function handleChat({
     sseMessage,
-    _messages,
+    dummyId,
   }: {
     sseMessage: SSEMessage;
-    _messages: Message[];
+    dummyId: string;
   }) {
     const { id, textResponse, type, error, streaming } = sseMessage;
     const currentDate = new Date();
-    //    const formattedDate = format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+
+    const removeDummyMessage = (messages: Message[]) =>
+      messages.filter((msg) => msg.id !== dummyId);
 
     switch (type) {
       case "abort": {
         setLoading(false);
         setMessages((prevMessages) => [
-          ...prevMessages,
+          ...removeDummyMessage(prevMessages),
           {
             id,
             createdAt: currentDate,
@@ -237,49 +260,63 @@ export default function useSession({
             content: "",
             chatId: chat?.id,
             error: error,
-            streaming,
+            streaming: false,
             loading: false,
           },
         ]);
         break;
       }
       case "textResponseChunk": {
-        const chatIdx = _messages.findIndex((chat) => chat.id === id);
+        setMessages((prevMessages) => {
+          const updatedMessages = removeDummyMessage(prevMessages);
+          const existingIndex = updatedMessages.findIndex(
+            (msg) => msg.id === id
+          );
 
-        if (chatIdx !== -1) {
-          const existingMessage = { ..._messages[chatIdx] };
-          const updatedMessage = {
-            ...existingMessage,
-            content: (existingMessage.content ?? "") + (textResponse ?? ""),
-            streaming,
-          };
-          _messages[chatIdx] = updatedMessage;
-        } else {
-          _messages.push({
-            id,
-            chatId: chat?.id,
-            content: textResponse ?? "",
-            role: "assistant",
-            createdAt: currentDate,
-            updatedAt: currentDate,
-            streaming,
-            error: null,
-            loading: false,
-          });
-        }
+          if (existingIndex !== -1) {
+            updatedMessages[existingIndex] = {
+              ...updatedMessages[existingIndex],
+              content:
+                (updatedMessages[existingIndex].content ?? "") +
+                (textResponse ?? ""),
+              streaming,
+              loading: false,
+            };
+          } else {
+            updatedMessages.push({
+              id,
+              chatId: chat?.id,
+              content: textResponse ?? "",
+              role: "assistant",
+              createdAt: currentDate,
+              updatedAt: currentDate,
+              streaming,
+              error: null,
+              loading: false,
+              seenByAgent: true,
+            });
+          }
 
-        setMessages([..._messages]);
+          return updatedMessages;
+        });
+
         if (!streaming) {
           if (socket) {
-            const lastMessage = _messages[_messages.length - 1];
-            socket.emit("new message", {
-              chatId: chat?.id,
-              message: lastMessage,
+            setMessages((prevMessages) => {
+              const lastMessage = prevMessages[prevMessages.length - 1];
+              socket.emit("new message", {
+                chatId: chat?.id,
+                message: lastMessage,
+              });
+              return prevMessages;
             });
           }
 
           if (!isAgent) {
-            await generateFollowUps({ messages: _messages });
+            setMessages((prevMessages) => {
+              generateFollowUps({ messages: prevMessages });
+              return prevMessages;
+            });
           }
 
           setLoading(false);
@@ -287,6 +324,8 @@ export default function useSession({
         break;
       }
       default:
+        // In case of unknown message type, remove dummy message as a precaution
+        setMessages(removeDummyMessage);
         break;
     }
   }
@@ -305,6 +344,18 @@ export default function useSession({
     const { followUps } = await followUpRes.json();
     return setFollowUps(followUps);
   }
+
+  const recalculatePendingCount = useCallback((): void => {
+    const unseenMessagesCount = messages.filter((msg) => {
+      console.log(`${msg.content} - ${msg.seenByUser}\n`);
+      return !msg.seenByUser && msg.role !== "user";
+    }).length;
+    setPendingCount(unseenMessagesCount);
+  }, [messages]);
+
+  useEffect(() => {
+    recalculatePendingCount();
+  }, [recalculatePendingCount]);
 
   return {
     sessionId,

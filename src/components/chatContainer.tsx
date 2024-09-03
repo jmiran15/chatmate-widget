@@ -97,23 +97,23 @@ export default function ChatContainer({
         break;
       }
       case false: {
-        const prevChatHistory = [
-          ...messages,
-          newMessage,
-          {
-            id: v4(),
-            chatId: chat?.id,
-            createdAt: currentDate,
-            updatedAt: currentDate,
-            role: "assistant",
-            content: "",
-            streaming: true,
-            loading: true,
-            seenByAgent: true,
-          } as Message,
-        ];
+        // const prevChatHistory = [
+        //   ...messages,
+        //   newMessage,
+        //   {
+        //     id: v4(),
+        //     chatId: chat?.id,
+        //     createdAt: currentDate,
+        //     updatedAt: currentDate,
+        //     role: "assistant",
+        //     content: "",
+        //     streaming: true,
+        //     loading: true,
+        //     seenByAgent: true,
+        //   } as Message,
+        // ];
 
-        setMessages(prevChatHistory);
+        // setMessages(prevChatHistory);
         setMessage("");
 
         return await streamChat({

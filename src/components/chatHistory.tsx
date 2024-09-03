@@ -11,14 +11,8 @@ import React, {
 } from "react";
 import { Message } from "src/utils/types";
 import { useSessionContext } from "../providers/session";
-import { useSocket } from "../providers/socket";
 import HistoricalMessage from "./historicalMessage";
 import PromptReply from "./promptReply";
-
-interface AgentTyping {
-  chatId: string;
-  isTyping: boolean;
-}
 
 // Helper function to safely parse dates
 const safeParseDate = (dateString: string) => {
@@ -39,13 +33,12 @@ const ChatHistory: React.FC<{
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   setMessage: (message: string) => void;
 }> = ({ followUps, handleSubmit, setMessage }) => {
-  const { chat, setFollowUps, messages, setMessages } = useSessionContext();
+  const { messages } = useSessionContext();
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const lastFollowUpRef = useRef<HTMLButtonElement>(null);
-  const socket = useSocket();
 
   const scrollToLastFollowUp = useCallback(() => {
     lastFollowUpRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -134,124 +127,6 @@ const ChatHistory: React.FC<{
       );
     });
   };
-
-  const debouncedSetThread = useCallback(
-    debounce((updateFn: (prevThread: Message[]) => Message[]) => {
-      setMessages(updateFn);
-    }, 50),
-    []
-  );
-
-  const handleUserTyping = useCallback(
-    (data: AgentTyping) => {
-      if (chat.id !== data.chatId) return;
-
-      debouncedSetThread((prevThread) => {
-        const lastMessage = prevThread[prevThread.length - 1];
-        const isTypingMessage =
-          lastMessage?.role === "assistant" &&
-          lastMessage?.isPreview &&
-          lastMessage?.isTyping;
-
-        if (isTypingMessage === data.isTyping) {
-          return prevThread; // No change needed
-        }
-
-        if (data.isTyping) {
-          return [
-            ...prevThread,
-            {
-              id: `preview-${Date.now()}`,
-              role: "assistant",
-              isPreview: true,
-              isTyping: true,
-              content: "",
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              chatId: chat.id,
-              clusterId: null,
-              seenByUser: undefined,
-              seenByAgent: undefined,
-              seenByUserAt: undefined,
-              activity: undefined,
-              loading: true,
-              error: null,
-            },
-          ];
-        }
-
-        return isTypingMessage ? prevThread.slice(0, -1) : prevThread;
-      });
-    },
-    [chat?.id, debouncedSetThread]
-  );
-
-  const handleThread = useCallback(
-    (data: { chatId: string; message: any }) => {
-      if (chat.id === data.chatId) {
-        setMessages((prevThread) => {
-          const newMessage = data.message;
-          const newMessageTime = new Date(newMessage.createdAt).getTime();
-
-          // Check if the message already exists
-          const existingIndex = prevThread.findIndex(
-            (m) => m.id === newMessage.id
-          );
-          if (existingIndex !== -1) {
-            // Update existing message
-            const updatedThread = [...prevThread];
-            updatedThread[existingIndex] = {
-              ...updatedThread[existingIndex],
-              ...newMessage,
-              seenByAgent: updatedThread[existingIndex].seenByAgent,
-              seenByUser: updatedThread[existingIndex].seenByUser,
-              seenByUserAt:
-                updatedThread[existingIndex].seenByUserAt ||
-                newMessage.seenByUserAt,
-              createdAt: updatedThread[existingIndex].createdAt,
-              updatedAt: new Date(newMessage.updatedAt),
-            };
-            return updatedThread;
-          }
-
-          // Find the correct insertion position
-          let insertIndex = prevThread.length;
-          for (let i = prevThread.length - 1; i >= 0; i--) {
-            const currentMessageTime = new Date(
-              prevThread[i].createdAt
-            ).getTime();
-            if (currentMessageTime <= newMessageTime) {
-              insertIndex = i + 1;
-              break;
-            }
-          }
-
-          // Insert the new message at the correct position
-          const updatedThread = [...prevThread];
-          updatedThread.splice(insertIndex, 0, {
-            ...newMessage,
-            createdAt: new Date(newMessage.createdAt),
-            updatedAt: new Date(newMessage.updatedAt),
-          });
-          return updatedThread;
-        });
-        setFollowUps([]);
-      }
-    },
-    [chat?.id, setMessages, setFollowUps]
-  );
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("new message", handleThread);
-    socket.on("agent typing", handleUserTyping);
-
-    return () => {
-      socket.off("new message", handleThread);
-      socket.off("agent typing", handleUserTyping);
-    };
-  }, [socket, chat]);
 
   if (messages.length === 0) {
     return (

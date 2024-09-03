@@ -1,3 +1,4 @@
+import { useCallback, useEffect } from "react";
 import ChatWindow from "./components/chatWindow";
 import { ElapsedTimeDisplay } from "./components/ElapsedTimeDisplay";
 import Head from "./components/Head";
@@ -17,6 +18,11 @@ import { ChatbotProvider } from "./providers/chatbot";
 import { SessionProvider } from "./providers/session";
 import { SocketProvider } from "./providers/socket";
 import { useMobileScreen } from "./utils/mobile";
+
+interface AgentTyping {
+  chatId: string;
+  isTyping: boolean;
+}
 
 export default function App({ embedId }: { embedId: string }) {
   const socket = useConnectSocket();
@@ -45,6 +51,118 @@ export default function App({ embedId }: { embedId: string }) {
   const isRestricted = useIsRestricted({ chatbot });
   useWidgetConnection({ socket, sessionId });
   usePingInstallation(chatbot);
+
+  const handleUserTyping = useCallback(
+    (data: AgentTyping) => {
+      if (session?.chat?.id !== data.chatId) return;
+
+      session?.setMessages((prevThread) => {
+        const lastMessage = prevThread[prevThread.length - 1];
+        const isTypingMessage =
+          lastMessage?.role === "assistant" &&
+          lastMessage?.isPreview &&
+          lastMessage?.isTyping;
+
+        if (isTypingMessage && data.isTyping) {
+          return prevThread; // No change needed
+        } else if (isTypingMessage && !data.isTyping) {
+          return prevThread.slice(0, -1);
+        } else if (!isTypingMessage && data.isTyping) {
+          return [
+            ...prevThread,
+            {
+              id: `preview-${Date.now()}`,
+              role: "assistant",
+              isPreview: true,
+              isTyping: true,
+              content: "",
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              chatId: session?.chat?.id,
+              clusterId: null,
+              seenByUser: undefined,
+              seenByAgent: undefined,
+              seenByUserAt: undefined,
+              activity: undefined,
+              loading: true,
+              error: null,
+            },
+          ];
+        } else {
+          return prevThread;
+        }
+      });
+    },
+    [session?.chat?.id, session?.setMessages]
+  );
+
+  const handleThread = useCallback(
+    (data: { chatId: string; message: any }) => {
+      console.log("new message: ", { data });
+      if (session?.chat?.id === data.chatId) {
+        session?.setMessages((prevThread) => {
+          const newMessage = data.message;
+          const newMessageTime = new Date(newMessage.createdAt).getTime();
+
+          // Check if the message already exists
+          const existingIndex = prevThread.findIndex(
+            (m) => m.id === newMessage.id
+          );
+          if (existingIndex !== -1) {
+            // Update existing message
+            const updatedThread = [...prevThread];
+            updatedThread[existingIndex] = {
+              ...updatedThread[existingIndex],
+              ...newMessage,
+              seenByAgent: updatedThread[existingIndex].seenByAgent,
+              seenByUser: updatedThread[existingIndex].seenByUser,
+              seenByUserAt:
+                updatedThread[existingIndex].seenByUserAt ||
+                newMessage.seenByUserAt,
+              createdAt: updatedThread[existingIndex].createdAt,
+              updatedAt: new Date(newMessage.updatedAt),
+            };
+            return updatedThread;
+          }
+
+          // Find the correct insertion position
+          let insertIndex = prevThread.length;
+          for (let i = prevThread.length - 1; i >= 0; i--) {
+            const currentMessageTime = new Date(
+              prevThread[i].createdAt
+            ).getTime();
+            if (currentMessageTime <= newMessageTime) {
+              insertIndex = i + 1;
+              break;
+            }
+          }
+
+          // Insert the new message at the correct position
+          const updatedThread = [...prevThread];
+          updatedThread.splice(insertIndex, 0, {
+            ...newMessage,
+            createdAt: new Date(newMessage.createdAt),
+            updatedAt: new Date(newMessage.updatedAt),
+          });
+          return updatedThread;
+        });
+        session?.setFollowUps([]);
+      }
+    },
+    [session?.chat?.id, session?.setMessages, session?.setFollowUps]
+  );
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("new message", handleThread);
+    socket.on("agent typing", handleUserTyping);
+
+    return () => {
+      socket.off("new message", handleThread);
+      socket.off("agent typing", handleUserTyping);
+    };
+  }, [socket, session?.chat?.id]);
 
   if (!embedId || !chatbot || isRestricted) return null;
 
