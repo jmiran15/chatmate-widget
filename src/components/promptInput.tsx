@@ -1,5 +1,6 @@
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { CircleNotch } from "@phosphor-icons/react";
+import clsx from "clsx";
 import debounce from "lodash/debounce";
 import React, {
   useCallback,
@@ -35,29 +36,6 @@ const PromptInput: React.FC<{
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [isTyping, setIsTyping] = useState(false);
     const chatbot = useChatbot();
-
-    useEffect(() => {
-      if (isAgent) {
-        const contents = message.trim();
-        if (contents) {
-          if (isTyping) {
-            sendEvent({
-              isTyping: true,
-              typingState: "typing",
-              typedContents: contents,
-            });
-          } else {
-            sendEvent({
-              isTyping: false,
-              typingState: "typed",
-              typedContents: contents,
-            });
-          }
-        } else {
-          sendEvent({ isTyping: false });
-        }
-      }
-    }, [isAgent]);
 
     const sendEvent = useCallback(
       (event: {
@@ -169,6 +147,29 @@ const PromptInput: React.FC<{
       }
     }, [inputDisabled, sendEvent]);
 
+    useEffect(() => {
+      if (isAgent) {
+        const contents = message.trim();
+        if (contents) {
+          if (isTyping) {
+            sendEvent({
+              isTyping: true,
+              typingState: "typing",
+              typedContents: contents,
+            });
+          } else {
+            sendEvent({
+              isTyping: false,
+              typingState: "typed",
+              typedContents: contents,
+            });
+          }
+        } else {
+          sendEvent({ isTyping: false });
+        }
+      }
+    }, [isAgent, isTyping, message, sendEvent]);
+
     const themeColor = useMemo(
       () => colors[(chatbot?.themeColor || "zinc") as keyof typeof colors],
       [chatbot?.themeColor]
@@ -209,7 +210,7 @@ const PromptInput: React.FC<{
               />
             ) : (
               <PaperAirplaneIcon
-                className={`w-[16px] h-[16px] text-${themeColor}`}
+                className={clsx("w-[16px] h-[16px]", `text-${themeColor}`)}
                 aria-hidden="true"
               />
             )}

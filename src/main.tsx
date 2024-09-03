@@ -6,23 +6,23 @@ class MyWidgetElement extends HTMLElement {
   constructor() {
     super();
 
-    const shadowRoot = this.attachShadow({ mode: "open" });
+    const shadow = this.attachShadow({ mode: "open" });
     const appElement = document.createElement("div");
     appElement.id = "chatmate-widget-div";
-    shadowRoot.appendChild(appElement);
+    shadow.appendChild(appElement);
     const { embedId } = this.getScriptSettings();
     const root = ReactDOM.createRoot(appElement);
 
     root.render(
       <React.StrictMode>
-        <App embedId={embedId} />
-      </React.StrictMode>,
+        {embedId ? <App embedId={embedId} shadowRoot={shadow} /> : null}
+      </React.StrictMode>
     );
   }
 
   getScriptSettings() {
     const currentScript = document.querySelector(
-      "script[data-chatmate-widget-script]",
+      "script[data-chatmate-widget-script]"
     ) as HTMLScriptElement;
     return Object.assign({}, currentScript?.dataset || {});
   }

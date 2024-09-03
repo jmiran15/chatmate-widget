@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
 import { useMobileScreen } from "../utils/mobile";
@@ -10,9 +10,11 @@ const ChatWindow = React.memo(
   ({
     handleUserActivity,
     closeChat,
+    shadowRoot,
   }: {
     handleUserActivity: () => void;
     closeChat: () => void;
+    shadowRoot: ShadowRoot | null;
   }) => {
     const chatbot = useChatbot();
     const isMobile = useMobileScreen();
@@ -24,43 +26,59 @@ const ChatWindow = React.memo(
         borderRadius: isMobile ? "0rem" : `${chatbot?.containerRadius}rem`,
         ...(isMobile ? {} : { [isLeftAligned ? "left" : "right"]: "20px" }),
       }),
-      [isMobile, chatbot?.containerRadius, isLeftAligned],
+      [isMobile, chatbot?.containerRadius, isLeftAligned]
     );
 
     // TOOD - copy code doesn't work - probably because the widget is inside a shadow root.
-    const copyCodeSnippet = useCallback((uuid: string) => {
-      const target = document.querySelector(`[data-code="${uuid}"]`);
-      if (!target) return false;
+    const copyCodeSnippet = useCallback(
+      (uuid: string) => {
+        if (!shadowRoot) return false;
 
-      const markdown =
-        target.parentElement?.parentElement?.querySelector(
-          "pre:first-of-type",
-        )?.textContent;
-      if (!markdown) return false;
+        const target = shadowRoot.querySelector(`[data-code="code-${uuid}"]`);
+        if (!target) return false;
 
-      navigator.clipboard.writeText(markdown);
-      target.classList.add("text-green-500");
-      const originalText = target.innerHTML;
-      target.textContent = "Copied!";
-      target.setAttribute("disabled", "true");
+        const codeBlock = target
+          .closest(".whitespace-pre-line")
+          ?.querySelector("pre");
+        const codeContent = codeBlock?.textContent;
+        if (!codeContent) return false;
 
-      setTimeout(() => {
-        target.classList.remove("text-green-500");
-        target.innerHTML = originalText;
-        target.removeAttribute("disabled");
-      }, 2500);
-    }, []);
+        navigator.clipboard.writeText(codeContent.trim());
 
-    React.useEffect(() => {
-      const handleClick = (e: MouseEvent) => {
+        const buttonText = target.querySelector("p");
+        if (buttonText) {
+          const originalText = buttonText.textContent;
+          buttonText.textContent = "Copied!";
+          target.setAttribute("disabled", "true");
+
+          setTimeout(() => {
+            buttonText.textContent = originalText;
+            target.removeAttribute("disabled");
+          }, 2500);
+        }
+
+        return true;
+      },
+      [shadowRoot]
+    );
+
+    useEffect(() => {
+      if (!shadowRoot) return;
+
+      const handleClick = (e: Event) => {
         const target = (e.target as Element).closest("[data-code-snippet]");
-        const uuidCode = target?.getAttribute("data-code");
-        if (uuidCode) copyCodeSnippet(uuidCode);
+        if (target) {
+          const uuidCode = target.getAttribute("data-code");
+          if (uuidCode) {
+            e.preventDefault();
+            copyCodeSnippet(uuidCode.replace("code-", ""));
+          }
+        }
       };
 
-      document.addEventListener("click", handleClick);
-      return () => document.removeEventListener("click", handleClick);
-    }, [copyCodeSnippet]);
+      shadowRoot.addEventListener("click", handleClick);
+      return () => shadowRoot.removeEventListener("click", handleClick);
+    }, [copyCodeSnippet, shadowRoot]);
 
     if (loading) {
       return (
@@ -87,7 +105,7 @@ const ChatWindow = React.memo(
         <ChatContainer handleUserActivity={handleUserActivity} />
       </div>
     );
-  },
+  }
 );
 
 export default ChatWindow;

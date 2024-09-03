@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from "react";
 import ChatWindow from "./components/chatWindow";
-import { ElapsedTimeDisplay } from "./components/ElapsedTimeDisplay";
 import Head from "./components/Head";
 import OpenButton from "./components/openButton";
 import PendingMessages from "./components/pendingMessages";
@@ -19,12 +18,12 @@ import { SessionProvider } from "./providers/session";
 import { SocketProvider } from "./providers/socket";
 import { useMobileScreen } from "./utils/mobile";
 
-interface AgentTyping {
-  chatId: string;
-  isTyping: boolean;
+interface AppProps {
+  embedId: string;
+  shadowRoot: ShadowRoot;
 }
 
-export default function App({ embedId }: { embedId: string }) {
+export default function App({ embedId, shadowRoot }: AppProps) {
   const socket = useConnectSocket();
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const isMobile = useMobileScreen();
@@ -32,7 +31,7 @@ export default function App({ embedId }: { embedId: string }) {
   const chatbot = useChatbot(embedId);
   const session = useSession({ embedId, sessionId, socket });
 
-  const { activeTime, handleUserActivity } = useTimeTracking({
+  const { handleUserActivity } = useTimeTracking({
     isChatOpen,
     sessionId,
     embedId,
@@ -98,7 +97,6 @@ export default function App({ embedId }: { embedId: string }) {
 
   const handleThread = useCallback(
     (data: { chatId: string; message: any }) => {
-      console.log("new message: ", { data });
       if (session?.chat?.id === data.chatId) {
         session?.setMessages((prevThread) => {
           const newMessage = data.message;
@@ -173,12 +171,13 @@ export default function App({ embedId }: { embedId: string }) {
           <Head />
           <div>
             {/* only in dev */}
-            <ElapsedTimeDisplay activeTime={activeTime} />
+            {/* <ElapsedTimeDisplay activeTime={activeTime} /> */}
 
             {isChatOpen && (
               <ChatWindow
                 handleUserActivity={handleUserActivity}
                 closeChat={() => toggleOpenChat(false)}
+                shadowRoot={shadowRoot}
               />
             )}
             {(!isMobile || !isChatOpen) && (

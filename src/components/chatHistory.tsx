@@ -79,7 +79,14 @@ const ChatHistory: React.FC<{
     } else {
       setShowScrollButton(true);
     }
-  }, [messages, followUps, isAtBottom, scrollToBottom, scrollToLastFollowUp]);
+  }, [
+    // messages,
+    followUps,
+    isAtBottom,
+    scrollToBottom,
+    scrollToLastFollowUp,
+    setShowScrollButton,
+  ]);
 
   const renderMessages = () => {
     let lastMessageDate: Date | null = null;

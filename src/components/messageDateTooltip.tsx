@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 
 const MessageDateTooltip: React.FC<{
-  date: string | Date;
+  date: Date;
   parentRef: React.RefObject<HTMLElement>;
 }> = ({ date, parentRef }) => {
   const [position, setPosition] = useState<"left" | "right">("left");

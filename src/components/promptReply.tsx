@@ -1,9 +1,9 @@
 import { Warning } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
+import { Message } from "src/utils/types";
 import renderMarkdown from "../utils/markdown";
 import MessageDateTooltip from "./messageDateTooltip";
-import { Message } from "src/utils/types";
 
 const PromptReply = React.forwardRef<
   HTMLDivElement,
@@ -100,10 +100,7 @@ const PromptReply = React.forwardRef<
     >
       <AnimatePresence>
         {showTooltip && (
-          <MessageDateTooltip
-            date={createdAt}
-            chatHistoryRef={chatHistoryRef}
-          />
+          <MessageDateTooltip date={createdAt} parentRef={chatHistoryRef} />
         )}
       </AnimatePresence>
       <span

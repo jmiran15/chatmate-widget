@@ -63,7 +63,7 @@ const HistoricalMessage: React.FC<{
       }
     }
     return false;
-  }, [id, seenByUser, streaming, error, role, socket]);
+  }, [chatId, id, seenByUser, streaming, error, role, socket]);
 
   const checkVisibility = useCallback(() => {
     if (messageRef.current) {

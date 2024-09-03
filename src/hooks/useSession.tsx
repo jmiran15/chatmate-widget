@@ -215,7 +215,19 @@ export default function useSession({
             sseMessage,
             dummyId,
           });
-        } catch {}
+        } catch (error) {
+          console.error("Error parsing SSE message:", error);
+          handleChat({
+            sseMessage: {
+              id: v4(),
+              type: "abort",
+              textResponse: null,
+              streaming: false,
+              error: "An error occurred while processing the server response.",
+            },
+            dummyId,
+          });
+        }
       },
       onerror(err) {
         handleChat({
@@ -348,7 +360,13 @@ export default function useSession({
   const recalculatePendingCount = useCallback((): void => {
     const unseenMessagesCount = messages.filter((msg) => {
       console.log(`${msg.content} - ${msg.seenByUser}\n`);
-      return !msg.seenByUser && msg.role !== "user";
+      return (
+        !msg.seenByUser &&
+        msg.role !== "user" &&
+        !msg.streaming &&
+        !msg.loading &&
+        !msg.isPreview
+      );
     }).length;
     setPendingCount(unseenMessagesCount);
   }, [messages]);

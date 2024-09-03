@@ -30,7 +30,7 @@ export default function ChatContainer({
     setFollowUps,
   } = useSessionContext();
   const socket = useSocket();
-  const { isAgent } = useIsAgent({ chatId: chat?.id || "", socket });
+  const { isAgent } = useIsAgent({ chatId: chat?.id, socket });
 
   const showInitalStarterQuestions = useMemo(() => {
     return messages.length <= (chatbot?.introMessages?.length || 0);

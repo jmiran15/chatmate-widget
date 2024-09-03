@@ -4,6 +4,7 @@ import {
   ChevronDownIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
+import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useMemo, useState } from "react";
 import { Chatbot } from "src/utils/types";
@@ -30,9 +31,7 @@ const OpenButton = React.memo(
     const [shouldAnimate, setShouldAnimate] = useState(false);
 
     useEffect(() => {
-      if (isOpen) {
-        setShouldAnimate(true);
-      }
+      setShouldAnimate(isOpen);
     }, [isOpen]);
 
     const isLeftAligned = chatbot.widgetPosition === "BOTTOM_LEFT";
@@ -41,16 +40,17 @@ const OpenButton = React.memo(
       () =>
         CHAT_ICONS[(chatbot?.openIcon || "plus") as keyof typeof CHAT_ICONS] ||
         CHAT_ICONS.plus,
-      [chatbot?.openIcon],
+      [chatbot?.openIcon]
     );
 
-    const buttonClasses = useMemo(
-      () =>
-        `flex items-center justify-center p-0 rounded-full bg-${
-          colors[chatbot?.themeColor as keyof typeof colors]
-        } text-white text-2xl border-none shadow-lg focus:outline-none cursor-pointer box-content m-0`,
-      [chatbot?.themeColor],
-    );
+    const buttonClasses = useMemo(() => {
+      const colorClass = `bg-${colors[chatbot?.themeColor as keyof typeof colors]}`;
+      return clsx(
+        "flex items-center justify-center p-0 rounded-full",
+        colorClass,
+        "text-white text-2xl border-none shadow-lg focus:outline-none cursor-pointer box-content m-0"
+      );
+    }, [chatbot?.themeColor]);
 
     const iconClasses = "text-white w-[24px] h-[24px]";
 
@@ -132,7 +132,7 @@ const OpenButton = React.memo(
         </motion.div>
       </motion.div>
     );
-  },
+  }
 );
 
 export default OpenButton;
