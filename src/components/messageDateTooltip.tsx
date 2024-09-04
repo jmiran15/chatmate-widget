@@ -8,7 +8,7 @@ const MessageDateTooltip: React.FC<{
 }> = ({ date, parentRef }) => {
   const [position, setPosition] = useState<"left" | "right">("left");
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const formattedDate = format(new Date(date), "MMM d, yyyy 'at' h:mm a");
+  const formattedDate = format(date, "MMM d, yyyy 'at' h:mm a");
 
   useEffect(() => {
     const updatePosition = () => {

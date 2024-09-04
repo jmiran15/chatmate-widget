@@ -31,7 +31,7 @@ const ChatWindow = React.memo(
 
     // TOOD - copy code doesn't work - probably because the widget is inside a shadow root.
     const copyCodeSnippet = useCallback(
-      (uuid: string) => {
+      async (uuid: string) => {
         if (!shadowRoot) return false;
 
         const target = shadowRoot.querySelector(`[data-code="code-${uuid}"]`);
@@ -43,21 +43,26 @@ const ChatWindow = React.memo(
         const codeContent = codeBlock?.textContent;
         if (!codeContent) return false;
 
-        navigator.clipboard.writeText(codeContent.trim());
+        try {
+          await navigator.clipboard.writeText(codeContent.trim());
 
-        const buttonText = target.querySelector("p");
-        if (buttonText) {
-          const originalText = buttonText.textContent;
-          buttonText.textContent = "Copied!";
-          target.setAttribute("disabled", "true");
+          const buttonText = target.querySelector("p");
+          if (buttonText) {
+            const originalText = buttonText.textContent;
+            buttonText.textContent = "Copied!";
+            target.setAttribute("disabled", "true");
 
-          setTimeout(() => {
-            buttonText.textContent = originalText;
-            target.removeAttribute("disabled");
-          }, 2500);
+            setTimeout(() => {
+              buttonText.textContent = originalText;
+              target.removeAttribute("disabled");
+            }, 2500);
+          }
+
+          return true;
+        } catch (err) {
+          console.error("Failed to copy text: ", err);
+          return false;
         }
-
-        return true;
       },
       [shadowRoot]
     );

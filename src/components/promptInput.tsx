@@ -159,7 +159,7 @@ const PromptInput: React.FC<{
             });
           } else {
             sendEvent({
-              isTyping: false,
+              isTyping: true,
               typingState: "typed",
               typedContents: contents,
             });

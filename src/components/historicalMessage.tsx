@@ -44,21 +44,29 @@ const HistoricalMessage: React.FC<{
       try {
         const currentDate = new Date().toISOString();
 
-        await fetch(`${API_PATH}/api/seen/${id}`, {
+        const response = await fetch(`${API_PATH}/api/seen/${id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ seenAt: currentDate }),
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         socket.emit("seenAgentMessage", {
           chatId,
           messageId: id,
           seenAt: currentDate,
         });
+
         return true;
       } catch (error) {
         console.error("Error marking message as seen:", error);
+        // Consider adding a user-friendly error notification here
+        // For example: notifyUser("Failed to mark message as seen. Please try again.");
         return false;
       }
     }
@@ -133,14 +141,11 @@ const HistoricalMessage: React.FC<{
 
   if (message.activity) {
     return (
-      <>
-        <TextSeparator
-          ref={messageRef}
-          text={message.content}
-          className="mb-[16px]"
-        />
-        <p>Seen by user: {seenByUser ? "Yes" : "No"}</p>
-      </>
+      <TextSeparator
+        ref={messageRef}
+        text={message.content}
+        className="mb-[16px]"
+      />
     );
   }
 
@@ -159,7 +164,6 @@ const HistoricalMessage: React.FC<{
           />
         )}
       </AnimatePresence>
-      <p>Seen by user: {seenByUser ? "Yes" : "No"}</p>
       {error ? (
         <div className="p-2 rounded-lg bg-red-50 text-red-500">
           <span className="inline-block">

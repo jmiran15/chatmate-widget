@@ -23,6 +23,11 @@ interface AppProps {
   shadowRoot: ShadowRoot;
 }
 
+interface AgentTyping {
+  chatId: string;
+  isTyping: boolean;
+}
+
 export default function App({ embedId, shadowRoot }: AppProps) {
   const socket = useConnectSocket();
   const { isChatOpen, toggleOpenChat } = useOpenChat();
@@ -35,7 +40,7 @@ export default function App({ embedId, shadowRoot }: AppProps) {
     isChatOpen,
     sessionId,
     embedId,
-    initialActiveTime: session?.chat?.elapsedMs || 0,
+    initialActiveTime: session?.chat?.elapsedMs ?? 0,
   });
   const {
     showStarterPreviews,
@@ -194,7 +199,9 @@ export default function App({ embedId, shadowRoot }: AppProps) {
                   isOpen={isChatOpen}
                   toggleOpen={() => toggleOpenChat(!isChatOpen)}
                   chatbot={chatbot}
-                  pending={showStarterPreviews ? 0 : session?.pendingCount}
+                  pending={
+                    showStarterPreviews ? 0 : (session?.pendingCount ?? 0)
+                  }
                 />
               </>
             )}

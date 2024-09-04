@@ -1,22 +1,32 @@
 import { BoltIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import React, { useCallback, useMemo, useState } from "react";
+import { useIsAgent } from "../hooks/useIsAgent";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
+import { useSocket } from "../providers/socket";
 import { colors } from "../utils/constants";
 import { useMobileScreen } from "../utils/mobile";
 
 const ChatWindowHeader = React.memo(
   ({ closeChat }: { closeChat: () => void }) => {
     const [showingOptions, setShowOptions] = useState(false);
-    const { resetSession } = useSessionContext();
+    const { resetSession, chat } = useSessionContext();
     const chatbot = useChatbot();
     const isMobile = useMobileScreen();
+    const socket = useSocket();
+    const { isAgent } = useIsAgent({ chatId: chat?.id, socket });
 
     const handleChatReset = useCallback(async () => {
-      const res = await resetSession();
-      if (res) {
-        setShowOptions(false);
+      try {
+        const res = await resetSession();
+        if (res) {
+          setShowOptions(false);
+        } else {
+          throw new Error("Failed to reset chat");
+        }
+      } catch (error) {
+        console.error("Error resetting chat:", error);
       }
     }, [resetSession]);
 
@@ -27,7 +37,7 @@ const ChatWindowHeader = React.memo(
     const headerBgColor = useMemo(
       () =>
         `bg-${colors[(chatbot?.themeColor ?? "zinc") as keyof typeof colors]}`,
-      [chatbot?.themeColor],
+      [chatbot?.themeColor]
     );
 
     return (
@@ -47,7 +57,9 @@ const ChatWindowHeader = React.memo(
               <h1 className="text-base font-semibold text-white">
                 {chatbot?.publicName}
               </h1>
-              <div className="text-sm text-white/80">AI chat</div>
+              <div className="text-sm text-white/80">
+                Chatting with {isAgent ? "Agent" : "AI"}
+              </div>
             </div>
           </button>
           <HeaderButton onClick={toggleOptions} ariaLabel="Options">
@@ -62,7 +74,7 @@ const ChatWindowHeader = React.memo(
         <OptionsMenu showing={showingOptions} resetChat={handleChatReset} />
       </nav>
     );
-  },
+  }
 );
 
 const HeaderButton = React.memo(
@@ -83,7 +95,7 @@ const HeaderButton = React.memo(
     >
       {children}
     </button>
-  ),
+  )
 );
 
 const OptionsMenu = React.memo(
@@ -100,7 +112,7 @@ const OptionsMenu = React.memo(
         </button>
       </div>
     );
-  },
+  }
 );
 
 export default ChatWindowHeader;

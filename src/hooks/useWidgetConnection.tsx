@@ -31,11 +31,16 @@ export function useWidgetConnection({
     socket.on("pollingWidgetStatus", handlePollingWidgetStatus);
 
     socket.emit("widgetConnected", { sessionId, connected: true });
+    // TODO
+    // update last seen - maybe send it in the widgetConnected event
+    // then on WidgetConnected, update last seen in prisma db
+    // in the anon sidebar we check if widget is connected, if not, show the last seen time. If close by, show distance (e.g, 10 seconds ago), if not close by, show last seen time
 
     return () => {
       socket.off("confirmation", handleConfirmation);
       socket.off("pollingWidgetStatus", handlePollingWidgetStatus);
       socket.emit("widgetConnected", { sessionId, connected: false });
+      // update last seen
     };
   }, [socket, sessionId]);
 }
