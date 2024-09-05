@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { API_PATH } from "../utils/constants";
-import { Chatbot } from "src/utils/types";
+import { Chatbot } from "../utils/types";
 
 interface InstallationData {
   lastPingedAt: Date;
@@ -31,7 +31,7 @@ export function usePingInstallation(chatbot: Chatbot | null) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(installationData),
-          }
+          },
         );
 
         if (!response.ok) {
@@ -39,7 +39,6 @@ export function usePingInstallation(chatbot: Chatbot | null) {
         }
 
         const { chatbot: updatedChatbot } = await response.json();
-        console.log("Installation status updated:", updatedChatbot);
       } catch (error) {
         console.error("Error updating installation status:", error);
       }

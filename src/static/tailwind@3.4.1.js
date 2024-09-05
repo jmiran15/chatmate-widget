@@ -35,10 +35,10 @@
             "default",
             i && i.__esModule && "default" in i
               ? { get: () => i.default, enumerable: !0 }
-              : { value: i, enumerable: !0 }
-          )
+              : { value: i, enumerable: !0 },
+          ),
         ),
-        i
+        i,
       );
   var h,
     l = C(() => {
@@ -131,7 +131,7 @@
         t,
         {
           maxAge: r = this.maxAge === 1 / 0 ? void 0 : Date.now() + this.maxAge,
-        } = {}
+        } = {},
       ) {
         this.cache.has(e)
           ? this.cache.set(e, { value: t, maxAge: r })
@@ -429,7 +429,7 @@
             ...new Set(
               e
                 .filter((r) => i !== !1 && i[r] !== !1)
-                .concat(Object.keys(i).filter((r) => i[r] !== !1))
+                .concat(Object.keys(i).filter((r) => i[r] !== !1)),
             ),
           ];
   }
@@ -467,7 +467,7 @@
           ["content-problems"].includes(i) ||
             Jn(
               _e.bold(_e.yellow("warn")),
-              ...(Array.isArray(i) ? [i] : [e, i])
+              ...(Array.isArray(i) ? [i] : [e, i]),
             );
         },
         risk(i, e) {
@@ -840,7 +840,7 @@
     return i.experimental === "all"
       ? di.experimental
       : Object.keys(i?.experimental ?? {}).filter(
-          (e) => di.experimental.includes(e) && i.experimental[e]
+          (e) => di.experimental.includes(e) && i.experimental[e],
         );
   }
   function _u(i) {
@@ -896,12 +896,12 @@
             : !(
                 typeof t?.raw != "string" ||
                 (t?.extension && typeof t?.extension != "string")
-              )
+              ),
         );
       if (typeof i.content == "object" && i.content !== null) {
         if (
           Object.keys(i.content).some(
-            (t) => !["files", "relative", "extract", "transform"].includes(t)
+            (t) => !["files", "relative", "extract", "transform"].includes(t),
           )
         )
           return !1;
@@ -913,7 +913,7 @@
                 : !(
                     typeof t?.raw != "string" ||
                     (t?.extension && typeof t?.extension != "string")
-                  )
+                  ),
             )
           )
             return !1;
@@ -1253,14 +1253,14 @@
     if (i in ts) return { mode: "rgb", color: ts[i].map((a) => a.toString()) };
     let t = i
       .replace(Tb, (a, s, o, u, c) =>
-        ["#", s, s, o, o, u, u, c ? c + c : ""].join("")
+        ["#", s, s, o, o, u, u, c ? c + c : ""].join(""),
       )
       .match(Eb);
     if (t !== null)
       return {
         mode: "rgb",
         color: [parseInt(t[1], 16), parseInt(t[2], 16), parseInt(t[3], 16)].map(
-          (a) => a.toString()
+          (a) => a.toString(),
         ),
         alpha: t[4] ? (parseInt(t[4], 16) / 255).toString() : void 0,
       };
@@ -1298,10 +1298,10 @@
         (Pu = /\s*[,/]\s*/),
         (tt = /var\(--(?:[^ )]*?)(?:,(?:[^ )]*?|var\(--[^ )]*?\)))?\)/),
         (Pb = new RegExp(
-          `^(rgba?)\\(\\s*(${et.source}|${tt.source})(?:${gi.source}(${et.source}|${tt.source}))?(?:${gi.source}(${et.source}|${tt.source}))?(?:${Pu.source}(${et.source}|${tt.source}))?\\s*\\)$`
+          `^(rgba?)\\(\\s*(${et.source}|${tt.source})(?:${gi.source}(${et.source}|${tt.source}))?(?:${gi.source}(${et.source}|${tt.source}))?(?:${Pu.source}(${et.source}|${tt.source}))?\\s*\\)$`,
         )),
         (Db = new RegExp(
-          `^(hsla?)\\(\\s*((?:${et.source})(?:deg|rad|grad|turn)?|${tt.source})(?:${gi.source}(${et.source}|${tt.source}))?(?:${gi.source}(${et.source}|${tt.source}))?(?:${Pu.source}(${et.source}|${tt.source}))?\\s*\\)$`
+          `^(hsla?)\\(\\s*((?:${et.source})(?:deg|rad|grad|turn)?|${tt.source})(?:${gi.source}(${et.source}|${tt.source}))?(?:${gi.source}(${et.source}|${tt.source}))?(?:${Pu.source}(${et.source}|${tt.source}))?\\s*\\)$`,
         ));
     });
   function De(i, e, t) {
@@ -1318,7 +1318,7 @@
           r.map((a) => [
             a,
             i({ opacityVariable: t, opacityValue: `var(${t})` }),
-          ])
+          ]),
         ),
       };
     let n = ar(i);
@@ -1329,7 +1329,7 @@
         : {
             [t]: "1",
             ...Object.fromEntries(
-              r.map((a) => [a, rs({ ...n, alpha: `var(${t})` })])
+              r.map((a) => [a, rs({ ...n, alpha: `var(${t})` })]),
             ),
           };
   }
@@ -1393,7 +1393,7 @@
           ? [e.keyword, e.x, e.y, e.blur, e.spread, e.color]
               .filter(Boolean)
               .join(" ")
-          : e.raw
+          : e.raw,
       )
       .join(", ");
   }
@@ -1526,7 +1526,7 @@
           : ar(r, { loose: !0 }) !== null
             ? (e++, !0)
             : !1
-      )
+      ),
     )
       ? e > 0
       : !1;
@@ -1541,11 +1541,11 @@
           : as(r) ||
               jb(r) ||
               ["element(", "image(", "cross-fade(", "image-set("].some((n) =>
-                r.startsWith(n)
+                r.startsWith(n),
               )
             ? (e++, !0)
             : !1
-      )
+      ),
     )
       ? e > 0
       : !1;
@@ -1561,7 +1561,7 @@
       (r) => (
         (r = N(r)),
         r.startsWith("var(") ? !0 : zb.has(r) || ur(r) || lr(r) ? (e++, !0) : !1
-      )
+      ),
     )
       ? e > 0
       : !1;
@@ -1576,7 +1576,7 @@
           : (r.includes(" ") && !/(['"])([^"']+)\1/g.test(r)) || /^\d/g.test(r)
             ? !1
             : (e++, !0)
-      )
+      ),
     )
       ? e > 0
       : !1;
@@ -1880,9 +1880,9 @@
     return i.reduce(
       (e, { extend: t }) =>
         pr(e, t, (r, n) =>
-          r === void 0 ? [n] : Array.isArray(r) ? [n, ...r] : [n, r]
+          r === void 0 ? [n] : Array.isArray(r) ? [n, ...r] : [n, r],
         ),
-      {}
+      {},
     );
   }
   function Kb(i) {
@@ -1897,7 +1897,7 @@
     return pr(e, i, (t, r) =>
       !At(t) && !r.some(At)
         ? pr({}, t, ...r, Qu)
-        : (n, a) => pr({}, ...[t, ...r].map((s) => Jb(s, n, a)), Qu)
+        : (n, a) => pr({}, ...[t, ...r].map((s) => Jb(s, n, a)), Qu),
     );
   }
   function* e0(i) {
@@ -1936,7 +1936,7 @@
       Object.assign(e, { theme: e, ...ps }),
       Object.keys(i).reduce(
         (t, r) => ((t[r] = At(i[r]) ? i[r](e, ps) : i[r]), t),
-        {}
+        {},
       )
     );
   }
@@ -1958,7 +1958,7 @@
   function r0(i) {
     return [...i].reduceRight(
       (t, r) => (At(r) ? r({ corePlugins: t }) : wu(r, t)),
-      gu
+      gu,
     );
   }
   function i0(i) {
@@ -1973,8 +1973,8 @@
           corePlugins: r0(e.map((t) => t.corePlugins)),
           plugins: i0(i.map((t) => t?.plugins ?? [])),
         },
-        ...e
-      )
+        ...e,
+      ),
     );
   }
   var ps,
@@ -3212,7 +3212,7 @@
           throw new Error(
             "Unknown AST node type " +
               e.type +
-              ". Maybe you need to change PostCSS stringifier."
+              ". Maybe you need to change PostCSS stringifier.",
           );
         this[e.type](e, t);
       }
@@ -3534,7 +3534,7 @@
             e,
             { line: r.line, column: r.column },
             { line: n.line, column: n.column },
-            t
+            t,
           );
         }
         return new f0(e);
@@ -3636,7 +3636,7 @@
           let o = this[s];
           if (Array.isArray(o))
             r[s] = o.map((u) =>
-              typeof u == "object" && u.toJSON ? u.toJSON(null, t) : u
+              typeof u == "object" && u.toJSON ? u.toJSON(null, t) : u,
             );
           else if (typeof o == "object" && o.toJSON) r[s] = o.toJSON(null, t);
           else if (s === "source") {
@@ -3736,7 +3736,7 @@
           let t = this.source;
           e.stack = e.stack.replace(
             /\n\s{4}at /,
-            `$&${t.input.from}:${t.start.line}:${t.start.column}$&`
+            `$&${t.input.from}:${t.start.line}:${t.start.column}$&`,
           );
         }
         return e;
@@ -3817,7 +3817,7 @@
       kf;
     function Sf(i) {
       return i.map(
-        (e) => (e.nodes && (e.nodes = Sf(e.nodes)), delete e.source, e)
+        (e) => (e.nodes && (e.nodes = Sf(e.nodes)), delete e.source, e),
       );
     }
     function Cf(i) {
@@ -4014,7 +4014,7 @@
               (n.raws.before = t.raws.before.replace(/\S/g, "")),
             (n.parent = this.proxyOf),
             n
-          )
+          ),
         );
       }
       getProxyProcessor() {
@@ -4038,8 +4038,8 @@
                         ...r.map((n) =>
                           typeof n == "function"
                             ? (a, s) => n(a.toProxy(), s)
-                            : n
-                        )
+                            : n,
+                        ),
                       )
                   : t === "every" || t === "some"
                     ? (r) => e[t]((n, ...a) => r(n.toProxy(), ...a))
@@ -4890,21 +4890,21 @@
         throw this.input.error(
           "Unclosed bracket",
           { offset: e[2] },
-          { offset: e[2] + 1 }
+          { offset: e[2] + 1 },
         );
       }
       unknownWord(e) {
         throw this.input.error(
           "Unknown word",
           { offset: e[0][2] },
-          { offset: e[0][2] + e[0][1].length }
+          { offset: e[0][2] + e[0][1].length },
         );
       }
       unexpectedClose(e) {
         throw this.input.error(
           "Unexpected }",
           { offset: e[2] },
-          { offset: e[2] + 1 }
+          { offset: e[2] + 1 },
         );
       }
       unclosedBlock() {
@@ -4915,14 +4915,14 @@
         throw this.input.error(
           "Double colon",
           { offset: e[2] },
-          { offset: e[2] + e[1].length }
+          { offset: e[2] + e[1].length },
         );
       }
       unnamedAtrule(e, t) {
         throw this.input.error(
           "At-rule without name",
           { offset: t[2] },
-          { offset: t[2] + t[1].length }
+          { offset: t[2] + t[1].length },
         );
       }
       precheckMissedSemicolon() {}
@@ -4938,7 +4938,7 @@
         );
         throw this.input.error(
           "Missed semicolon",
-          n[0] === "word" ? n[3] + 1 : n[2]
+          n[0] === "word" ? n[3] + 1 : n[2],
         );
       }
     };
@@ -5070,7 +5070,7 @@
                     : { line: u.endLine, column: u.endColumn },
                   u.source,
                   u.file,
-                  n.plugin
+                  n.plugin,
                 ))
               : (a = new ic(
                   e,
@@ -5078,7 +5078,7 @@
                   s === void 0 ? r : { line: s, column: o },
                   this.css,
                   this.file,
-                  n.plugin
+                  n.plugin,
                 )),
             (a.input = {
               line: t,
@@ -5106,7 +5106,7 @@
             ? (u = zi(s.source))
             : (u = new URL(
                 s.source,
-                this.map.consumer().sourceRoot || zi(this.map.mapFile)
+                this.map.consumer().sourceRoot || zi(this.map.mapFile),
               ));
           let c = {
             url: u.toString(),
@@ -5119,7 +5119,7 @@
             if (rc) c.file = rc(u);
             else
               throw new Error(
-                "file: protocol is not available in this PostCSS build"
+                "file: protocol is not available in this PostCSS build",
               );
           let f = a.sourceContentFor(s.source);
           return f && (c.source = f), c;
@@ -5282,7 +5282,7 @@
             (this.plugins = this.processor.plugins.map((a) =>
               typeof a == "object" && a.prepare
                 ? { ...a, ...a.prepare(this.result) }
-                : a
+                : a,
             ));
         }
         get [Symbol.toStringTag]() {
@@ -5400,7 +5400,7 @@
             if (typeof e == "object" && e.Once) {
               if (this.result.root.type === "document") {
                 let t = this.result.root.nodes.map((r) =>
-                  e.Once(r, this.helpers)
+                  e.Once(r, this.helpers),
                 );
                 return Sr(t[0]) ? Promise.all(t) : t;
               }
@@ -5413,7 +5413,7 @@
         }
         getAsyncError() {
           throw new Error(
-            "Use process(css).then(cb) to work with async plugins"
+            "Use process(css).then(cb) to work with async plugins",
           );
         }
         handleError(e, t) {
@@ -5483,7 +5483,7 @@
               for (let r in t) {
                 if (!tv[r] && /^[A-Z]/.test(r))
                   throw new Error(
-                    `Unknown event ${r} in ${t.postcssPlugin}. Try to update PostCSS (${this.processor.version} now).`
+                    `Unknown event ${r} in ${t.postcssPlugin}. Try to update PostCSS (${this.processor.version} now).`,
                   );
                 if (!rv[r])
                   if (typeof t[r] == "object")
@@ -5753,14 +5753,14 @@
           console.warn(
             e +
               `: postcss.plugin was deprecated. Migration guide:
-https://evilmartians.com/chronicles/postcss-8-plugin-migration`
+https://evilmartians.com/chronicles/postcss-8-plugin-migration`,
           ),
           h.env.LANG &&
             h.env.LANG.startsWith("cn") &&
             console.warn(
               e +
                 `: \u91CC\u9762 postcss.plugin \u88AB\u5F03\u7528. \u8FC1\u79FB\u6307\u5357:
-https://www.w3ctech.com/topic/2226`
+https://www.w3ctech.com/topic/2226`,
             ));
         let o = t(...s);
         return (o.postcssPlugin = e), (o.postcssVersion = new Ns().version), o;
@@ -7126,15 +7126,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       m1 = /^('|")([^]*)\1$/,
       g1 = Nr(
         function () {},
-        "Assigning an attribute a value containing characters that might need to be escaped is deprecated. Call attribute.setValue() instead."
+        "Assigning an attribute a value containing characters that might need to be escaped is deprecated. Call attribute.setValue() instead.",
       ),
       y1 = Nr(
         function () {},
-        "Assigning attr.quoted is deprecated and has no effect. Assign to attr.quoteMark instead."
+        "Assigning attr.quoted is deprecated and has no effect. Assign to attr.quoteMark instead.",
       ),
       w1 = Nr(
         function () {},
-        "Constructing an Attribute selector with a value without specifying quoteMark is deprecated. Note: The value should be unescaped now."
+        "Constructing an Attribute selector with a value without specifying quoteMark is deprecated. Note: The value should be unescaped now.",
       );
     function la(i) {
       var e = !1,
@@ -7307,8 +7307,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         (o.before = " "),
                       sp(s, o)
                     );
-                  }
-                )
+                  },
+                ),
               )),
             a.push("]"),
             a.push(this.rawSpaceAfter),
@@ -7957,7 +7957,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         i[A.FIELDS.START_LINE],
         i[A.FIELDS.START_COL],
         i[A.FIELDS.END_LINE],
-        i[A.FIELDS.END_COL]
+        i[A.FIELDS.END_COL],
       );
     }
     function Ca(i, e) {
@@ -7966,7 +7966,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           i[A.FIELDS.START_LINE],
           i[A.FIELDS.START_COL],
           e[A.FIELDS.END_LINE],
-          e[A.FIELDS.END_COL]
+          e[A.FIELDS.END_COL],
         );
     }
     function qt(i, e) {
@@ -8032,7 +8032,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           if (this.currToken[A.FIELDS.TYPE] !== T.closeSquare)
             return this.expected(
               "closing square bracket",
-              this.currToken[A.FIELDS.START_POS]
+              this.currToken[A.FIELDS.START_POS],
             );
           var a = r.length,
             s = {
@@ -8153,7 +8153,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                           s,
                           "raws",
                           "spaces",
-                          "insensitive"
+                          "insensitive",
                         ),
                         (s.raws.spaces.insensitive.before = c),
                         (c = "")))
@@ -8168,7 +8168,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (!s.attribute || !s.operator)
                   return this.error(
                     "Expected an attribute followed by an operator preceding the string.",
-                    { index: p[A.FIELDS.START_POS] }
+                    { index: p[A.FIELDS.START_POS] },
                   );
                 var q = (0, gp.unescapeValue)(m),
                   X = q.unescaped,
@@ -8186,7 +8186,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (s.value)
                   return this.error(
                     'Unexpected "=" found; an operator was already defined.',
-                    { index: p[A.FIELDS.START_POS] }
+                    { index: p[A.FIELDS.START_POS] },
                   );
                 (s.operator = s.operator ? s.operator + m : m),
                   (f = "operator"),
@@ -8256,11 +8256,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     c[A.FIELDS.START_LINE],
                     c[A.FIELDS.START_COL],
                     f[A.FIELDS.END_LINE],
-                    f[A.FIELDS.END_COL]
+                    f[A.FIELDS.END_COL],
                   ),
                   sourceIndex: c[A.FIELDS.START_POS],
                   spaces: { before: s, after: "" },
-                })
+                }),
               );
             }
           }
@@ -8307,7 +8307,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 this.currToken[A.FIELDS.START_LINE],
                 this.currToken[A.FIELDS.START_COL],
                 this.tokens[this.position + 2][A.FIELDS.END_LINE],
-                this.tokens[this.position + 2][A.FIELDS.END_COL]
+                this.tokens[this.position + 2][A.FIELDS.END_COL],
               ),
               sourceIndex: this.currToken[A.FIELDS.START_POS],
               raws: a,
@@ -8405,7 +8405,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               value: this.content(),
               source: It(r),
               sourceIndex: r[A.FIELDS.START_POS],
-            })
+            }),
           ),
             this.position++;
         }),
@@ -8420,13 +8420,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         (e.missingParenthesis = function () {
           return this.expected(
             "opening parenthesis",
-            this.currToken[A.FIELDS.START_POS]
+            this.currToken[A.FIELDS.START_POS],
           );
         }),
         (e.missingSquareBracket = function () {
           return this.expected(
             "opening square bracket",
-            this.currToken[A.FIELDS.START_POS]
+            this.currToken[A.FIELDS.START_POS],
           );
         }),
         (e.unexpected = function () {
@@ -8434,13 +8434,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             "Unexpected '" +
               this.content() +
               "'. Escaping special characters with \\ may help.",
-            this.currToken[A.FIELDS.START_POS]
+            this.currToken[A.FIELDS.START_POS],
           );
         }),
         (e.unexpectedPipe = function () {
           return this.error(
             "Unexpected '|'.",
-            this.currToken[A.FIELDS.START_POS]
+            this.currToken[A.FIELDS.START_POS],
           );
         }),
         (e.namespace = function () {
@@ -8465,7 +8465,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               value: this.content(),
               source: It(n),
               sourceIndex: n[A.FIELDS.START_POS],
-            })
+            }),
           ),
             this.position++;
         }),
@@ -8510,16 +8510,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       o[A.FIELDS.START_LINE],
                       o[A.FIELDS.START_COL],
                       c[A.FIELDS.END_LINE],
-                      c[A.FIELDS.END_COL]
+                      c[A.FIELDS.END_COL],
                     ),
                     sourceIndex: o[A.FIELDS.START_POS],
-                  })
+                  }),
                 );
           }
           if (n)
             return this.expected(
               "closing parenthesis",
-              this.currToken[A.FIELDS.START_POS]
+              this.currToken[A.FIELDS.START_POS],
             );
         }),
         (e.pseudo = function () {
@@ -8532,7 +8532,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           if (!this.currToken)
             return this.expected(
               ["pseudo-class", "pseudo-element"],
-              this.position - 1
+              this.position - 1,
             );
           if (this.currToken[A.FIELDS.TYPE] === T.word)
             this.splitWord(!1, function (s, o) {
@@ -8542,7 +8542,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     value: n,
                     source: Ca(a, r.currToken),
                     sourceIndex: a[A.FIELDS.START_POS],
-                  })
+                  }),
                 ),
                 o > 1 &&
                   r.nextToken &&
@@ -8554,7 +8554,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           else
             return this.expected(
               ["pseudo-class", "pseudo-element"],
-              this.currToken[A.FIELDS.START_POS]
+              this.currToken[A.FIELDS.START_POS],
             );
         }),
         (e.space = function () {
@@ -8580,7 +8580,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               value: this.content(),
               source: It(r),
               sourceIndex: r[A.FIELDS.START_POS],
-            })
+            }),
           ),
             this.position++;
         }),
@@ -8595,7 +8595,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               source: It(a),
               sourceIndex: a[A.FIELDS.START_POS],
             }),
-            r
+            r,
           ),
             this.position++;
         }),
@@ -8721,7 +8721,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return a
             ? this.error(
                 "Expected " + o + " " + r + ', found "' + a + '" instead.',
-                { index: n }
+                { index: n },
               )
             : this.error("Expected " + o + " " + r + ".", { index: n });
         }),
@@ -8857,7 +8857,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             s = this.func(a);
           if (s && typeof s.then == "function")
             throw new Error(
-              "Selector processor returned a promise to a synchronous call."
+              "Selector processor returned a promise to a synchronous call.",
             );
           var o = void 0;
           return (
@@ -9281,7 +9281,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             t[2]
               .trim()
               .split(/\s+/)
-              .map((s) => [s, !0])
+              .map((s) => [s, !0]),
           );
         if (r && n.all) return { type: "noop" };
         let a = (s) => !!n[s];
@@ -9359,7 +9359,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             "-webkit-keyframes",
             "-moz-keyframes",
           ],
-          i.unwrap
+          i.unwrap,
         ),
         n = (i.rootRuleName || "at-root").replace(/^@/, ""),
         a = i.preserveEmpty;
@@ -9626,7 +9626,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           (e) =>
             V([(0, nd.default)({ bubble: ["screen"] })]).process(e, {
               parser: rd,
-            }).root.nodes
+            }).root.nodes,
         )
       : Mt([i]);
   }
@@ -9701,19 +9701,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       Array.isArray(w)
                         ? Object.assign(m, { [w[0]]: w[1] })
                         : Object.assign(m, { [w]: n(p) }),
-                    {}
+                    {},
                   ),
               }),
-            {}
+            {},
           ),
           {
             ...r,
             values: t
               ? Object.fromEntries(
-                  Object.entries(s(i) ?? {}).filter(([c]) => c !== "DEFAULT")
+                  Object.entries(s(i) ?? {}).filter(([c]) => c !== "DEFAULT"),
                 )
               : s(i),
-          }
+          },
         );
       }
     };
@@ -9735,7 +9735,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   r.max && `(max-width: ${r.max})`,
                 ]
                   .filter(Boolean)
-                  .join(" and ")
+                  .join(" and "),
           );
           return e.not ? `not all and ${t}` : t;
         })
@@ -9817,8 +9817,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               ? Object.entries(fd(t)).map(([r, n]) => ({
                   [e + (r === "DEFAULT" ? "" : `-${r}`)]: n,
                 }))
-              : [{ [`${e}`]: t }]
-          )
+              : [{ [`${e}`]: t }],
+          ),
         )),
         (ie = fd);
     });
@@ -10006,15 +10006,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       s = pn(n);
     if (a.reason === "multiple-values" || s.reason === "multiple-values")
       throw new Error(
-        "Attempted to sort a screen with multiple values. This should never happen. Please open a bug report."
+        "Attempted to sort a screen with multiple values. This should never happen. Please open a bug report.",
       );
     if (a.reason === "raw-values" || s.reason === "raw-values")
       throw new Error(
-        "Attempted to sort a screen with raw values. This should never happen. Please open a bug report."
+        "Attempted to sort a screen with raw values. This should never happen. Please open a bug report.",
       );
     if (a.reason === "min-and-max" || s.reason === "min-and-max")
       throw new Error(
-        "Attempted to sort a screen with both min and max values. This should never happen. Please open a bug report."
+        "Attempted to sort a screen with both min and max values. This should never happen. Please open a bug report.",
       );
     let { min: o, max: u } = r.values[0],
       { min: c, max: f } = n.values[0];
@@ -10106,11 +10106,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   }),
                     r ||
                       t.prepend(
-                        V.decl({ prop: "content", value: "var(--tw-content)" })
+                        V.decl({ prop: "content", value: "var(--tw-content)" }),
                       );
                 }),
                 "&::before"
-              )
+              ),
             ),
             i(
               "after",
@@ -10122,11 +10122,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   }),
                     r ||
                       t.prepend(
-                        V.decl({ prop: "content", value: "var(--tw-content)" })
+                        V.decl({ prop: "content", value: "var(--tw-content)" }),
                       );
                 }),
                 "&::after"
-              )
+              ),
             );
         },
         pseudoClassVariants: ({
@@ -10218,7 +10218,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   f.slice(0, m) + d + f.slice(m + 1, w) + p + f.slice(w)
                 );
               },
-              { values: Object.fromEntries(n), [Jr]: { respectPrefix: !1 } }
+              { values: Object.fromEntries(n), [Jr]: { respectPrefix: !1 } },
             );
         },
         directionVariants: ({ addVariant: i }) => {
@@ -10301,7 +10301,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   if (b === "max" && _ !== void 0) return k;
                   if (b === "max" && S !== void 0) return { ...k, not: !k.not };
                 })
-                .map((k) => [k.name, k])
+                .map((k) => [k.name, k]),
             );
           }
           function p(b) {
@@ -10362,7 +10362,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     `@supports ${r}`)
               );
             },
-            { values: e("supports") ?? {} }
+            { values: e("supports") ?? {} },
           );
         },
         hasVariants: ({ matchVariant: i }) => {
@@ -10373,7 +10373,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 t
                   ? `:merge(.group\\/${t}):has(${N(e)}) &`
                   : `:merge(.group):has(${N(e)}) &`,
-              { values: {} }
+              { values: {} },
             ),
             i(
               "peer-has",
@@ -10381,7 +10381,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 t
                   ? `:merge(.peer\\/${t}):has(${N(e)}) ~ &`
                   : `:merge(.peer):has(${N(e)}) ~ &`,
-              { values: {} }
+              { values: {} },
             );
         },
         ariaVariants: ({ matchVariant: i, theme: e }) => {
@@ -10392,7 +10392,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 r
                   ? `:merge(.group\\/${r})[aria-${N(t)}] &`
                   : `:merge(.group)[aria-${N(t)}] &`,
-              { values: e("aria") ?? {} }
+              { values: e("aria") ?? {} },
             ),
             i(
               "peer-aria",
@@ -10400,7 +10400,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 r
                   ? `:merge(.peer\\/${r})[aria-${N(t)}] ~ &`
                   : `:merge(.peer)[aria-${N(t)}] ~ &`,
-              { values: e("aria") ?? {} }
+              { values: e("aria") ?? {} },
             );
         },
         dataVariants: ({ matchVariant: i, theme: e }) => {
@@ -10411,7 +10411,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 r
                   ? `:merge(.group\\/${r})[data-${N(t)}] &`
                   : `:merge(.group)[data-${N(t)}] &`,
-              { values: e("data") ?? {} }
+              { values: e("data") ?? {} },
             ),
             i(
               "peer-data",
@@ -10419,7 +10419,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 r
                   ? `:merge(.peer\\/${r})[data-${N(t)}] ~ &`
                   : `:merge(.peer)[data-${N(t)}] ~ &`,
-              { values: e("data") ?? {} }
+              { values: e("data") ?? {} },
             );
         },
         orientationVariants: ({ addVariant: i }) => {
@@ -10467,7 +10467,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         (md = {
           preflight: ({ addBase: i }) => {
             let e = V.parse(
-              `*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:theme('borderColor.DEFAULT', currentColor)}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:theme('fontFamily.sans', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");font-feature-settings:theme('fontFamily.sans[1].fontFeatureSettings', normal);font-variation-settings:theme('fontFamily.sans[1].fontVariationSettings', normal);-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:theme('fontFamily.mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);font-feature-settings:theme('fontFamily.mono[1].fontFeatureSettings', normal);font-variation-settings:theme('fontFamily.mono[1].fontVariationSettings', normal);font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:theme('colors.gray.4', #9ca3af)}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]{display:none}`
+              `*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:theme('borderColor.DEFAULT', currentColor)}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:theme('fontFamily.sans', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");font-feature-settings:theme('fontFamily.sans[1].fontFeatureSettings', normal);font-variation-settings:theme('fontFamily.sans[1].fontVariationSettings', normal);-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:theme('fontFamily.mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);font-feature-settings:theme('fontFamily.mono[1].fontFeatureSettings', normal);font-variation-settings:theme('fontFamily.mono[1].fontVariationSettings', normal);font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:theme('colors.gray.4', #9ca3af)}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]{display:none}`,
             );
             i([
               V.comment({
@@ -10506,7 +10506,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     : {};
                 },
                 u = Array.from(
-                  new Set(a.slice().sort((c, f) => parseInt(c) - parseInt(f)))
+                  new Set(a.slice().sort((c, f) => parseInt(c) - parseInt(f))),
                 ).map((c) => ({
                   [`@media (min-width: ${c})`]: {
                     ".container": { "max-width": c, ...o(c) },
@@ -10519,7 +10519,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     r("container.center", !1)
                       ? { marginRight: "auto", marginLeft: "auto" }
                       : {},
-                    o(0)
+                    o(0),
                   ),
                 },
                 ...u,
@@ -10590,7 +10590,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ["left", ["left"]],
               ],
             ],
-            { supportsNegativeValues: !0 }
+            { supportsNegativeValues: !0 },
           ),
           isolation: ({ addUtilities: i }) => {
             i({
@@ -10646,7 +10646,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ["ml", ["margin-left"]],
               ],
             ],
-            { supportsNegativeValues: !0 }
+            { supportsNegativeValues: !0 },
           ),
           boxSizing: ({ addUtilities: i }) => {
             i({
@@ -10664,7 +10664,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "-webkit-line-clamp": `${r}`,
                 }),
               },
-              { values: t("lineClamp") }
+              { values: t("lineClamp") },
             ),
               e({
                 ".line-clamp-none": {
@@ -10763,7 +10763,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       "var(--tw-border-spacing-x) var(--tw-border-spacing-y)",
                   }),
                 },
-                { values: t("borderSpacing") }
+                { values: t("borderSpacing") },
               );
           },
           transformOrigin: P("transformOrigin", [
@@ -10791,7 +10791,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ],
               ],
             ],
-            { supportsNegativeValues: !0 }
+            { supportsNegativeValues: !0 },
           ),
           rotate: P(
             "rotate",
@@ -10801,7 +10801,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 [["@defaults transform", {}], "--tw-rotate", ["transform", Te]],
               ],
             ],
-            { supportsNegativeValues: !0 }
+            { supportsNegativeValues: !0 },
           ),
           skew: P(
             "skew",
@@ -10825,7 +10825,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ],
               ],
             ],
-            { supportsNegativeValues: !0 }
+            { supportsNegativeValues: !0 },
           ),
           scale: P(
             "scale",
@@ -10858,7 +10858,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ],
               ],
             ],
-            { supportsNegativeValues: !0 }
+            { supportsNegativeValues: !0 },
           ),
           transform: ({ addDefaults: i, addUtilities: e }) => {
             i("transform", {
@@ -10876,7 +10876,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ".transform-gpu": {
                   transform: Te.replace(
                     "translate(var(--tw-translate-x), var(--tw-translate-y))",
-                    "translate3d(var(--tw-translate-x), var(--tw-translate-y), 0)"
+                    "translate3d(var(--tw-translate-x), var(--tw-translate-y), 0)",
                   ),
                 },
                 ".transform-none": { transform: "none" },
@@ -10888,7 +10888,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 Object.entries(e("keyframes") ?? {}).map(([a, s]) => [
                   a,
                   { [`@keyframes ${r(a)}`]: s },
-                ])
+                ]),
               );
             i(
               {
@@ -10901,14 +10901,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         .map(({ name: o, value: u }) =>
                           o === void 0 || n[o] === void 0
                             ? u
-                            : u.replace(o, r(o))
+                            : u.replace(o, r(o)),
                         )
                         .join(", "),
                     },
                   ];
                 },
               },
-              { values: e("animation") }
+              { values: e("animation") },
             );
           },
           cursor: P("cursor"),
@@ -11033,7 +11033,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ["scroll-ml", ["scroll-margin-left"]],
               ],
             ],
-            { supportsNegativeValues: !0 }
+            { supportsNegativeValues: !0 },
           ),
           scrollPadding: P("scrollPadding", [
             ["scroll-p", ["scroll-padding"]],
@@ -11227,7 +11227,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   }
                 ),
               },
-              { values: t("space"), supportsNegativeValues: !0 }
+              { values: t("space"), supportsNegativeValues: !0 },
             ),
               e({
                 ".space-y-reverse > :not([hidden]) ~ :not([hidden])": {
@@ -11267,7 +11267,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               {
                 values: t("divideWidth"),
                 type: ["line-width", "length", "any"],
-              }
+              },
             ),
               e({
                 ".divide-y-reverse > :not([hidden]) ~ :not([hidden])": {
@@ -11320,7 +11320,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               {
                 values: (({ DEFAULT: r, ...n }) => n)(ie(e("divideColor"))),
                 type: ["color", "any"],
-              }
+              },
             );
           },
           divideOpacity: ({ matchUtilities: i, theme: e }) => {
@@ -11332,7 +11332,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   },
                 }),
               },
-              { values: e("divideOpacity") }
+              { values: e("divideOpacity") },
             );
           },
           placeSelf: ({ addUtilities: i }) => {
@@ -11537,7 +11537,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ],
               ],
             ],
-            { type: ["line-width", "length"] }
+            { type: ["line-width", "length"] },
           ),
           borderStyle: ({ addUtilities: i }) => {
             i({
@@ -11564,7 +11564,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               {
                 values: (({ DEFAULT: r, ...n }) => n)(ie(e("borderColor"))),
                 type: ["color", "any"],
-              }
+              },
             ),
               i(
                 {
@@ -11594,7 +11594,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                   values: (({ DEFAULT: r, ...n }) => n)(ie(e("borderColor"))),
                   type: ["color", "any"],
-                }
+                },
               ),
               i(
                 {
@@ -11650,7 +11650,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                   values: (({ DEFAULT: r, ...n }) => n)(ie(e("borderColor"))),
                   type: ["color", "any"],
-                }
+                },
               );
           },
           borderOpacity: P("borderOpacity", [
@@ -11672,7 +11672,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       })
                     : { "background-color": L(r) },
               },
-              { values: ie(e("backgroundColor")), type: ["color", "any"] }
+              { values: ie(e("backgroundColor")), type: ["color", "any"] },
             );
           },
           backgroundOpacity: P("backgroundOpacity", [
@@ -11681,7 +11681,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           backgroundImage: P(
             "backgroundImage",
             [["bg", ["background-image"]]],
-            { type: ["lookup", "image", "url"] }
+            { type: ["lookup", "image", "url"] },
           ),
           gradientColorStops: (() => {
             function i(e) {
@@ -11714,7 +11714,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     };
                   },
                 },
-                n
+                n,
               ),
                 e({ from: (s) => ({ "--tw-gradient-from-position": s }) }, a),
                 e(
@@ -11728,7 +11728,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       };
                     },
                   },
-                  n
+                  n,
                 ),
                 e({ via: (s) => ({ "--tw-gradient-via-position": s }) }, a),
                 e(
@@ -11738,7 +11738,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       "--tw-gradient-to": `${L(s)} var(--tw-gradient-to-position)`,
                     }),
                   },
-                  n
+                  n,
                 ),
                 e({ to: (s) => ({ "--tw-gradient-to-position": s }) }, a);
             };
@@ -11772,7 +11772,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           backgroundPosition: P(
             "backgroundPosition",
             [["bg", ["background-position"]]],
-            { type: ["lookup", ["position", { preferOnConflict: !0 }]] }
+            { type: ["lookup", ["position", { preferOnConflict: !0 }]] },
           ),
           backgroundRepeat: ({ addUtilities: i }) => {
             i({
@@ -11794,13 +11794,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           fill: ({ matchUtilities: i, theme: e }) => {
             i(
               { fill: (t) => ({ fill: L(t) }) },
-              { values: ie(e("fill")), type: ["color", "any"] }
+              { values: ie(e("fill")), type: ["color", "any"] },
             );
           },
           stroke: ({ matchUtilities: i, theme: e }) => {
             i(
               { stroke: (t) => ({ stroke: L(t) }) },
-              { values: ie(e("stroke")), type: ["color", "url", "any"] }
+              { values: ie(e("stroke")), type: ["color", "url", "any"] },
             );
           },
           strokeWidth: P("strokeWidth", [["stroke", ["stroke-width"]]], {
@@ -11875,7 +11875,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               {
                 values: e("fontFamily"),
                 type: ["lookup", "generic-name", "family-name"],
-              }
+              },
             );
           },
           fontSize: ({ matchUtilities: i, theme: e }) => {
@@ -11906,7 +11906,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "length",
                   "percentage",
                 ],
-              }
+              },
             );
           },
           fontWeight: P("fontWeight", [["font", ["fontWeight"]]], {
@@ -11996,7 +11996,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       })
                     : { color: L(r) },
               },
-              { values: ie(e("textColor")), type: ["color", "any"] }
+              { values: ie(e("textColor")), type: ["color", "any"] },
             );
           },
           textOpacity: P("textOpacity", [
@@ -12013,7 +12013,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           textDecorationColor: ({ matchUtilities: i, theme: e }) => {
             i(
               { decoration: (t) => ({ "text-decoration-color": L(t) }) },
-              { values: ie(e("textDecorationColor")), type: ["color", "any"] }
+              { values: ie(e("textDecorationColor")), type: ["color", "any"] },
             );
           },
           textDecorationStyle: ({ addUtilities: i }) => {
@@ -12028,12 +12028,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           textDecorationThickness: P(
             "textDecorationThickness",
             [["decoration", ["text-decoration-thickness"]]],
-            { type: ["length", "percentage"] }
+            { type: ["length", "percentage"] },
           ),
           textUnderlineOffset: P(
             "textUnderlineOffset",
             [["underline-offset", ["text-underline-offset"]]],
-            { type: ["length", "percentage", "any"] }
+            { type: ["length", "percentage", "any"] },
           ),
           fontSmoothing: ({ addUtilities: i }) => {
             i({
@@ -12065,7 +12065,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       }
                     : { "&::placeholder": { color: L(r) } },
               },
-              { values: ie(e("placeholderColor")), type: ["color", "any"] }
+              { values: ie(e("placeholderColor")), type: ["color", "any"] },
             );
           },
           placeholderOpacity: ({ matchUtilities: i, theme: e }) => {
@@ -12075,19 +12075,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   ["&::placeholder"]: { "--tw-placeholder-opacity": t },
                 }),
               },
-              { values: e("placeholderOpacity") }
+              { values: e("placeholderOpacity") },
             );
           },
           caretColor: ({ matchUtilities: i, theme: e }) => {
             i(
               { caret: (t) => ({ "caret-color": L(t) }) },
-              { values: ie(e("caretColor")), type: ["color", "any"] }
+              { values: ie(e("caretColor")), type: ["color", "any"] },
             );
           },
           accentColor: ({ matchUtilities: i, theme: e }) => {
             i(
               { accent: (t) => ({ "accent-color": L(t) }) },
-              { values: ie(e("accentColor")), type: ["color", "any"] }
+              { values: ie(e("accentColor")), type: ["color", "any"] },
             );
           },
           opacity: P("opacity", [["opacity", ["opacity"]]]),
@@ -12164,7 +12164,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       };
                     },
                   },
-                  { values: n("boxShadow"), type: ["shadow"] }
+                  { values: n("boxShadow"), type: ["shadow"] },
                 );
             };
           })(),
@@ -12176,7 +12176,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "--tw-shadow": "var(--tw-shadow-colored)",
                 }),
               },
-              { values: ie(e("boxShadowColor")), type: ["color", "any"] }
+              { values: ie(e("boxShadowColor")), type: ["color", "any"] },
             );
           },
           outlineStyle: ({ addUtilities: i }) => {
@@ -12200,12 +12200,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             {
               type: ["length", "number", "percentage", "any"],
               supportsNegativeValues: !0,
-            }
+            },
           ),
           outlineColor: ({ matchUtilities: i, theme: e }) => {
             i(
               { outline: (t) => ({ "outline-color": L(t) }) },
-              { values: ie(e("outlineColor")), type: ["color", "any"] }
+              { values: ie(e("outlineColor")), type: ["color", "any"] },
             );
           },
           ringWidth: ({
@@ -12247,7 +12247,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     ].join(", "),
                   }),
                 },
-                { values: r("ringWidth"), type: "length" }
+                { values: r("ringWidth"), type: "length" },
               ),
               t({
                 ".ring-inset": {
@@ -12271,11 +12271,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               {
                 values: Object.fromEntries(
                   Object.entries(ie(e("ringColor"))).filter(
-                    ([r]) => r !== "DEFAULT"
-                  )
+                    ([r]) => r !== "DEFAULT",
+                  ),
                 ),
                 type: ["color", "any"],
-              }
+              },
             );
           },
           ringOpacity: (i) => {
@@ -12287,12 +12287,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           ringOffsetWidth: P(
             "ringOffsetWidth",
             [["ring-offset", ["--tw-ring-offset-width"]]],
-            { type: "length" }
+            { type: "length" },
           ),
           ringOffsetColor: ({ matchUtilities: i, theme: e }) => {
             i(
               { "ring-offset": (t) => ({ "--tw-ring-offset-color": L(t) }) },
-              { values: ie(e("ringOffsetColor")), type: ["color", "any"] }
+              { values: ie(e("ringOffsetColor")), type: ["color", "any"] },
             );
           },
           blur: ({ matchUtilities: i, theme: e }) => {
@@ -12304,7 +12304,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   filter: Me,
                 }),
               },
-              { values: e("blur") }
+              { values: e("blur") },
             );
           },
           brightness: ({ matchUtilities: i, theme: e }) => {
@@ -12316,7 +12316,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   filter: Me,
                 }),
               },
-              { values: e("brightness") }
+              { values: e("brightness") },
             );
           },
           contrast: ({ matchUtilities: i, theme: e }) => {
@@ -12328,7 +12328,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   filter: Me,
                 }),
               },
-              { values: e("contrast") }
+              { values: e("contrast") },
             );
           },
           dropShadow: ({ matchUtilities: i, theme: e }) => {
@@ -12342,7 +12342,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   filter: Me,
                 }),
               },
-              { values: e("dropShadow") }
+              { values: e("dropShadow") },
             );
           },
           grayscale: ({ matchUtilities: i, theme: e }) => {
@@ -12354,7 +12354,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   filter: Me,
                 }),
               },
-              { values: e("grayscale") }
+              { values: e("grayscale") },
             );
           },
           hueRotate: ({ matchUtilities: i, theme: e }) => {
@@ -12366,7 +12366,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   filter: Me,
                 }),
               },
-              { values: e("hueRotate"), supportsNegativeValues: !0 }
+              { values: e("hueRotate"), supportsNegativeValues: !0 },
             );
           },
           invert: ({ matchUtilities: i, theme: e }) => {
@@ -12378,7 +12378,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   filter: Me,
                 }),
               },
-              { values: e("invert") }
+              { values: e("invert") },
             );
           },
           saturate: ({ matchUtilities: i, theme: e }) => {
@@ -12390,7 +12390,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   filter: Me,
                 }),
               },
-              { values: e("saturate") }
+              { values: e("saturate") },
             );
           },
           sepia: ({ matchUtilities: i, theme: e }) => {
@@ -12402,7 +12402,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   filter: Me,
                 }),
               },
-              { values: e("sepia") }
+              { values: e("sepia") },
             );
           },
           filter: ({ addDefaults: i, addUtilities: e }) => {
@@ -12431,7 +12431,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "backdrop-filter": Be,
                 }),
               },
-              { values: e("backdropBlur") }
+              { values: e("backdropBlur") },
             );
           },
           backdropBrightness: ({ matchUtilities: i, theme: e }) => {
@@ -12443,7 +12443,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "backdrop-filter": Be,
                 }),
               },
-              { values: e("backdropBrightness") }
+              { values: e("backdropBrightness") },
             );
           },
           backdropContrast: ({ matchUtilities: i, theme: e }) => {
@@ -12455,7 +12455,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "backdrop-filter": Be,
                 }),
               },
-              { values: e("backdropContrast") }
+              { values: e("backdropContrast") },
             );
           },
           backdropGrayscale: ({ matchUtilities: i, theme: e }) => {
@@ -12467,7 +12467,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "backdrop-filter": Be,
                 }),
               },
-              { values: e("backdropGrayscale") }
+              { values: e("backdropGrayscale") },
             );
           },
           backdropHueRotate: ({ matchUtilities: i, theme: e }) => {
@@ -12479,7 +12479,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "backdrop-filter": Be,
                 }),
               },
-              { values: e("backdropHueRotate"), supportsNegativeValues: !0 }
+              { values: e("backdropHueRotate"), supportsNegativeValues: !0 },
             );
           },
           backdropInvert: ({ matchUtilities: i, theme: e }) => {
@@ -12491,7 +12491,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "backdrop-filter": Be,
                 }),
               },
-              { values: e("backdropInvert") }
+              { values: e("backdropInvert") },
             );
           },
           backdropOpacity: ({ matchUtilities: i, theme: e }) => {
@@ -12503,7 +12503,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "backdrop-filter": Be,
                 }),
               },
-              { values: e("backdropOpacity") }
+              { values: e("backdropOpacity") },
             );
           },
           backdropSaturate: ({ matchUtilities: i, theme: e }) => {
@@ -12515,7 +12515,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "backdrop-filter": Be,
                 }),
               },
-              { values: e("backdropSaturate") }
+              { values: e("backdropSaturate") },
             );
           },
           backdropSepia: ({ matchUtilities: i, theme: e }) => {
@@ -12527,7 +12527,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "backdrop-filter": Be,
                 }),
               },
-              { values: e("backdropSepia") }
+              { values: e("backdropSepia") },
             );
           },
           backdropFilter: ({ addDefaults: i, addUtilities: e }) => {
@@ -12565,7 +12565,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       }),
                 }),
               },
-              { values: e("transitionProperty") }
+              { values: e("transitionProperty") },
             );
           },
           transitionDelay: P("transitionDelay", [
@@ -12574,12 +12574,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           transitionDuration: P(
             "transitionDuration",
             [["duration", ["transitionDuration"]]],
-            { filterDefault: !0 }
+            { filterDefault: !0 },
           ),
           transitionTimingFunction: P(
             "transitionTimingFunction",
             [["ease", ["transitionTimingFunction"]]],
-            { filterDefault: !0 }
+            { filterDefault: !0 },
           ),
           willChange: P("willChange", [["will-change", ["will-change"]]]),
           content: P("content", [
@@ -12773,7 +12773,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   e.value.startsWith("::") &&
                   t.type === "class"
                 ? 1
-                : i.index(e) - i.index(t)
+                : i.index(e) - i.index(t),
       ),
       i
     );
@@ -12820,7 +12820,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         d.nodes.splice(
           w,
           m.length,
-          ...xC(Fe.default.selector({ nodes: m })).nodes
+          ...xC(Fe.default.selector({ nodes: m })).nodes,
         ),
           u.remove(),
           c.remove();
@@ -12849,7 +12849,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         let u = o;
         a.pseudo.parent.insertAfter(
           a.pseudo,
-          Fe.default.selector({ nodes: s.map((c) => c.clone()) })
+          Fe.default.selector({ nodes: s.map((c) => c.clone()) }),
         ),
           r.remove(),
           s.forEach((c) => c.remove()),
@@ -13015,7 +13015,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                           return no(B);
                         },
                         selector: B,
-                      })
+                      }),
                     ));
                 }),
                 x
@@ -13073,7 +13073,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               sort: t.offsets.applyVariantOffset(
                 c.sort,
                 p,
-                Object.assign(r, t.variantOptions.get(i))
+                Object.assign(r, t.variantOptions.get(i)),
               ),
               collectedFormats: (c.collectedFormats ?? []).concat(y),
             },
@@ -13191,7 +13191,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         if (w.length > 0) {
           let x = Array.from(
-            fs(p.options?.types ?? [], f, p.options ?? {}, e.tailwindConfig)
+            fs(p.options?.types ?? [], f, p.options ?? {}, e.tailwindConfig),
           ).map(([y, b]) => b);
           x.length > 0 && u.set(w, x), o.push(w);
         }
@@ -13207,22 +13207,22 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       Ad(_)
                         ? S.types.some(
                             ({ type: O, preferOnConflict: I }) =>
-                              k.includes(O) && I
+                              k.includes(O) && I,
                           )
-                        : !1
+                        : !1,
                     );
                   });
             },
             [p, m] = o.reduce(
               (y, b) => (
                 b.some(([{ options: S }]) =>
-                  S.types.some(({ type: _ }) => _ === "any")
+                  S.types.some(({ type: _ }) => _ === "any"),
                 )
                   ? y[0].push(b)
                   : y[1].push(b),
                 y
               ),
-              [[], []]
+              [[], []],
             ),
             x = w(m) ?? w(p);
           if (x) o = [x];
@@ -13244,17 +13244,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     I.toString()
                       .split(
                         `
-`
+`,
                       )
                       .slice(1, -1)
                       .map((B) => B.trim())
                       .map((B) => `      ${B}`).join(`
-`)
+`),
                   ).join(`
 
 `);
                 b.push(
-                  `  Use \`${i.replace("[", `[${_}:`)}\` for \`${O.trim()}\``
+                  `  Use \`${i.replace("[", `[${_}:`)}\` for \`${O.trim()}\``,
                 );
                 break;
               }
@@ -13378,7 +13378,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       ze();
       io();
       SC = (0, vn.default)(
-        (i) => i.first.filter(({ type: e }) => e === "class").pop().value
+        (i) => i.first.filter(({ type: e }) => e === "class").pop().value,
       );
       EC = /^[a-z_-]/;
     });
@@ -13527,7 +13527,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               if (o !== u) continue;
               let c = r.sort(
                 { value: r.value, modifier: r.modifier },
-                { value: n.value, modifier: n.modifier }
+                { value: n.value, modifier: n.modifier },
               );
               if (c !== 0) return c;
             }
@@ -13574,7 +13574,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       types: t.map((r) =>
         Array.isArray(r)
           ? { type: r[0], ...r[1] }
-          : { type: r, preferOnConflict: !1 }
+          : { type: r, preferOnConflict: !1 },
       ),
     };
   }
@@ -13673,7 +13673,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   function UC(
     i,
     e,
-    { variantList: t, variantMap: r, offsets: n, classList: a }
+    { variantList: t, variantMap: r, offsets: n, classList: a },
   ) {
     function s(p, m) {
       return p ? (0, Bd.default)(i, p, m) : i;
@@ -13723,7 +13723,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           m = Object.assign(
             {},
             { preserveSource: !1, respectPrefix: !0, respectImportant: !1 },
-            Array.isArray(m) ? {} : m
+            Array.isArray(m) ? {} : m,
           );
           for (let [x, y] of _n(p)) {
             let b = u(x, m);
@@ -13743,7 +13743,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           m = Object.assign(
             {},
             { preserveSource: !1, respectPrefix: !0, respectImportant: !0 },
-            Array.isArray(m) ? {} : m
+            Array.isArray(m) ? {} : m,
           );
           for (let [x, y] of _n(p)) {
             let b = u(x, m);
@@ -13864,12 +13864,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         args: b,
                         wrap: O,
                         format: I,
-                      }
-                    )
+                      },
+                    ),
                   );
                 if (typeof B == "string" && !Cn(B))
                   throw new Error(
-                    `Your custom variant \`${p}\` has an invalid format string. Make sure it's an at-rule or contains a \`&\` placeholder.`
+                    `Your custom variant \`${p}\` has an invalid format string. Make sure it's an at-rule or contains a \`&\` placeholder.`,
                   );
                 return Array.isArray(B)
                   ? B.filter((q) => typeof q == "string").map((q) => Zr(q))
@@ -13877,7 +13877,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               };
             if (!Cn(x))
               throw new Error(
-                `Your custom variant \`${p}\` has an invalid format string. Make sure it's an at-rule or contains a \`&\` placeholder.`
+                `Your custom variant \`${p}\` has an invalid format string. Make sure it's an at-rule or contains a \`&\` placeholder.`,
               );
             return Zr(x);
           })),
@@ -13898,7 +13898,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     _,
                     b
                       ? { modifier: O?.modifier, container: I }
-                      : { container: I }
+                      : { container: I },
                   ),
                 {
                   ...w,
@@ -13906,7 +13906,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   id: x,
                   type: fo.MatchVariant,
                   variantInfo: co.Base,
-                }
+                },
               );
           let k = "DEFAULT" in (w?.values ?? {});
           d.addVariant(
@@ -13917,12 +13917,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 : m(
                     S?.value === Kr
                       ? w.values.DEFAULT
-                      : S?.value ?? (typeof S == "string" ? S : ""),
+                      : (S?.value ?? (typeof S == "string" ? S : "")),
                     b
                       ? { modifier: S?.modifier, container: _ }
-                      : { container: _ }
+                      : { container: _ },
                   ),
-            { ...w, id: x, type: fo.MatchVariant, variantInfo: co.Dynamic }
+            { ...w, id: x, type: fo.MatchVariant, variantInfo: co.Dynamic },
           );
         },
       };
@@ -13992,7 +13992,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         (u) => (
           u.__isOptionsFunction && (u = u()),
           typeof u == "function" ? u : u.handler
-        )
+        ),
       ),
       n = WC(e),
       a = [
@@ -14052,7 +14052,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     for (let [f, d] of r.entries())
       e.variantMap.set(
         f,
-        d.map((p, m) => [n.forVariant(f, m), p])
+        d.map((p, m) => [n.forVariant(f, m), p]),
       );
     let o = (e.tailwindConfig.safelist ?? []).filter(Boolean);
     if (o.length > 0) {
@@ -14093,8 +14093,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       ...S,
                       ...S.flatMap((_) =>
                         Object.keys(e.tailwindConfig.theme.opacity).map(
-                          (O) => `${_}/${O}`
-                        )
+                          (O) => `${_}/${O}`,
+                        ),
                       ),
                     ]),
                   m &&
@@ -14199,7 +14199,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     return no(lu);
                                   },
                                   selector: lu,
-                                })
+                                }),
                               ));
                           }),
                           k
@@ -14236,7 +14236,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   X = m[Jr] ?? {},
                   le = (() => !(q || X.respectPrefix === !1))();
                 (O = O.map((j) =>
-                  j.map((ue) => ({ format: ue, respectPrefix: le }))
+                  j.map((ue) => ({ format: ue, respectPrefix: le })),
                 )),
                   (I = I.map((j) => ({ format: j, respectPrefix: le })));
                 let ce = { candidate: y, context: e },
@@ -14244,7 +14244,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     wn(`.${y}`, $t(j, ce), ce)
                       .replace(`.${y}`, "&")
                       .replace("{ & }", "")
-                      .trim()
+                      .trim(),
                   );
                 return (
                   I.length > 0 &&
@@ -14429,11 +14429,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           let n = t("lineClamp");
           i(
             { "line-clamp": (a) => ({ ...XC, "-webkit-line-clamp": `${a}` }) },
-            { values: n }
+            { values: n },
           ),
             e(
               [{ ".line-clamp-none": { "-webkit-line-clamp": "unset" } }],
-              r("lineClamp")
+              r("lineClamp"),
             );
         },
         {
@@ -14441,7 +14441,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             lineClamp: { 1: "1", 2: "2", 3: "3", 4: "4", 5: "5", 6: "6" },
           },
           variants: { lineClamp: ["responsive"] },
-        }
+        },
       );
     Hd.exports = KC;
   });
@@ -14763,16 +14763,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         ) {
           if (!e.has(n.params))
             throw n.error(
-              `\`@layer ${n.params}\` is used but no matching \`@tailwind ${n.params}\` directive is present.`
+              `\`@layer ${n.params}\` is used but no matching \`@tailwind ${n.params}\` directive is present.`,
             );
         } else if (n.name === "responsive") {
           if (!e.has("utilities"))
             throw n.error(
-              "`@responsive` is used but `@tailwind utilities` is missing."
+              "`@responsive` is used but `@tailwind utilities` is missing.",
             );
         } else if (n.name === "variants" && !e.has("utilities"))
           throw n.error(
-            "`@variants` is used but `@tailwind utilities` is missing."
+            "`@variants` is used but `@tailwind utilities` is missing.",
           );
     }
     return { tailwindDirectives: e, applyDirectives: r };
@@ -14868,7 +14868,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 /(?:\/[^\s'"`\\$]*)?/,
               ]),
               /[-\/][^\s'"`\\$={><]*/,
-            ])
+            ]),
           ),
         ]),
       ]),
@@ -14896,7 +14896,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     r = Array.from(r).flatMap((n) => {
       let [, ...a] = n;
       return a.map((s, o) =>
-        Object.assign([], n, { index: n.index + o, 0: s })
+        Object.assign([], n, { index: n.index + o, 0: s }),
       );
     });
     for (let n of r) {
@@ -14993,8 +14993,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               ]) => {
                 (S = k ? await re.promises.readFile(k, "utf8") : S),
                   g2(_(S), O, r, n);
-              }
-            )
+              },
+            ),
           );
         }
       }
@@ -15022,12 +15022,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         t.base.remove()),
         t.components &&
           (t.components.before(
-            vt([...c], t.components.source, { layer: "components" })
+            vt([...c], t.components.source, { layer: "components" }),
           ),
           t.components.remove()),
         t.utilities &&
           (t.utilities.before(
-            vt([...f], t.utilities.source, { layer: "utilities" })
+            vt([...f], t.utilities.source, { layer: "utilities" }),
           ),
           t.utilities.remove());
       let p = Array.from(d).filter((w) => {
@@ -15147,7 +15147,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       if (e.classCache.has(t)) {
         e.applyClassCache.set(
           t,
-          e.classCache.get(t).map(([n, a]) => [n, a.clone()])
+          e.classCache.get(t).map(([n, a]) => [n, a.clone()]),
         );
         continue;
       }
@@ -15230,7 +15230,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             _.value.startsWith("::") &&
                             O.type === "class"
                           ? 1
-                          : 0
+                          : 0,
                 ),
                 (b.nodes = b.nodes.concat(S));
           }
@@ -15248,11 +15248,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         if (u.parent.name === "screen") {
           let p = u.parent.params;
           throw u.error(
-            `@apply is not supported within nested at-rules like @screen. We suggest you write this as @apply ${f.map((m) => `${p}:${m}`).join(" ")} instead.`
+            `@apply is not supported within nested at-rules like @screen. We suggest you write this as @apply ${f.map((m) => `${p}:${m}`).join(" ")} instead.`,
           );
         }
         throw u.error(
-          `@apply is not supported within nested at-rules like @${u.parent.name}. You can fix this by un-nesting @${u.parent.name}.`
+          `@apply is not supported within nested at-rules like @${u.parent.name}. You can fix this by un-nesting @${u.parent.name}.`,
         );
       }
       for (let p of f) {
@@ -15260,7 +15260,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           throw u.error(`@apply should not be used with the '${p}' utility`);
         if (!a.has(p))
           throw u.error(
-            `The \`${p}\` class does not exist. If \`${p}\` is a custom class, make sure it is defined within a \`@layer\` directive.`
+            `The \`${p}\` class does not exist. If \`${p}\` is a custom class, make sure it is defined within a \`@layer\` directive.`,
           );
         let m = a.get(p);
         c.push([p, d, m]);
@@ -15279,7 +15279,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             S.some((q) => _.includes(q)))
           )
             throw k.error(
-              `You cannot \`@apply\` the \`${m}\` utility here because it creates a circular dependency.`
+              `You cannot \`@apply\` the \`${m}\` utility here because it creates a circular dependency.`,
             );
           let I = V.root({ nodes: [k.clone()] });
           I.walk((q) => {
@@ -15418,7 +15418,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ? (u[c][f] = u[c - 1][f - 1])
                 : (u[c][f] = Math.min(
                     u[c - 1][f - 1] + 1,
-                    Math.min(u[c][f - 1] + 1, u[c - 1][f] + 1)
+                    Math.min(u[c][f - 1] + 1, u[c - 1][f] + 1),
                   )),
               u[c][f] < d && (d = u[c][f]);
           if (d > a) return a + 1;
@@ -15790,7 +15790,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       : i.reduce(
           (e, t, r) =>
             t.includes(".") ? `${e}[${t}]` : r === 0 ? t : `${e}.${t}`,
-          ""
+          "",
         );
   }
   function Qh(i) {
@@ -15883,7 +15883,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       Object.assign(Lo(i, n, t, { opacityValue: a }), {
         resolvedPath: n,
         alpha: a,
-      })
+      }),
     );
     return r.find((n) => n.isValid) ?? r[0];
   }
@@ -15971,8 +15971,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ? !0
             : o.value.startsWith("::") ||
               [":before", ":after", ":first-line", ":first-letter"].includes(
-                o.value
-              )
+                o.value,
+              ),
         )
         .reverse(),
       t = new Set(["tag", "class", "id", "attribute"]),
@@ -16065,7 +16065,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             .split((r) => r.type === "combinator" && r.value === " ")
             .pop();
           return L2(t);
-        })
+        }),
       )),
         ($o = new Map());
     });
@@ -16087,7 +16087,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           : n.every(
                 (a) =>
                   (r[a] ?? "").replace(/\s+/g, " ") ===
-                  (t[a] ?? "").replace(/\s+/g, " ")
+                  (t[a] ?? "").replace(/\s+/g, " "),
               )
             ? (r.nodes && t.append(r.nodes), r.remove())
             : (t = r);
@@ -16144,7 +16144,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   }
   function U2(i) {
     let e = /^-?\d*.?\d+([\w%]+)?$/g.exec(i);
-    return e ? e[1] ?? V2 : null;
+    return e ? (e[1] ?? V2) : null;
   }
   var V2,
     am = C(() => {
@@ -16205,7 +16205,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 "Consider using a prefix to scope Tailwind's classes: https://tailwindcss.com/docs/configuration#prefix",
                 "Alternatively, use the important selector strategy: https://tailwindcss.com/docs/configuration#selector-strategy",
               ].join(`
-`)
+`),
             ),
             !1
           );
@@ -16222,10 +16222,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   "Please enable a CSS nesting plugin *before* Tailwind in your configuration.",
                   "See how here: https://tailwindcss.com/docs/using-with-preprocessors#nesting",
                 ].join(`
-`)
+`),
               ),
               !1
-            )
+            ),
           );
         });
     };
@@ -16249,7 +16249,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       })(e, t);
       if (a.tailwindConfig.separator === "-")
         throw new Error(
-          "The '-' character cannot be used as a custom separator in JIT mode due to parsing ambiguity. Please use another character like '_' instead."
+          "The '-' character cannot be used as a custom separator in JIT mode due to parsing ambiguity. Please use another character like '_' instead.",
         );
       _u(a.tailwindConfig),
         await Oo(a)(e, t),
@@ -16284,23 +16284,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       i.walkAtRules("config", (n) => {
         if (((r = n.source?.input.file ?? e.opts.from ?? null), r === null))
           throw n.error(
-            "The `@config` directive cannot be used without setting `from` in your PostCSS config."
+            "The `@config` directive cannot be used without setting `from` in your PostCSS config.",
           );
         if (t)
           throw n.error("Only one `@config` directive is allowed per file.");
         let a = n.params.match(/(['"])(.*?)\1/);
         if (!a)
           throw n.error(
-            "A path is required when using the `@config` directive."
+            "A path is required when using the `@config` directive.",
           );
         let s = a[2];
         if (ee.isAbsolute(s))
           throw n.error(
-            "The `@config` directive cannot be used with an absolute path."
+            "The `@config` directive cannot be used with an absolute path.",
           );
         if (((t = ee.resolve(ee.dirname(r), s)), !re.existsSync(t)))
           throw n.error(
-            `The config file at "${s}" does not exist. Make sure the path is correct and the file exists.`
+            `The config file at "${s}" does not exist. Make sure the path is correct and the file exists.`,
           );
         n.remove();
       }),
@@ -16977,7 +16977,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     };
     ct.exports.splitSelector = function (i) {
       return Go.comma(i).map((e) =>
-        Go.space(e).map((t) => t.split(/(?=\.|#)/g))
+        Go.space(e).map((t) => t.split(/(?=\.|#)/g)),
       );
     };
   });
@@ -16993,7 +16993,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           for (let e in wm) this.prefixesCache.push(`-${wm[e].prefix}-`);
           return (
             (this.prefixesCache = X2.uniq(this.prefixesCache).sort(
-              (e, t) => t.length - e.length
+              (e, t) => t.length - e.length,
             )),
             this.prefixesCache
           );
@@ -17256,7 +17256,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 this.bad.push(this.prefixName(t, "max"));
           }
           e.params = Yo.editList(e.params, (t) =>
-            t.filter((r) => this.bad.every((n) => !r.includes(n)))
+            t.filter((r) => this.bad.every((n) => !r.includes(n))),
           );
         }
         process(e) {
@@ -17729,7 +17729,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               n &&
               t.warn(
                 e,
-                "Replace transition-property to transition, because Autoprefixer could not support any cases of transition-property and other transition-*"
+                "Replace transition-property to transition, because Autoprefixer could not support any cases of transition-property and other transition-*",
               );
         }
         remove(e) {
@@ -17746,7 +17746,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           let n = e.parent.some((s) => s.prop === e.prop && s.value === r),
             a = e.parent.some(
-              (s) => s !== e && s.prop === e.prop && s.value.length > r.length
+              (s) => s !== e && s.prop === e.prop && s.value.length > r.length,
             );
           if (n || a) {
             e.remove();
@@ -17872,7 +17872,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             let d = s.replace(/\s+/, " ");
             if (
               f.some(
-                (w) => w.prop === t.prop && w.value.replace(/\s+/, " ") === d
+                (w) => w.prop === t.prop && w.value.replace(/\s+/, " ") === d,
               )
             ) {
               n.push(o);
@@ -17941,7 +17941,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       ];
     function rl(i) {
       return i.parent.some(
-        (e) => e.prop === "grid-template" || e.prop === "grid-template-areas"
+        (e) => e.prop === "grid-template" || e.prop === "grid-template-areas",
       );
     }
     function EA(i) {
@@ -17988,7 +17988,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         function u(f) {
           return f.parent.some(
-            (d) => d.prop === "display" && /(inline-)?flex/.test(d.value)
+            (d) => d.prop === "display" && /(inline-)?flex/.test(d.value),
           );
         }
         let c =
@@ -18004,37 +18004,37 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (p === "grid-row-span") {
               t.warn(
                 "grid-row-span is not part of final Grid Layout. Use grid-row.",
-                { node: f }
+                { node: f },
               );
               return;
             } else if (p === "grid-column-span") {
               t.warn(
                 "grid-column-span is not part of final Grid Layout. Use grid-column.",
-                { node: f }
+                { node: f },
               );
               return;
             } else if (p === "display" && m === "box") {
               t.warn(
                 "You should write display: flex by final spec instead of display: box",
-                { node: f }
+                { node: f },
               );
               return;
             } else if (p === "text-emphasis-position")
               (m === "under" || m === "over") &&
                 t.warn(
                   "You should use 2 values for text-emphasis-position For example, `under left` instead of just `under`.",
-                  { node: f }
+                  { node: f },
                 );
             else if (/^(align|justify|place)-(items|content)$/.test(p) && u(f))
               (m === "start" || m === "end") &&
                 t.warn(
                   `${m} value has mixed support, consider using flex-${m} instead`,
-                  { node: f }
+                  { node: f },
                 );
             else if (p === "text-decoration-skip" && m === "ink")
               t.warn(
                 "Replace text-decoration-skip: ink to text-decoration-skip-ink: auto, because spec had been changed",
-                { node: f }
+                { node: f },
               );
             else {
               if (c && this.gridStatus(f, t))
@@ -18046,7 +18046,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   let x = p.replace("-items", "-self");
                   t.warn(
                     `IE does not support ${p} on grid containers. Try using ${x} on child elements instead: ${f.parent.selector} > * { ${x}: ${f.value} }`,
-                    { node: f }
+                    { node: f },
                   );
                 } else if (/^(align|justify|place)-content$/.test(p) && o(f))
                   t.warn(`IE does not support ${f.prop} on grid containers`, {
@@ -18055,7 +18055,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 else if (p === "display" && f.value === "contents") {
                   t.warn(
                     "Please do not use display: contents; if you have grid setting enabled",
-                    { node: f }
+                    { node: f },
                   );
                   return;
                 } else if (f.prop === "grid-gap") {
@@ -18063,13 +18063,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   x === "autoplace" && !EA(f) && !rl(f)
                     ? t.warn(
                         "grid-gap only works if grid-template(-areas) is being used or both rows and columns have been declared and cells have not been manually placed inside the explicit grid",
-                        { node: f }
+                        { node: f },
                       )
                     : (x === !0 || x === "no-autoplace") &&
                       !rl(f) &&
                       t.warn(
                         "grid-gap only works if grid-template(-areas) is being used",
-                        { node: f }
+                        { node: f },
                       );
                 } else if (p === "grid-auto-columns") {
                   t.warn("grid-auto-columns is not supported by IE", {
@@ -18094,7 +18094,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         !y &&
                         t.warn(
                           "grid-auto-flow works only if grid-template-rows and grid-template-columns are present in the same rule",
-                          { node: f }
+                          { node: f },
                         );
                   return;
                 } else if (m.includes("auto-fit")) {
@@ -18114,13 +18114,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     m.includes("[") &&
                     t.warn(
                       "Autoprefixer currently does not support line names. Try using grid-template-areas instead.",
-                      { node: f, word: "[" }
+                      { node: f, word: "[" },
                     );
               if (m.includes("radial-gradient"))
                 if (CA.test(f.value))
                   t.warn(
                     "Gradient has outdated direction syntax. New syntax is like `closest-side at 0 0` instead of `0 0, closest-side`.",
-                    { node: f }
+                    { node: f },
                   );
                 else {
                   let x = tg(m);
@@ -18131,19 +18131,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                           (b.value === "cover"
                             ? t.warn(
                                 "Gradient has outdated direction syntax. Replace `cover` to `farthest-corner`.",
-                                { node: f }
+                                { node: f },
                               )
                             : b.value === "contain" &&
                               t.warn(
                                 "Gradient has outdated direction syntax. Replace `contain` to `closest-side`.",
-                                { node: f }
+                                { node: f },
                               ));
                 }
               m.includes("linear-gradient") &&
                 SA.test(m) &&
                 t.warn(
                   "Gradient has outdated direction syntax. New syntax is like `to left` instead of `right`.",
-                  { node: f }
+                  { node: f },
                 );
             }
             OA.includes(f.prop) &&
@@ -18151,15 +18151,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 (f.value.includes("fill-available")
                   ? t.warn(
                       "Replace fill-available to stretch, because spec had been changed",
-                      { node: f }
+                      { node: f },
                     )
                   : f.value.includes("fill") &&
                     tg(m).nodes.some(
-                      (y) => y.type === "word" && y.value === "fill"
+                      (y) => y.type === "word" && y.value === "fill",
                     ) &&
                     t.warn(
                       "Replace fill to stretch, because spec had been changed",
-                      { node: f }
+                      { node: f },
                     )));
             let w;
             if (f.prop === "transition" || f.prop === "transition-property")
@@ -18300,7 +18300,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               (typeof n != "undefined"
                 ? t.warn(
                     "Second Autoprefixer control comment was ignored. Autoprefixer applies control comment to whole block, not to next rules.",
-                    { node: a }
+                    { node: a },
                   )
                 : (n = /on/i.test(a.text)));
           }),
@@ -18353,7 +18353,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               typeof n != "undefined"
                 ? t.warn(
                     "Second Autoprefixer grid control comment was ignored. Autoprefixer applies control comments to the whole block, not to the next rules.",
-                    { node: a }
+                    { node: a },
                   )
                 : s
                   ? (n = "autoplace")
@@ -18496,7 +18496,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           (this.prefixerCache = new this.Prefixes(
             this.all.data,
             t,
-            this.all.options
+            this.all.options,
           )),
           this.prefixerCache
         );
@@ -18572,7 +18572,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ? t
             : t.length === 1 && typeof t[0] == "object"
               ? this.cleanBrackets(t[0])
-              : this.cleanBrackets(t)
+              : this.cleanBrackets(t),
         );
       }
       convert(e) {
@@ -18691,7 +18691,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             let t = e ? this.prefixed(e) : this.name;
             this.regexpCache.set(
               e,
-              new RegExp(`(^|[^:"'=])${LA.escapeRegexp(t)}`, "gi")
+              new RegExp(`(^|[^:"'=])${LA.escapeRegexp(t)}`, "gi"),
             );
           }
           return this.regexpCache.get(e);
@@ -18991,7 +18991,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             a.length === 0 ||
             e.parent.some(
               (d) =>
-                d.prop === t + "box-orient" || d.prop === t + "box-direction"
+                d.prop === t + "box-orient" || d.prop === t + "box-direction",
             )
           )
             return;
@@ -19156,7 +19156,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           super(e, t, r);
           this.prefixes &&
             (this.prefixes = l_.uniq(
-              this.prefixes.map((n) => (n === "-ms-" ? "-webkit-" : n))
+              this.prefixes.map((n) => (n === "-ms-" ? "-webkit-" : n)),
             ));
         }
       };
@@ -19262,7 +19262,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     };
     Ne.regexp = new RegExp(
       `\\s+(${Object.keys(Ne.oldValues).join("|")})\\b(?!\\))\\s*(?=[,])`,
-      "ig"
+      "ig",
     );
     dy.exports = Ne;
   });
@@ -19580,7 +19580,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         normalize(e) {
           return e.replace(
             /(margin|padding|border)-(start|end)/,
-            "$1-inline-$2"
+            "$1-inline-$2",
           );
         }
       };
@@ -19679,7 +19679,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           if (
             e.parent.some(
               (f) =>
-                f.prop === t + "box-orient" || f.prop === t + "box-direction"
+                f.prop === t + "box-orient" || f.prop === t + "box-direction",
             )
           )
             return;
@@ -19752,7 +19752,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           super(e, t, r);
           this.prefixes &&
             (this.prefixes = R_.uniq(
-              this.prefixes.map((n) => (n === "-ms-" ? "-webkit-" : n))
+              this.prefixes.map((n) => (n === "-ms-" ? "-webkit-" : n)),
             ));
         }
       };
@@ -19768,7 +19768,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           super(e, t, r);
           this.prefixes &&
             (this.prefixes = B_.uniq(
-              this.prefixes.map((n) => (n === "-ms-" ? "-webkit-" : n))
+              this.prefixes.map((n) => (n === "-ms-" ? "-webkit-" : n)),
             ));
         }
         check(e) {
@@ -19905,7 +19905,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             c = s.includes("columns"),
             f = a.some(
               (k) =>
-                k.prop === "grid-template" || k.prop === "grid-template-areas"
+                k.prop === "grid-template" || k.prop === "grid-template-areas",
             );
           if (f && u) return !1;
           let d = new H_({ options: {} }),
@@ -19926,7 +19926,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (!k && !f) {
               e.warn(
                 n,
-                "Autoplacement does not work without grid-template-rows property"
+                "Autoplacement does not work without grid-template-rows property",
               );
               return;
             }
@@ -19934,7 +19934,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               !f &&
               e.warn(
                 n,
-                "Autoplacement does not work without grid-template-columns property"
+                "Autoplacement does not work without grid-template-columns property",
               ),
               c && !f && U_(e, n, m, b);
           }
@@ -20145,7 +20145,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             .map((n) =>
               n === " "
                 ? { type: "space", value: n }
-                : { type: "word", value: n }
+                : { type: "word", value: n },
             )
             .concat(e.slice(1));
         }
@@ -20181,7 +20181,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return e;
           e.unshift(
             { type: "word", value: "to" },
-            { type: "space", value: " " }
+            { type: "space", value: " " },
           );
           for (let t = 2; t < e.length && e[t].type !== "div"; t++)
             e[t].type === "word" &&
@@ -20277,7 +20277,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return (
             e.nodes.unshift(
               { type: "word", value: "linear" },
-              this.cloneDiv(e.nodes)
+              this.cloneDiv(e.nodes),
             ),
             (e.value = "-webkit-gradient"),
             !0
@@ -21426,11 +21426,11 @@ Check your Browserslist config to be sure that your targets are set up correctly
         e.browser)
       )
         throw new Error(
-          "Change `browser` option to `overrideBrowserslist` in Autoprefixer"
+          "Change `browser` option to `overrideBrowserslist` in Autoprefixer",
         );
       if (e.browserslist)
         throw new Error(
-          "Change `browserslist` option to `overrideBrowserslist` in Autoprefixer"
+          "Change `browserslist` option to `overrideBrowserslist` in Autoprefixer",
         );
       e.overrideBrowserslist
         ? (i = e.overrideBrowserslist)
@@ -21440,8 +21440,8 @@ Check your Browserslist config to be sure that your targets are set up correctly
             (ru.red
               ? console.warn(
                   ru.red(
-                    nb.replace(/`[^`]+`/g, (n) => ru.yellow(n.slice(1, -1)))
-                  )
+                    nb.replace(/`[^`]+`/g, (n) => ru.yellow(n.slice(1, -1))),
+                  ),
                 )
               : console.warn(nb)),
           (i = e.browsers));
@@ -21520,7 +21520,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     return i && i.__esModule ? i : { default: i };
   }
   console.warn(
-    "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+    "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation",
   );
   var Hn = "tailwind",
     nu = "text/tailwindcss",
@@ -21552,7 +21552,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
       plugin: GO.default,
       resolveConfig: HO.default,
     },
-    bb(!0)
+    bb(!0),
   );
   function vb(i) {
     au.observe(i, {
@@ -21589,7 +21589,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
       attributeFilter: ["class"],
       childList: !0,
       subtree: !0,
-    }
+    },
   );
   async function ou(i = !1) {
     i && (yb++, su.clear());
@@ -21627,7 +21627,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
         }),
         (0, jO.default)({ remove: !1 }),
       ]).process(
-        `@tailwind base;@tailwind components;@tailwind utilities;${e}`
+        `@tailwind base;@tailwind components;@tailwind utilities;${e}`,
       );
       (!xt || !xt.isConnected) &&
         ((xt = document.createElement("style")),

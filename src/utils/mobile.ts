@@ -1,28 +1,24 @@
+import debounce from "lodash/debounce";
 import { useEffect, useState } from "react";
 
 function useWindowSize() {
   const [size, setSize] = useState({
-    width: 0,
-    height: 0,
+    width: window.innerWidth,
+    height: window.innerHeight,
   });
 
   useEffect(() => {
-    setSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-
-    const onResize = () => {
+    const debouncedHandleResize = debounce(() => {
       setSize({
         width: window.innerWidth,
         height: window.innerHeight,
       });
-    };
+    }, 250);
 
-    window.addEventListener("resize", onResize);
+    window.addEventListener("resize", debouncedHandleResize);
 
     return () => {
-      window.removeEventListener("resize", onResize);
+      window.removeEventListener("resize", debouncedHandleResize);
     };
   }, []);
 

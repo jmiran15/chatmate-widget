@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_PATH } from "../utils/constants";
-import { Chatbot } from "src/utils/types";
+import { Chatbot } from "../utils/types";
 
 export default function useChatbot(chatbotId: string): Chatbot | null {
-  const [chatbot, setChatbot] = useState(null);
+  const [chatbot, setChatbot] = useState<Chatbot | null>(null);
 
   useEffect(() => {
     axios({
@@ -13,7 +13,7 @@ export default function useChatbot(chatbotId: string): Chatbot | null {
       url: `/api/chatbot/${chatbotId}`,
     })
       .then((res) => {
-        setChatbot(res.data);
+        setChatbot(res.data.chatbot);
       })
       .catch((error) => {
         if (error.response) {
