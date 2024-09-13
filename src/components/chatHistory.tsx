@@ -9,8 +9,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Message } from "src/utils/types";
 import { useSessionContext } from "../providers/session";
+import { Message } from "../utils/types";
 import HistoricalMessage from "./historicalMessage";
 import PromptReply from "./promptReply";
 

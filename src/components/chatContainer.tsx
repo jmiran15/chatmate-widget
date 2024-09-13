@@ -1,14 +1,14 @@
 import axios from "axios";
 import debounce from "lodash/debounce";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { StreamChatRequest } from "src/hooks/useSession";
-import { Message } from "src/utils/types";
 import { v4 } from "uuid";
 import { useIsAgent } from "../hooks/useIsAgent";
+import { StreamChatRequest } from "../hooks/useSession";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
 import { useSocket } from "../providers/socket";
 import { API_PATH } from "../utils/constants";
+import { Message } from "../utils/types";
 import ChatHistory from "./chatHistory";
 import PromptInput from "./promptInput";
 

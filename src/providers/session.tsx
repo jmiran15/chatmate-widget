@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import { Message } from "src/utils/types";
+import { Message } from "../utils/types";
 
 interface SessionContextType {
   sessionId: string;

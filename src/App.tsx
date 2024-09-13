@@ -3,6 +3,7 @@ import ChatWindow from "./components/chatWindow";
 import Head from "./components/Head";
 import OpenButton from "./components/openButton";
 import PendingMessages from "./components/pendingMessages";
+import { Button } from "./components/ui/button";
 import useChatbot from "./hooks/useChatbot";
 import { useConnectSocket } from "./hooks/useConnectSocket";
 import { useIsRestricted } from "./hooks/useIsRestricted";
@@ -103,6 +104,7 @@ export default function App({ embedId, shadowRoot }: AppProps) {
   const handleThread = useCallback(
     (data: { chatId: string; message: any }) => {
       if (session?.chat?.id === data.chatId) {
+        console.log("data.message", data.message);
         session?.setMessages((prevThread) => {
           const newMessage = data.message;
           const newMessageTime = new Date(newMessage.createdAt).getTime();
@@ -187,6 +189,7 @@ export default function App({ embedId, shadowRoot }: AppProps) {
             )}
             {(!isMobile || !isChatOpen) && (
               <>
+                <Button>Testing</Button>
                 {!isChatOpen && delayedShow && (
                   <PendingMessages
                     chatbot={chatbot}
@@ -199,9 +202,7 @@ export default function App({ embedId, shadowRoot }: AppProps) {
                   isOpen={isChatOpen}
                   toggleOpen={() => toggleOpenChat(!isChatOpen)}
                   chatbot={chatbot}
-                  pending={
-                    showStarterPreviews ? 0 : (session?.pendingCount ?? 0)
-                  }
+                  pending={showStarterPreviews ? 0 : session?.pendingCount ?? 0}
                 />
               </>
             )}

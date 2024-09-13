@@ -1,8 +1,8 @@
 import { Warning } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
-import { Message } from "src/utils/types";
 import renderMarkdown from "../utils/markdown";
+import { Message } from "../utils/types";
 import MessageDateTooltip from "./messageDateTooltip";
 
 const PromptReply = React.forwardRef<
@@ -73,6 +73,8 @@ const PromptReply = React.forwardRef<
       </div>
     );
   }
+
+  console.log("message", message);
 
   if (error) {
     return (

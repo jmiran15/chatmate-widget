@@ -7,8 +7,8 @@ import {
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useMemo, useState } from "react";
-import { Chatbot } from "src/utils/types";
 import { colors } from "../utils/constants";
+import { Chatbot } from "../utils/types";
 
 const CHAT_ICONS = {
   plus: PlusIcon,

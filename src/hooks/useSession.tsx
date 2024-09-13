@@ -298,7 +298,7 @@ export default function useSession({
             updatedMessages.push({
               id,
               chatId: chat?.id,
-              content: textResponse ?? "",
+              content: textResponse ?? "blob new",
               role: "assistant",
               createdAt: currentDate,
               updatedAt: currentDate,
@@ -333,6 +333,12 @@ export default function useSession({
 
           setLoading(false);
         }
+        break;
+      }
+      case "toolCall": {
+        console.log("toolCall", sseMessage);
+        // remove dummy message
+        setMessages(removeDummyMessage);
         break;
       }
       default:
