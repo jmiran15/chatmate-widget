@@ -3,7 +3,6 @@ import ChatWindow from "./components/chatWindow";
 import Head from "./components/Head";
 import OpenButton from "./components/openButton";
 import PendingMessages from "./components/pendingMessages";
-import { Button } from "./components/ui/button";
 import useChatbot from "./hooks/useChatbot";
 import { useConnectSocket } from "./hooks/useConnectSocket";
 import { useIsRestricted } from "./hooks/useIsRestricted";
@@ -189,7 +188,6 @@ export default function App({ embedId, shadowRoot }: AppProps) {
             )}
             {(!isMobile || !isChatOpen) && (
               <>
-                <Button>Testing</Button>
                 {!isChatOpen && delayedShow && (
                   <PendingMessages
                     chatbot={chatbot}
