@@ -43,6 +43,29 @@ interface PrismaMessage {
   seenByAgent?: boolean;
   seenByUserAt?: Date;
   activity?: ActivityType;
+
+  isFormMessage?: boolean;
+  formId?: string;
+  form?: Form;
+  formSubmission?: FormSubmission;
+}
+
+interface Form {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  chatbotId: string;
+  formSchema: any;
+}
+
+interface FormSubmission {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  formId: string;
+  form: Form;
+  submissionData: any;
+  messageId?: string;
 }
 
 type TypingState = "typing" | "typed";

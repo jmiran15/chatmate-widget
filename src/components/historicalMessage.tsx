@@ -1,21 +1,27 @@
 import { Warning } from "@phosphor-icons/react";
+import axios from "axios";
 import createDOMPurify from "dompurify";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import jsonSchemaToZod from "json-schema-to-zod";
 import debounce from "lodash/debounce";
+import { Check } from "lucide-react";
 import React, {
   forwardRef,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import { Message } from "src/utils/types";
+import { z } from "zod";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
 import { useSocket } from "../providers/socket";
 import { API_PATH, colors } from "../utils/constants";
 import renderMarkdown from "../utils/markdown";
+import { Message } from "../utils/types";
 import MessageDateTooltip from "./messageDateTooltip";
+import AutoForm, { AutoFormSubmit } from "./ui/auto-form";
 
 const DOMPurify = createDOMPurify(window);
 
@@ -149,6 +155,118 @@ const HistoricalMessage: React.FC<{
     );
   }
 
+  console.log("message UPDATE", message);
+
+  const messageContent = useMemo(() => {
+    if (message.isFormMessage) {
+      // check if we have a formSubmission
+      if (message.formSubmission) {
+        return <FormSubmissionMessage />;
+      }
+
+      console.log("message.form", message.form, message.form?.formSchema);
+
+      const formSchema = message.form?.formSchema;
+      const zodSchemaString = jsonSchemaToZod(
+        formSchema?.schema?.definitions.formSchema
+      );
+
+      console.log("zodSchemaFromJson", formSchema?.schema, zodSchemaString);
+
+      const schemaString = `
+// you can put any helper function or code directly inside the string and use them in your schema
+
+function getZodSchema({z, ctx}) {
+  // use ctx for any dynamic data that your schema depends on
+  return ${zodSchemaString};
+}
+`;
+
+      const zodSchema = Function(
+        "...args",
+        `${schemaString}; return getZodSchema(...args)`
+      )({ z, ctx: {} });
+
+      console.log("zodSchema", zodSchema);
+
+      const handleSubmit = (data: z.infer<typeof formSchema.schema>) => {
+        try {
+          const validatedData = zodSchema.parse(data);
+
+          console.log("Form submitted with valid data:", {
+            validatedData,
+          });
+
+          // lets call the route /api/form-submission with axios as POSt with the data as json body
+          axios
+            .post(`${API_PATH}/api/form-submission`, {
+              formId: message.form?.id,
+              messageId: message.id,
+              submissionData: validatedData,
+            })
+            .then((response) => {
+              console.log("Form submission response:", response);
+              const updatedMessage = response.data?.updatedMessage;
+              // update the state with the submission
+              // we need to setMessages after the submission to update it
+              setMessages((messages: Message[]) =>
+                messages.map((msg) =>
+                  msg.id === updatedMessage.id
+                    ? {
+                        ...updatedMessage,
+                        createdAt: new Date(updatedMessage.createdAt),
+                        updatedAt: new Date(updatedMessage.updatedAt),
+                      }
+                    : msg
+                )
+              );
+            })
+            .catch(function (error) {
+              if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+              } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                // http.ClientRequest in node.js
+                console.log(error.request);
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log("Error", error.message);
+              }
+              console.log(error.config);
+            });
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.log("Form submitted with errors:", error.errors);
+          }
+        }
+      };
+
+      return (
+        <AutoForm
+          formSchema={zodSchema}
+          fieldConfig={formSchema?.fieldConfig}
+          onSubmit={handleSubmit}
+        >
+          <AutoFormSubmit>Submit</AutoFormSubmit>
+        </AutoForm>
+      );
+    } else {
+      return (
+        <span
+          className="whitespace-normal break-words flex flex-col gap-y-1 text-[14px] leading-[1.4] min-h-[10px]"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(renderMarkdown(content ?? "")),
+          }}
+        />
+      );
+    }
+  }, [message.isFormMessage, message.form, message.formSubmission, content]);
+
   return (
     <div
       ref={messageRef}
@@ -175,12 +293,7 @@ const HistoricalMessage: React.FC<{
           </p>
         </div>
       ) : (
-        <span
-          className="whitespace-normal break-words flex flex-col gap-y-1 text-[14px] leading-[1.4] min-h-[10px]"
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(renderMarkdown(content ?? "")),
-          }}
-        />
+        messageContent
       )}
     </div>
   );
@@ -216,3 +329,25 @@ const TextSeparator = forwardRef<HTMLDivElement, TextSeparatorProps>(
 );
 
 TextSeparator.displayName = "TextSeparator";
+
+// The form submission message
+
+function FormSubmissionMessage() {
+  return (
+    <div className="flex flex-col items-start space-y-3">
+      <motion.div
+        className="flex items-center space-x-2"
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+      >
+        <div className="bg-blue-100 rounded-full p-1">
+          <Check className="w-5 h-5 text-blue-500" />
+        </div>
+        <span className="whitespace-normal flex flex-col gap-y-1 text-[14px] leading-[1.4] min-h-[10px] font-medium">
+          Thank you for your submission!
+        </span>
+      </motion.div>
+    </div>
+  );
+}
