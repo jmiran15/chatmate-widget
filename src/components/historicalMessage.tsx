@@ -155,8 +155,6 @@ const HistoricalMessage: React.FC<{
     );
   }
 
-  console.log("message UPDATE", message);
-
   const messageContent = useMemo(() => {
     if (message.isFormMessage) {
       // check if we have a formSubmission
@@ -164,14 +162,10 @@ const HistoricalMessage: React.FC<{
         return <FormSubmissionMessage />;
       }
 
-      console.log("message.form", message.form, message.form?.formSchema);
-
       const formSchema = message.form?.formSchema;
       const zodSchemaString = jsonSchemaToZod(
         formSchema?.schema?.definitions.formSchema
       );
-
-      console.log("zodSchemaFromJson", formSchema?.schema, zodSchemaString);
 
       const schemaString = `
 // you can put any helper function or code directly inside the string and use them in your schema
@@ -187,15 +181,9 @@ function getZodSchema({z, ctx}) {
         `${schemaString}; return getZodSchema(...args)`
       )({ z, ctx: {} });
 
-      console.log("zodSchema", zodSchema);
-
       const handleSubmit = (data: z.infer<typeof formSchema.schema>) => {
         try {
           const validatedData = zodSchema.parse(data);
-
-          console.log("Form submitted with valid data:", {
-            validatedData,
-          });
 
           // lets call the route /api/form-submission with axios as POSt with the data as json body
           axios
@@ -205,7 +193,6 @@ function getZodSchema({z, ctx}) {
               submissionData: validatedData,
             })
             .then((response) => {
-              console.log("Form submission response:", response);
               const updatedMessage = response.data?.updatedMessage;
               // update the state with the submission
               // we need to setMessages after the submission to update it

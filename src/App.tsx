@@ -103,7 +103,6 @@ export default function App({ embedId, shadowRoot }: AppProps) {
   const handleThread = useCallback(
     (data: { chatId: string; message: any }) => {
       if (session?.chat?.id === data.chatId) {
-        console.log("data.message", data.message);
         session?.setMessages((prevThread) => {
           const newMessage = data.message;
           const newMessageTime = new Date(newMessage.createdAt).getTime();
