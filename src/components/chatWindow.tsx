@@ -6,6 +6,8 @@ import ChatContainer from "./chatContainer";
 import ChatWindowHeader from "./chatHeader";
 import { ChatHistoryLoading } from "./chatHistory";
 
+// TODO - we no longer have a shadow root, so revamp to work regularly
+
 const ChatWindow = React.memo(
   ({
     handleUserActivity,
@@ -85,10 +87,17 @@ const ChatWindow = React.memo(
       return () => shadowRoot.removeEventListener("click", handleClick);
     }, [copyCodeSnippet, shadowRoot]);
 
+    // Chat window
+    // TODO - do this in tailwind
+    // .chat-window-custom {
+    //   height: min(704px, 100% - 104px);
+    //   box-shadow: rgba(0, 0, 0, 0.16) 0px 5px 40px;
+    // }
+
     if (loading) {
       return (
         <div
-          className={`flex flex-col flex-1 fixed bottom-[84px] z-[9999] min-h-[80px] w-[400px] max-h-[704px] opacity-100 overflow-hidden chat-window-custom`}
+          className={`cm-flex cm-flex-col cm-flex-1 cm-fixed cm-bottom-[84px] cm-z-[9999] cm-min-h-[80px] cm-w-[400px] cm-max-h-[704px] cm-opacity-100 cm-overflow-hidden cm-h-[min(704px,calc(100%-104px))] cm-shadow-[0_5px_40px_rgba(0,0,0,0.16)]`}
           style={containerStyle}
         >
           <ChatWindowHeader closeChat={closeChat} />
@@ -99,11 +108,11 @@ const ChatWindow = React.memo(
 
     return (
       <div
-        className={`flex flex-col flex-1 fixed ${
+        className={`cm-flex cm-flex-col cm-flex-1 cm-fixed ${
           isMobile
-            ? "bottom-0 right-0 h-dvh w-dvw"
-            : "bottom-[84px] min-h-[80px] w-[400px] max-h-[704px]"
-        } z-[9999] opacity-100 overflow-hidden chat-window-custom`}
+            ? "cm-bottom-0 cm-right-0 cm-h-dvh cm-w-dvw"
+            : "cm-bottom-[84px] cm-min-h-[80px] cm-w-[400px] cm-max-h-[704px]"
+        } cm-z-[9999] cm-opacity-100 cm-overflow-hidden cm-h-[min(704px,calc(100%-104px))] cm-shadow-[0_5px_40px_rgba(0,0,0,0.16)]`}
         style={containerStyle}
       >
         <ChatWindowHeader closeChat={closeChat} />

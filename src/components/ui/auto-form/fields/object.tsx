@@ -63,7 +63,7 @@ export default function AutoFormObject<
   };
 
   return (
-    <Accordion type="multiple" className="space-y-5 border-none">
+    <Accordion type="multiple" className="cm-space-y-5 cm-border-none">
       {Object.keys(shape).map((name) => {
         let item = shape[name] as z.ZodAny;
         item = handleIfZodNumber(item) as z.ZodAny;
@@ -83,9 +83,9 @@ export default function AutoFormObject<
 
         if (zodBaseType === "ZodObject") {
           return (
-            <AccordionItem value={name} key={key} className="border-none">
+            <AccordionItem value={name} key={key} className="cm-border-none">
               <AccordionTrigger>{itemName}</AccordionTrigger>
-              <AccordionContent className="p-2">
+              <AccordionContent className="cm-p-2">
                 <AutoFormObject
                   schema={item as unknown as z.ZodObject<any, any>}
                   form={form}

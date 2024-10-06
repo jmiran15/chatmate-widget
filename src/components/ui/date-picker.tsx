@@ -20,15 +20,15 @@ export const DatePicker = forwardRef<
         <Button
           variant={"outline"}
           className={cn(
-            "w-full justify-start text-left font-normal",
-            !date && "text-muted-foreground"
+            "cm-w-full cm-justify-start cm-text-left cm-font-normal",
+            !date && "cm-text-muted-foreground"
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="cm-w-4 cm-h-4 cm-mr-2" />
           {date ? format(date, "PPP") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" ref={ref}>
+      <PopoverContent className="cm-w-auto cm-p-0" ref={ref}>
         <Calendar
           mode="single"
           selected={date}

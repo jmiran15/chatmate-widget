@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useCallback, useEffect } from "react";
 import ChatWindow from "./components/chatWindow";
 import Head from "./components/Head";
@@ -6,6 +7,7 @@ import PendingMessages from "./components/pendingMessages";
 import useChatbot from "./hooks/useChatbot";
 import { useConnectSocket } from "./hooks/useConnectSocket";
 import { useIsRestricted } from "./hooks/useIsRestricted";
+import { useMessageProcessor } from "./hooks/useMessageProcessor";
 import useOpenChat from "./hooks/useOpenChat";
 import { usePendingMessages } from "./hooks/usePendingMessages";
 import { usePingInstallation } from "./hooks/usePingInstallation";
@@ -16,11 +18,12 @@ import { useWidgetConnection } from "./hooks/useWidgetConnection";
 import { ChatbotProvider } from "./providers/chatbot";
 import { SessionProvider } from "./providers/session";
 import { SocketProvider } from "./providers/socket";
+import { API_PATH } from "./utils/constants";
 import { useMobileScreen } from "./utils/mobile";
+import { Message } from "./utils/types";
 
 interface AppProps {
   embedId: string;
-  shadowRoot: ShadowRoot;
 }
 
 interface AgentTyping {
@@ -28,7 +31,7 @@ interface AgentTyping {
   isTyping: boolean;
 }
 
-export default function App({ embedId, shadowRoot }: AppProps) {
+export default function App({ embedId }: AppProps) {
   const socket = useConnectSocket();
   const { isChatOpen, toggleOpenChat } = useOpenChat();
   const isMobile = useMobileScreen();
@@ -100,59 +103,20 @@ export default function App({ embedId, shadowRoot }: AppProps) {
     [session?.chat?.id, session?.setMessages]
   );
 
+  const { addMessageToQueue } = useMessageProcessor({
+    setMessages: session?.setMessages,
+    setFollowUps: session?.setFollowUps,
+    messages: session?.messages,
+  });
+
   const handleThread = useCallback(
-    (data: { chatId: string; message: any }) => {
+    (data: { chatId: string; message: Message }) => {
       if (session?.chat?.id === data.chatId) {
-        session?.setMessages((prevThread) => {
-          const newMessage = data.message;
-          const newMessageTime = new Date(newMessage.createdAt).getTime();
-
-          // Check if the message already exists
-          const existingIndex = prevThread.findIndex(
-            (m) => m.id === newMessage.id
-          );
-          if (existingIndex !== -1) {
-            // Update existing message
-            const updatedThread = [...prevThread];
-            updatedThread[existingIndex] = {
-              ...updatedThread[existingIndex],
-              ...newMessage,
-              seenByAgent: updatedThread[existingIndex].seenByAgent,
-              seenByUser: updatedThread[existingIndex].seenByUser,
-              seenByUserAt:
-                updatedThread[existingIndex].seenByUserAt ||
-                newMessage.seenByUserAt,
-              createdAt: updatedThread[existingIndex].createdAt,
-              updatedAt: new Date(newMessage.updatedAt),
-            };
-            return updatedThread;
-          }
-
-          // Find the correct insertion position
-          let insertIndex = prevThread.length;
-          for (let i = prevThread.length - 1; i >= 0; i--) {
-            const currentMessageTime = new Date(
-              prevThread[i].createdAt
-            ).getTime();
-            if (currentMessageTime <= newMessageTime) {
-              insertIndex = i + 1;
-              break;
-            }
-          }
-
-          // Insert the new message at the correct position
-          const updatedThread = [...prevThread];
-          updatedThread.splice(insertIndex, 0, {
-            ...newMessage,
-            createdAt: new Date(newMessage.createdAt),
-            updatedAt: new Date(newMessage.updatedAt),
-          });
-          return updatedThread;
-        });
-        session?.setFollowUps([]);
+        console.log("processing message", data.message);
+        addMessageToQueue(data.message);
       }
     },
-    [session?.chat?.id, session?.setMessages, session?.setFollowUps]
+    [session?.chat?.id, addMessageToQueue]
   );
 
   useEffect(() => {
@@ -166,6 +130,55 @@ export default function App({ embedId, shadowRoot }: AppProps) {
       socket.off("agent typing", handleUserTyping);
     };
   }, [socket, session?.chat?.id]);
+
+  // TODO - not very robust, but it works for now
+  const isInitialThread_ =
+    session?.messages?.length <= (chatbot?.introMessages?.length || 0);
+  useEffect(() => {
+    if (
+      isChatOpen &&
+      !session?.chat?.hasLoadedInitialMessages &&
+      isInitialThread_ &&
+      session?.chat?.id &&
+      chatbot?.id
+    ) {
+      axios
+        .post(`${API_PATH}/api/initialload/${session.chat.id}/${chatbot.id}`)
+        .then((res) => {
+          console.log(res.data);
+          const { chat } = res.data;
+          if (chat) {
+            session?.setChat(chat);
+          }
+        })
+        .catch((error) => {
+          session?.setMessages([]);
+          session?.setLoading(false);
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log(error.request);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+          }
+          console.log(error.config);
+        });
+    }
+  }, [
+    session?.chat?.id,
+    session?.chat?.hasLoadedInitialMessages,
+    chatbot?.id,
+    isChatOpen,
+    isInitialThread_,
+  ]);
 
   if (!embedId || !chatbot || isRestricted) return null;
 
@@ -182,7 +195,7 @@ export default function App({ embedId, shadowRoot }: AppProps) {
               <ChatWindow
                 handleUserActivity={handleUserActivity}
                 closeChat={() => toggleOpenChat(false)}
-                shadowRoot={shadowRoot}
+                shadowRoot={null}
               />
             )}
             {(!isMobile || !isChatOpen) && (

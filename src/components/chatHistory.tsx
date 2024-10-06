@@ -137,9 +137,9 @@ const ChatHistory: React.FC<{
 
   if (messages.length === 0) {
     return (
-      <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
-        <div className="flex h-full flex-col items-center justify-center">
-          <p className="text-slate-400 text-sm font-base py-4 text-center">
+      <div className="cm-h-full cm-max-h-[82vh] cm-pb-[100px] cm-pt-[5px] cm-bg-gray-100 cm-rounded-lg cm-px-2 cm-mt-2 cm-gap-y-2 cm-overflow-y-scroll cm-flex cm-flex-col cm-justify-start cm-no-scroll">
+        <div className="cm-flex cm-h-full cm-flex-col cm-items-center cm-justify-center">
+          <p className="cm-text-slate-400 cm-text-sm cm-font-base cm-py-4 cm-text-center">
             Send a chat to get started!
           </p>
         </div>
@@ -148,9 +148,9 @@ const ChatHistory: React.FC<{
   }
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden relative">
+    <div className="cm-flex cm-flex-col cm-flex-1 cm-overflow-hidden cm-relative">
       <div
-        className="flex flex-col flex-1 overflow-auto overflow-x-hidden relative overscroll-none pb-[4px] px-[24px] pt-[24px] bg-white"
+        className="cm-flex cm-flex-col cm-flex-1 cm-overflow-auto cm-overflow-x-hidden cm-relative cm-overscroll-none cm-pb-[4px] cm-px-[24px] cm-pt-[24px] cm-bg-white"
         id="chat-history"
         ref={chatHistoryRef}
       >
@@ -161,13 +161,13 @@ const ChatHistory: React.FC<{
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="flex flex-col items-end space-y-2 mb-4"
+              className="cm-flex cm-flex-col cm-items-end cm-space-y-2 cm-mb-4"
             >
               {followUps.map((followUp, i) => (
                 <motion.form
                   key={i}
                   onSubmit={handleSubmit}
-                  className="border border-input bg-white hover:bg-[#f2f2f2] rounded-[10px] relative px-3 py-2 w-auto max-w-[75%] h-fit"
+                  className="cm-border cm-border-input cm-bg-white hover:cm-bg-[#f2f2f2] cm-rounded-[10px] cm-relative cm-px-3 cm-py-2 cm-w-auto cm-max-w-[75%] cm-h-fit"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
@@ -175,7 +175,7 @@ const ChatHistory: React.FC<{
                   <button
                     ref={i === followUps.length - 1 ? lastFollowUpRef : null}
                     type="submit"
-                    className="text-left whitespace-normal break-words flex flex-col gap-y-1 text-black text-sm select-text"
+                    className="cm-text-left cm-whitespace-normal cm-break-words cm-flex cm-flex-col cm-gap-y-1 cm-text-black cm-text-sm cm-select-text"
                     onClick={() => setMessage(followUp)}
                   >
                     {followUp}
@@ -193,7 +193,7 @@ const ChatHistory: React.FC<{
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             whileHover={{ scale: 1.1 }}
-            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-gray-600 rounded-full p-2 shadow-lg hover:bg-gray-100 transition-all duration-200"
+            className="cm-absolute cm-bottom-4 cm-left-1/2 cm-transform cm--translate-x-1/2 cm-bg-white cm-text-gray-600 cm-rounded-full cm-p-2 cm-shadow-lg hover:cm-bg-gray-100 cm-transition-all cm-duration-200"
             onClick={scrollToBottom}
             aria-label="Scroll to bottom"
             style={{
@@ -213,10 +213,13 @@ export default React.memo(ChatHistory);
 
 export function ChatHistoryLoading() {
   return (
-    <div className="h-full w-full relative">
-      <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
-        <div className="flex h-full flex-col items-center justify-center">
-          <CircleNotch size={14} className="text-slate-400 animate-spin" />
+    <div className="cm-h-full cm-w-full cm-relative">
+      <div className="cm-h-full cm-max-h-[82vh] cm-pb-[100px] cm-pt-[5px] cm-bg-gray-100 cm-rounded-lg cm-px-2 cm-mt-2 cm-gap-y-2 cm-overflow-y-scroll cm-flex cm-flex-col cm-justify-start cm-no-scroll">
+        <div className="cm-flex cm-h-full cm-flex-col cm-items-center cm-justify-center">
+          <CircleNotch
+            size={14}
+            className="cm-text-slate-400 cm-animate-spin"
+          />
         </div>
       </div>
     </div>
@@ -237,8 +240,8 @@ const DateSeparator = ({ date }: { date: string }) => {
       : format(parsedDate, "MMMM d, yyyy");
 
   return (
-    <div className="flex items-center justify-center my-4">
-      <div className="bg-gray-200 text-gray-600 text-xs font-medium px-3 py-1 rounded-full">
+    <div className="cm-flex cm-items-center cm-justify-center cm-my-4">
+      <div className="cm-bg-gray-200 cm-text-gray-600 cm-text-xs cm-font-medium cm-px-3 cm-py-1 cm-rounded-full">
         {formattedDate}
       </div>
     </div>

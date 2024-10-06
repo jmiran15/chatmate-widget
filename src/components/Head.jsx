@@ -1,3 +1,5 @@
+import { Fragment } from "react/jsx-runtime";
+
 const hljsCss = `
 pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}/*!
   Theme: GitHub Dark Dimmed
@@ -28,86 +30,6 @@ const customCss = `
 }
 
 
-.animate-slow-pulse {
-  transform: scale(1);
-  animation: subtlePulse 20s infinite;
-  will-change: transform;
-}
-
-@keyframes subtlePulse {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.1);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes subtleShift {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.bg-black-900 {
-  background: #141414;
-}
-
-.shadow-custom {
-  box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.06), 0 2px 32px 0 rgba(0, 0, 0, 0.16);
-}
-
-.transition-custom {
-  transition: transform 167ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
-}
-
-.button-hover-effect:hover {
-  transition: transform 250ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
-  transform: scale(1.1);
-}
-
-.chat-window-custom {
-  height: min(704px, 100% - 104px);
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 5px 40px;
-}
-
-.chat-header-bottom-border {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.chat-header-image {
-  overflow-clip-margin: content-box;
-  overflow: clip;
-}
-
-.chat-header-button {
-  transition: background-color 250ms ease 0s;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.settings-button {
-  transition: background-color 250ms ease 0s;
-}
-
-
-.chat-header-btn:hover {
-  cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
 .input-border-top {
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
@@ -120,9 +42,9 @@ const customCss = `
 
 export default function Head() {
   return (
-    <head>
+    <Fragment>
       <style>{hljsCss}</style>
       <style>{customCss}</style>
-    </head>
+    </Fragment>
   );
 }

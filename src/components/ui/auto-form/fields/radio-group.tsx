@@ -40,12 +40,12 @@ export default function AutoFormRadioGroup({
             {values?.map((value: any) => (
               <FormItem
                 key={value}
-                className="mb-2 flex items-center gap-3 space-y-0"
+                className="cm-mb-2 cm-flex cm-items-center cm-gap-3 cm-space-y-0"
               >
                 <FormControl>
                   <RadioGroupItem value={value} />
                 </FormControl>
-                <FormLabel className="font-normal">{value}</FormLabel>
+                <FormLabel className="cm-font-normal">{value}</FormLabel>
               </FormItem>
             ))}
           </RadioGroup>

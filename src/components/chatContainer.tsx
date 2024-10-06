@@ -124,7 +124,7 @@ export default function ChatContainer({
   };
 
   return (
-    <div className="relative flex flex-col flex-1 overflow-hidden min-w-full block">
+    <div className="cm-relative cm-flex cm-flex-col cm-flex-1 cm-overflow-hidden cm-min-w-full cm-block">
       <ChatHistory
         followUps={followUps}
         handleSubmit={handleSubmit}
