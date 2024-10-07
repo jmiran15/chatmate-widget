@@ -14,7 +14,7 @@ export default function AutoFormCheckbox({
   return (
     <div>
       <FormItem>
-        <div className="mb-3 flex items-center gap-3">
+        <div className="cm-mb-3 cm-flex cm-items-center cm-gap-3">
           <FormControl>
             <Checkbox
               checked={field.value}

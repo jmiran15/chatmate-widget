@@ -1,0 +1,4 @@
+/* Define a class with the same name as a Tailwind CSS class but with different properties */
+.bg-red-100 {
+  background-color: blue; /* Opposite color to test interference */
+}

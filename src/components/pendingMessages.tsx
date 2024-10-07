@@ -30,7 +30,7 @@ const PendingMessages = React.memo(
 
     return (
       <div
-        className="fixed bottom-[88px] z-[9998] max-w-[300px] space-y-2"
+        className="cm-fixed cm-bottom-[88px] cm-z-[9999] cm-max-w-[300px] cm-space-y-2"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         style={{
@@ -48,19 +48,19 @@ const PendingMessages = React.memo(
                 e.stopPropagation();
                 handleDismiss();
               }}
-              className={`absolute -top-2 ${isLeftAligned ? "left-0" : "right-0"} bg-gray-200 rounded-full p-1 shadow-md z-10`}
+              className={`cm-absolute cm--top-2 ${isLeftAligned ? "cm-left-0" : "cm-right-0"} cm-bg-gray-200 cm-rounded-full cm-p-1 cm-shadow-md cm-z-[9999]`}
             >
-              <XMarkIcon className="w-4 h-4 text-gray-600" />
+              <XMarkIcon className="cm-w-4 cm-h-4 cm-text-gray-600" />
             </motion.button>
           )}
         </AnimatePresence>
         {visiblePreviews.map((message) => (
           <div
             key={message.id}
-            className="relative bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-4 cursor-pointer"
+            className="cm-relative cm-bg-white cm-rounded-lg cm-shadow-md hover:cm-shadow-lg cm-transition-shadow cm-duration-200 cm-p-4 cm-cursor-pointer"
             onClick={openChat}
           >
-            <div className="line-clamp-2 overflow-hidden text-ellipsis">
+            <div className="cm-line-clamp-2 cm-overflow-hidden cm-text-ellipsis">
               {message.content}
             </div>
           </div>
@@ -68,7 +68,7 @@ const PendingMessages = React.memo(
 
         {remainingCount > 0 && (
           <div
-            className={`text-sm text-blue-600 cursor-pointer hover:underline ${isLeftAligned ? "text-left" : "text-right"}`}
+            className={`cm-text-sm cm-text-blue-600 cm-cursor-pointer hover:cm-underline ${isLeftAligned ? "cm-text-left" : "cm-text-right"}`}
             onClick={openChat}
           >
             View {remainingCount} more
@@ -76,7 +76,7 @@ const PendingMessages = React.memo(
         )}
       </div>
     );
-  },
+  }
 );
 
 export default PendingMessages;

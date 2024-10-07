@@ -1,6 +1,5 @@
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { CircleNotch } from "@phosphor-icons/react";
-import clsx from "clsx";
 import debounce from "lodash/debounce";
 import React, {
   useCallback,
@@ -13,7 +12,8 @@ import { useIsAgent } from "../hooks/useIsAgent";
 import { useChatbot } from "../providers/chatbot";
 import { useSessionContext } from "../providers/session";
 import { useSocket } from "../providers/socket";
-import { colors } from "../utils/constants";
+import { textColorClasses } from "../utils/constants";
+import { cn } from "./lib/utils";
 
 const PromptInput: React.FC<{
   message: string;
@@ -170,19 +170,16 @@ const PromptInput: React.FC<{
       }
     }, [isAgent, isTyping, message, sendEvent]);
 
-    const themeColor = useMemo(
-      () => colors[(chatbot?.themeColor || "zinc") as keyof typeof colors],
-      [chatbot?.themeColor]
-    );
+    const themeColor = textColorClasses[chatbot?.themeColor ?? "zinc"];
 
     return (
       <form
         ref={formRef}
         onSubmit={handleSubmitForm}
-        className={`relative w-full flex-col min-h-[56px] max-h-[200px] input-border-top overflow-hidden bg-white`}
+        className={`cm-relative cm-w-full cm-flex-col cm-min-h-[56px] cm-max-h-[200px] input-border-top cm-overflow-hidden cm-bg-white`}
         aria-label="Chat input form"
       >
-        <div className="flex items-start w-full px-[29px] py-[18px]">
+        <div className="cm-flex cm-items-start cm-w-full cm-px-[29px] cm-py-[18px]">
           <textarea
             ref={textareaRef}
             onKeyUp={captureEnter}
@@ -193,24 +190,24 @@ const PromptInput: React.FC<{
               handleStopTyping();
             }}
             value={message}
-            className={`overflow-auto overflow-x-hidden resize-none border-none box-border w-full h-full text-[14px] leading-snug whitespace-pre-wrap break-words max-h-[200px] cursor-text focus:outline-none overscroll-none disabled:bg-white transition-colors duration-200 ease-in-out`}
+            className={`cm-overflow-auto cm-overflow-x-hidden cm-resize-none cm-border-none cm-box-border cm-w-full cm-h-full cm-text-[14px] cm-leading-snug cm-whitespace-pre-wrap cm-break-words cm-max-h-[200px] cm-cursor-text focus:cm-outline-none cm-overscroll-none disabled:cm-bg-white cm-transition-colors cm-duration-200 cm-ease-in-out`}
             placeholder="Send a message"
             aria-label="Chat message input"
           />
           <button
             type="submit"
             disabled={buttonDisabled}
-            className="inline-flex justify-center rounded-2xl cursor-pointer group ml-4"
+            className="cm-inline-flex cm-justify-center cm-rounded-2xl cm-cursor-pointer cm-group cm-ml-4"
             aria-label="Send message"
           >
             {buttonDisabled ? (
               <CircleNotch
-                className="w-4 h-4 animate-spin text-gray-500"
+                className="cm-w-4 cm-h-4 cm-animate-spin cm-text-gray-500"
                 aria-hidden="true"
               />
             ) : (
               <PaperAirplaneIcon
-                className={clsx("w-[16px] h-[16px]", `text-${themeColor}`)}
+                className={cn("cm-w-[16px] cm-h-[16px]", themeColor)}
                 aria-hidden="true"
               />
             )}

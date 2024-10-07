@@ -20,7 +20,7 @@ export default defineConfig({
     }),
     esbuild({
       minify: true,
-      target: "es2015",
+      target: "es2020", // Updated target to 'es2020'
     }),
   ],
   define: {
@@ -35,6 +35,7 @@ export default defineConfig({
     ],
   },
   build: {
+    target: "es2020", // Specifies the build target environment
     lib: {
       entry: "src/main.tsx",
       name: "Chatmate",
@@ -82,7 +83,6 @@ export default defineConfig({
     },
     cssCodeSplit: false,
     assetsInlineLimit: 8192, // 8KB
-    // minify: "terser",
     minify: false, // Disable Vite's default minification
     terserOptions: {
       compress: {

@@ -393,5 +393,7 @@ export default function useSession({
     chat,
     followUps,
     setFollowUps,
+    setChat,
+    setLoading,
   };
 }

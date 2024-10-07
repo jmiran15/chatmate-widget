@@ -19,7 +19,7 @@ const PromptReply = React.forwardRef<
 
   const DotsAnimation = () => (
     <motion.div
-      className="flex space-x-1 h-[18px] items-center justify-center"
+      className="cm-flex cm-space-x-1 cm-h-[18px] cm-items-center cm-justify-center"
       initial="start"
       animate="end"
       variants={{
@@ -41,7 +41,7 @@ const PromptReply = React.forwardRef<
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className="w-1.5 h-1.5 bg-gray-500 rounded-full"
+          className="cm-w-1.5 cm-h-1.5 cm-bg-gray-500 cm-rounded-full"
           variants={{
             start: {
               y: 0,
@@ -62,12 +62,12 @@ const PromptReply = React.forwardRef<
   );
 
   const messageClasses =
-    "w-auto max-w-[75%] py-3 px-4 relative inline-block rounded-lg mb-4 bg-[#f2f2f2] text-black";
+    "cm-w-auto cm-max-w-[75%] cm-py-3 cm-px-4 cm-relative cm-inline-block cm-rounded-lg cm-mb-4 cm-bg-[#f2f2f2] cm-text-black";
 
   if (loading) {
     return (
       <div ref={ref} className={messageClasses}>
-        <div className="h-[18px] flex items-center">
+        <div className="cm-h-[18px] cm-flex cm-items-center">
           <DotsAnimation />
         </div>
       </div>
@@ -78,13 +78,15 @@ const PromptReply = React.forwardRef<
 
   if (error) {
     return (
-      <div className="flex justify-center items-end w-full bg-red-100 rounded-lg">
-        <div className="py-2 px-4 w-full flex gap-x-5 flex-col">
-          <div className="flex gap-x-5">
-            <span className="inline-block p-2 rounded-lg bg-red-50 text-red-500">
-              <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
-              respond to message.
-              <span className="text-xs ml-1">Reason: {error || "unknown"}</span>
+      <div className="cm-flex cm-justify-center cm-items-end cm-w-full cm-bg-red-100 cm-rounded-lg">
+        <div className="cm-py-2 cm-px-4 cm-w-full cm-flex cm-gap-x-5 cm-flex-col">
+          <div className="cm-flex cm-gap-x-5">
+            <span className="cm-inline-block cm-p-2 cm-rounded-lg cm-bg-red-50 cm-text-red-500">
+              <Warning className="cm-h-4 cm-w-4 cm-mb-1 cm-inline-block" />{" "}
+              Could not respond to message.
+              <span className="cm-text-xs cm-ml-1">
+                Reason: {error || "unknown"}
+              </span>
             </span>
           </div>
         </div>
@@ -106,7 +108,7 @@ const PromptReply = React.forwardRef<
         )}
       </AnimatePresence>
       <span
-        className="whitespace-normal break-words flex flex-col gap-y-1 text-sm leading-relaxed min-h-[18px]"
+        className="cm-whitespace-normal cm-break-words cm-flex cm-flex-col cm-gap-y-1 cm-text-sm cm-leading-relaxed cm-min-h-[18px]"
         dangerouslySetInnerHTML={{ __html: renderMarkdown(content || "") }}
       />
     </div>

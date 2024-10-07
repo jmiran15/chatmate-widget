@@ -53,7 +53,7 @@ export default function AutoFormFile({
         </FormControl>
       )}
       {file && (
-        <div className="flex h-[40px] w-full flex-row items-center justify-between space-x-2 rounded-sm border p-2 text-black focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white dark:text-black dark:focus-visible:ring-0 dark:focus-visible:ring-offset-0">
+        <div className="cm-flex cm-h-[40px] cm-w-full cm-flex-row cm-items-center cm-justify-between cm-space-x-2 cm-rounded-sm cm-border cm-p-2 cm-text-black cm-focus-visible:ring-0 cm-focus-visible:ring-offset-0 cm-dark:bg-white cm-dark:text-black cm-dark:focus-visible:ring-0 cm-dark:focus-visible:ring-offset-0">
           <p>{fileName}</p>
           <button onClick={handleRemoveClick} aria-label="Remove image">
             <Trash2 size={16} />

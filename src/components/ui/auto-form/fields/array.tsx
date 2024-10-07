@@ -49,28 +49,28 @@ export default function AutoFormArray({
       : null;
 
   return (
-    <AccordionItem value={name} className="border-none">
+    <AccordionItem value={name} className="cm-border-none">
       <AccordionTrigger>{title}</AccordionTrigger>
       <AccordionContent>
         {fields.map((_field, index) => {
           const key = _field.id;
           return (
-            <div className="mt-4 flex flex-col" key={`${key}`}>
+            <div className="cm-mt-4 cm-flex cm-flex-col" key={`${key}`}>
               <AutoFormObject
                 schema={itemDefType as z.ZodObject<any, any>}
                 form={form}
                 fieldConfig={fieldConfig}
                 path={[...path, index.toString()]}
               />
-              <div className="my-4 flex justify-end">
+              <div className="cm-my-4 cm-flex cm-justify-end">
                 <Button
                   variant="secondary"
                   size="icon"
                   type="button"
-                  className="hover:bg-zinc-300 hover:text-black focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white dark:text-black dark:hover:bg-zinc-300 dark:hover:text-black dark:hover:ring-0 dark:hover:ring-offset-0 dark:focus-visible:ring-0 dark:focus-visible:ring-offset-0"
+                  className="cm-hover:bg-zinc-300 cm-hover:text-black cm-focus:ring-0 cm-focus:ring-offset-0 cm-focus-visible:ring-0 cm-focus-visible:ring-offset-0 cm-dark:bg-white cm-dark:text-black cm-dark:hover:bg-zinc-300 cm-dark:hover:text-black cm-dark:hover:ring-0 cm-dark:hover:ring-offset-0 cm-dark:focus-visible:ring-0 cm-dark:focus-visible:ring-offset-0"
                   onClick={() => remove(index)}
                 >
-                  <Trash className="size-4 " />
+                  <Trash className="cm-size-4" />
                 </Button>
               </div>
 
@@ -82,9 +82,9 @@ export default function AutoFormArray({
           type="button"
           variant="secondary"
           onClick={() => append({})}
-          className="mt-4 flex items-center"
+          className="cm-mt-4 cm-flex cm-items-center"
         >
-          <Plus className="mr-2" size={16} />
+          <Plus className="cm-mr-2" size={16} />
           Add
         </Button>
       </AccordionContent>

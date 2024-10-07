@@ -1,3 +1,5 @@
+import { FormElement } from "src/hooks/useAutoForm";
+
 // this is the type for the chatbot object in the api.chatmate
 export interface Chatbot {
   id: string;
@@ -48,6 +50,8 @@ interface PrismaMessage {
   formId?: string;
   form?: Form;
   formSubmission?: FormSubmission;
+
+  flowId?: string;
 }
 
 interface Form {
@@ -55,7 +59,7 @@ interface Form {
   createdAt: Date;
   updatedAt: Date;
   chatbotId: string;
-  formSchema: any;
+  elements: FormElement[];
 }
 
 interface FormSubmission {
@@ -82,10 +86,15 @@ interface StreamingInformation {
   loading?: boolean;
   error: string | null;
 }
+
+interface DelayInformation {
+  delay?: number;
+}
 export interface Message
   extends PrismaMessage,
     TypingInformation,
-    StreamingInformation {}
+    StreamingInformation,
+    DelayInformation {}
 
 // this is the SSE type in api.chatmate
 export interface SSEMessage {

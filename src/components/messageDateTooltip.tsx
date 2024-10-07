@@ -36,8 +36,8 @@ const MessageDateTooltip: React.FC<{
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
       transition={{ duration: 0.2 }}
-      className={`absolute bottom-full mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded shadow-lg whitespace-nowrap z-10 ${
-        position === "right" ? "right-0" : "left-0"
+      className={`cm-absolute cm-bottom-full cm-mb-2 cm-px-3 cm-py-1 cm-bg-gray-800 cm-text-white cm-text-xs cm-rounded cm-shadow-lg cm-whitespace-nowrap cm-z-[9999] ${
+        position === "right" ? "cm-right-0" : "cm-left-0"
       }`}
     >
       {formattedDate}

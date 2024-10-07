@@ -14,7 +14,7 @@ export default function AutoFormSwitch({
   return (
     <div>
       <FormItem>
-        <div className="flex items-center gap-3">
+        <div className="cm-flex cm-items-center cm-gap-3">
           <FormControl>
             <Switch
               checked={field.value}
