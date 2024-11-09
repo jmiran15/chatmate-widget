@@ -1,3 +1,5 @@
+// TODO - currently have to build before running yarn run dev
+
 import axios from "axios";
 import { useCallback, useEffect } from "react";
 import ChatWindow from "./components/chatWindow";
@@ -190,7 +192,6 @@ export default function App({ embedId }: AppProps) {
           <div>
             {/* only in dev */}
             {/* <ElapsedTimeDisplay activeTime={activeTime} /> */}
-
             {isChatOpen && (
               <ChatWindow
                 handleUserActivity={handleUserActivity}
@@ -200,14 +201,16 @@ export default function App({ embedId }: AppProps) {
             )}
             {(!isMobile || !isChatOpen) && (
               <>
-                {!isChatOpen && delayedShow && (
-                  <PendingMessages
-                    chatbot={chatbot}
-                    starterMessages={pendingStarterMessages}
-                    openChat={() => toggleOpenChat(true)}
-                    handleDismiss={handleDismiss}
-                  />
-                )}
+                {!isChatOpen &&
+                  delayedShow &&
+                  chatbot.showIntroPreview !== false && (
+                    <PendingMessages
+                      chatbot={chatbot}
+                      starterMessages={pendingStarterMessages}
+                      openChat={() => toggleOpenChat(true)}
+                      handleDismiss={handleDismiss}
+                    />
+                  )}
                 <OpenButton
                   isOpen={isChatOpen}
                   toggleOpen={() => toggleOpenChat(!isChatOpen)}

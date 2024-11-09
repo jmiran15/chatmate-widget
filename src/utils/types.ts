@@ -25,6 +25,8 @@ export interface Chatbot {
   installed: boolean;
   lastPingedAt?: string;
   widgetPosition?: "BOTTOM_RIGHT" | "BOTTOM_LEFT";
+  showIntroPreview?: boolean;
+  subheader?: string;
 }
 
 enum ActivityType {

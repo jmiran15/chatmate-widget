@@ -7,6 +7,7 @@ import { useSessionContext } from "../providers/session";
 import { useSocket } from "../providers/socket";
 import { colors } from "../utils/constants";
 import { useMobileScreen } from "../utils/mobile";
+import { cn } from "./lib/utils";
 
 const ChatWindowHeader = React.memo(
   ({ closeChat }: { closeChat: () => void }) => {
@@ -53,8 +54,16 @@ const ChatWindowHeader = React.memo(
               <h1 className="cm-text-base cm-font-semibold cm-text-white">
                 {chatbot?.publicName}
               </h1>
-              <div className="cm-text-sm cm-text-white/80">
-                Chatting with {isAgent ? "Agent" : "AI"}
+              <div
+                className={cn(
+                  "cm-text-sm cm-text-white/80 overflow-hidden",
+                  chatbot?.subheader
+                    ? "max-h-[20px] opacity-100"
+                    : "max-h-0 opacity-0"
+                )}
+              >
+                {chatbot?.subheader}
+                {/* Chatting with {isAgent ? "Agent" : "AI"} */}
               </div>
             </div>
           </button>
